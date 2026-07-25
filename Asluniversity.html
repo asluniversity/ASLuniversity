@@ -1,0 +1,820 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ASL University - Premium Trading Membership</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #e8f4f8 0%, #f0f9fc 100%);
+            color: #1a4d5c;
+            line-height: 1.6;
+        }
+
+        /* Navigation */
+        nav {
+            background: linear-gradient(135deg, #17a2b8 0%, #1eb3cc 100%);
+            padding: 20px 0;
+            box-shadow: 0 4px 15px rgba(23, 162, 184, 0.2);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 28px;
+            font-weight: 900;
+            color: #ffffff;
+            letter-spacing: 3px;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 30px;
+            list-style: none;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: white;
+            font-weight: 600;
+            transition: all 0.3s;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .nav-links a:hover {
+            color: #ffd700;
+            text-shadow: 0 0 8px rgba(255, 215, 0, 0.3);
+        }
+
+        /* ============ HERO SECTION 1 ============ */
+        .hero-section {
+            max-width: 1200px;
+            margin: 60px auto;
+            padding: 0 20px;
+            display: flex;
+            align-items: center;
+            gap: 50px;
+            min-height: 500px;
+        }
+
+        .hero-image {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .hero-image img {
+            width: 100%;
+            max-width: 400px;
+            height: auto;
+            object-fit: contain;
+            animation: float 3s ease-in-out infinite;
+            filter: drop-shadow(0 10px 30px rgba(23, 162, 184, 0.25));
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+        }
+
+        .hero-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: linear-gradient(135deg, rgba(23, 162, 184, 0.2) 0%, rgba(255, 215, 0, 0.1) 100%);
+            color: #17a2b8;
+            padding: 12px 20px;
+            border-radius: 50px;
+            font-size: 13px;
+            font-weight: 700;
+            width: fit-content;
+            border: 2px solid #17a2b8;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .hero-content h1 {
+            font-size: 52px;
+            font-weight: 900;
+            line-height: 1.2;
+            color: #0a5f7a;
+            letter-spacing: -1px;
+        }
+
+        .hero-content .highlight {
+            color: #17a2b8;
+            text-decoration: underline;
+            text-decoration-color: #ffd700;
+            text-decoration-thickness: 3px;
+            text-underline-offset: 8px;
+        }
+
+        .hero-content p {
+            font-size: 18px;
+            color: #4a7c8a;
+            font-weight: 400;
+            line-height: 1.8;
+        }
+
+        .features-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin: 20px 0;
+        }
+      .feature-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            font-size: 15px;
+            color: #1a4d5c;
+            font-weight: 600;
+        }
+
+        .feature-item::before {
+            content: '✓';
+            color: #17a2b8;
+            font-weight: bold;
+            font-size: 20px;
+            flex-shrink: 0;
+            margin-top: 0px;
+            background: rgba(23, 162, 184, 0.1);
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .cta-buttons {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
+            align-items: center;
+        }
+
+        .btn {
+            padding: 16px 32px;
+            border-radius: 10px;
+            font-size: 15px;
+            font-weight: 700;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #17a2b8 0%, #1eb3cc 100%);
+            color: white;
+            box-shadow: 0 8px 25px rgba(23, 162, 184, 0.35);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 35px rgba(23, 162, 184, 0.45);
+        }
+
+        .btn-secondary {
+            background: white;
+            color: #17a2b8;
+            border: 2px solid #17a2b8;
+            box-shadow: 0 4px 15px rgba(23, 162, 184, 0.1);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(23, 162, 184, 0.05);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(23, 162, 184, 0.2);
+        }
+
+        .price-tag {
+            font-size: 28px;
+            font-weight: 900;
+            color: #17a2b8;
+            margin-top: 10px;
+            display: flex;
+            align-items: baseline;
+            gap: 5px;
+        }
+
+        .price-tag .currency {
+            font-size: 20px;
+        }
+
+        .price-tag .period {
+            font-size: 14px;
+            color: #4a7c8a;
+            font-weight: 500;
+        }
+
+        /* ============ DIVIDER ============ */
+        .divider {
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #17a2b8, transparent);
+            margin: 80px 0;
+        }
+
+        /* ============ HERO SECTION 2 ============ */
+        .hero-section.reverse {
+            flex-direction: row-reverse;
+        }
+
+        /* ============ BENEFITS GRID ============ */
+        .benefits-section {
+            max-width: 1200px;
+            margin: 80px auto;
+            padding: 60px 20px;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(23, 162, 184, 0.15);
+            border: 2px solid rgba(23, 162, 184, 0.1);
+        }
+
+        .section-title {
+            text-align: center;
+            font-size: 42px;
+            font-weight: 900;
+            color: #0a5f7a;
+            margin-bottom: 50px;
+            line-height: 1.2;
+        }
+
+        .section-title .highlight {
+            color: #17a2b8;
+        }
+
+        .benefits-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 30px;
+        }
+
+        .benefit-card {
+            background: linear-gradient(135deg, rgba(23, 162, 184, 0.08) 0%, rgba(255, 255, 255, 0.5) 100%);
+            padding: 30px;
+            border-radius: 15px;
+            border: 2px solid rgba(23, 162, 184, 0.2);
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+      .benefit-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 50px rgba(23, 162, 184, 0.2);
+            border-color: #17a2b8;
+            background: linear-gradient(135deg, rgba(23, 162, 184, 0.12) 0%, rgba(255, 215, 0, 0.05) 100%);
+        }
+
+        .benefit-icon {
+            font-size: 45px;
+            margin-bottom: 15px;
+            filter: drop-shadow(0 4px 8px rgba(23, 162, 184, 0.15));
+        }
+
+        .benefit-card h3 {
+            font-size: 18px;
+            font-weight: 800;
+            color: #0a5f7a;
+            margin-bottom: 10px;
+            letter-spacing: -0.5px;
+        }
+
+        .benefit-card p {
+            font-size: 14px;
+            color: #4a7c8a;
+            line-height: 1.7;
+            font-weight: 500;
+        }
+
+        /* ============ TESTIMONIAL SECTION ============ */
+        .testimonial-section {
+            max-width: 1200px;
+            margin: 80px auto;
+            padding: 0 20px;
+            text-align: center;
+        }
+
+        .testimonial-section h2 {
+            font-size: 42px;
+            font-weight: 900;
+            color: #0a5f7a;
+            margin-bottom: 50px;
+        }
+
+        .testimonial-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+        }
+
+        .testimonial-card {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            border-left: 4px solid #17a2b8;
+            box-shadow: 0 5px 20px rgba(23, 162, 184, 0.1);
+        }
+
+        .testimonial-card p {
+            color: #4a7c8a;
+            font-size: 15px;
+            line-height: 1.8;
+            margin-bottom: 15px;
+            font-style: italic;
+        }
+
+        .testimonial-author {
+            color: #0a5f7a;
+            font-weight: 700;
+            font-size: 14px;
+        }
+
+        /* ============ PRICING SECTION ============ */
+        .pricing-section {
+            max-width: 1200px;
+            margin: 80px auto;
+            padding: 0 20px;
+            text-align: center;
+        }
+
+        .pricing-section h2 {
+            font-size: 48px;
+            font-weight: 900;
+            color: #0a5f7a;
+            margin-bottom: 20px;
+        }
+
+        .pricing-section > p {
+            font-size: 18px;
+            color: #4a7c8a;
+            margin-bottom: 50px;
+        }
+
+        .pricing-card {
+            background: linear-gradient(135deg, white 0%, rgba(23, 162, 184, 0.05) 100%);
+            border: 3px solid #17a2b8;
+            border-radius: 20px;
+            padding: 50px;
+            max-width: 500px;
+            margin: 0 auto;
+            box-shadow: 0 20px 60px rgba(23, 162, 184, 0.25);
+        }
+
+        .pricing-card h3 {
+            font-size: 28px;
+            color: #0a5f7a;
+            margin-bottom: 20px;
+            font-weight: 900;
+        }
+
+        .price-big {
+            font-size: 56px;
+            font-weight: 900;
+            color: #17a2b8;
+            margin: 30px 0;
+        }
+
+        .price-big .currency {
+            font-size: 32px;
+        }
+
+        .price-big .period {
+            font-size: 18px;
+            color: #4a7c8a;
+            font-weight: 500;
+        }
+
+        .pricing-features {
+            text-align: left;
+            margin: 30px 0;
+            padding: 30px 0;
+            border-top: 2px solid rgba(23, 162, 184, 0.2);
+            border-bottom: 2px solid rgba(23, 162, 184, 0.2);
+        }
+
+        .pricing-features li {
+            list-style: none;
+            padding: 12px 0;
+            color: #1a4d5c;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 15px;
+        }
+
+        .pricing-features li::before {
+          content: '✓';
+            color: #17a2b8;
+            font-weight: bold;
+            font-size: 20px;
+            background: rgba(23, 162, 184, 0.1);
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .pricing-card .btn-primary {
+            width: 100%;
+            justify-content: center;
+            margin-top: 30px;
+            font-size: 16px;
+            padding: 18px 32px;
+        }
+
+        /* ============ CTA FINAL SECTION ============ */
+        .final-cta {
+            background: linear-gradient(135deg, #17a2b8 0%, #1eb3cc 50%, #0a5f7a 100%);
+            padding: 60px 20px;
+            text-align: center;
+            margin: 80px 0 0 0;
+            border-radius: 0;
+        }
+
+        .final-cta h2 {
+            font-size: 42px;
+            font-weight: 900;
+            color: white;
+            margin-bottom: 20px;
+            letter-spacing: -1px;
+        }
+
+        .final-cta p {
+            font-size: 18px;
+            color: rgba(255, 255, 255, 0.95);
+            margin-bottom: 30px;
+        }
+
+        .final-cta .btn {
+            background: white;
+            color: #17a2b8;
+            font-size: 18px;
+            padding: 18px 50px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .final-cta .btn:hover {
+            background: #ffd700;
+            color: #0a5f7a;
+            transform: translateY(-3px);
+            box-shadow: 0 15px 40px rgba(255, 215, 0, 0.3);
+        }
+
+        /* ============ TELEGRAM SUPPORT ============ */
+        .telegram-support {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: linear-gradient(135deg, #17a2b8 0%, #1eb3cc 100%);
+            color: white;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            cursor: pointer;
+            box-shadow: 0 8px 25px rgba(23, 162, 184, 0.3);
+            transition: all 0.3s;
+            text-decoration: none;
+            z-index: 50;
+        }
+
+        .telegram-support:hover {
+            transform: scale(1.1);
+            box-shadow: 0 12px 35px rgba(23, 162, 184, 0.4);
+        }
+
+        /* ============ FOOTER ============ */
+        footer {
+            background: #0a5f7a;
+            color: white;
+            text-align: center;
+            padding: 40px 20px;
+        }
+
+        .disclaimer {
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.8);
+            line-height: 1.8;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .footer-info {
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.2);
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 12px;
+        }
+
+        /* ============ RESPONSIVE ============ */
+        @media (max-width: 768px) {
+            .hero-section {
+                flex-direction: column;
+                gap: 30px;
+                margin: 40px auto;
+            }
+
+            .hero-section.reverse {
+                flex-direction: column;
+            }
+
+            .hero-content h1 {
+                font-size: 36px;
+            }
+
+            .nav-links {
+                gap: 15px;
+                font-size: 12px;
+            }
+
+            .section-title {
+                font-size: 32px;
+            }
+
+            .benefits-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .cta-buttons {
+                flex-direction: column;
+                width: 100%;
+            }
+
+            .btn {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .pricing-card {
+                padding: 30px;
+            }
+          .telegram-support {
+                bottom: 20px;
+                right: 20px;
+            }
+
+            .final-cta h2 {
+                font-size: 32px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav>
+        <div class="nav-container">
+            <div class="logo">ASL</div>
+            <ul class="nav-links">
+                <li><a href="#benefits">Benefits</a></li>
+                <li><a href="#pricing">Pricing</a></li>
+                <li><a href="#join">Join Now</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Hero Section 1 -->
+    <section class="hero-section">
+        <div class="hero-image">
+            <img src="https://i.ibb.co/WpVFw5q8/unlock-potential.jpg" alt="Unlock Your Trading Potential">
+        </div>
+        <div class="hero-content">
+            <div class="badge">🚀 Limited to 100 Members</div>
+            <h1>Unlock Your <span class="highlight">Trading Potential</span></h1>
+            <p>Join ASL University's exclusive Premium Trading Membership and gain access to professional tools, verified signals, and a structured growth program designed for active traders.</p>
+            
+            <div class="features-list">
+                <div class="feature-item">Zero trading fees on all transactions</div>
+                <div class="feature-item">Weekly growth program targeting 2-5% returns</div>
+                <div class="feature-item">Exclusive trading signals with ~80% win rate</div>
+                <div class="feature-item">Professional trader certificate</div>
+            </div>
+
+            <div class="price-tag">
+                <span class="currency">$</span>49<span class="period">/month</span>
+            </div>
+
+            <div class="cta-buttons">
+                <button class="btn btn-primary">Join Now - Claim Your Spot</button>
+                <button class="btn btn-secondary">Learn More</button>
+            </div>
+        </div>
+    </section>
+
+    <div class="divider"></div>
+
+    <!-- Hero Section 2 -->
+    <section class="hero-section reverse">
+        <div class="hero-image">
+            <img src="https://i.ibb.co/27h8JQTZ/best-traders.jpg" alt="The Best Traders">
+        </div>
+        <div class="hero-content">
+            <div class="badge">✨ Premium Benefits</div>
+            <h1>Become One of <span class="highlight">The Best Traders</span></h1>
+            <p>Experience an all-in-one monthly membership packed with exceptional benefits designed for serious traders who want to scale their trading business and achieve financial independence.</p>
+            
+            <div class="features-list">
+                <div class="feature-item">10% monthly promotional credit</div>
+                <div class="feature-item">Access to top investor training courses</div>
+                <div class="feature-item">Free $1,000 prop account opportunity</div>
+                <div class="feature-item">Personal guidance & risk management plans</div>
+            </div>
+
+            <div class="cta-buttons">
+                <button class="btn btn-primary">Start Your Journey</button>
+                <button class="btn btn-secondary">View All Features</button>
+            </div>
+        </div>
+    </section>
+
+    <div class="divider"></div>
+
+    <!-- Benefits Section -->
+    <section class="benefits-section" id="benefits">
+        <h2 class="section-title">What's Included in Your <span class="highlight">Premium Membership</span></h2>
+        
+        <div class="benefits-grid">
+            <div class="benefit-card">
+                <div class="benefit-icon">💰</div>
+                <h3>Zero Trading Fees</h3>
+                <p>Buy and sell any cryptocurrency on our platform without paying transaction fees ever.</p>
+            </div>
+
+            <div class="benefit-card">
+                <div class="benefit-icon">📈</div>
+                <h3>Weekly Growth Program</h3>
+                <p>Structured plan targeting 2-5% weekly returns with clear entry and exit signals daily.</p>
+            </div>
+            <div class="benefit-card">
+                <div class="benefit-icon">🎯</div>
+                <h3>80% Accurate Signals</h3>
+                <p>Access exclusive trading signals channel with historical ~80% win rate and trade plans.</p>
+            </div>
+
+            <div class="benefit-card">
+                <div class="benefit-icon">🏆</div>
+                <h3>Trader Certificate</h3>
+                <p>Receive an official accredited certificate recognizing you as a top, profitable trader.</p>
+            </div>
+
+            <div class="benefit-card">
+                <div class="benefit-icon">💎</div>
+                <h3>$1,000 Prop Account</h3>
+                <p>Opportunity to earn a free funded trading account by passing our skills evaluation.</p>
+            </div>
+
+            <div class="benefit-card">
+                <div class="benefit-icon">👨‍🏫</div>
+                <h3>Expert Training</h3>
+                <p>Learn directly from the world's top investors through our comprehensive programs.</p>
+            </div>
+
+            <div class="benefit-card">
+                <div class="benefit-icon">💳</div>
+                <h3>10% Monthly Credits</h3>
+                <p>Receive 10% promotional credit every month to accelerate your trading growth.</p>
+            </div>
+
+            <div class="benefit-card">
+                <div class="benefit-icon">🛡️</div>
+                <h3>Risk Management</h3>
+                <p>Personalized guidance with clear risk rules and portfolio management strategies.</p>
+            </div>
+
+            <div class="benefit-card">
+                <div class="benefit-icon">24/7</div>
+                <h3>24/7 Support</h3>
+                <p>Round-the-clock access to our support team via Telegram and email channels.</p>
+            </div>
+        </div>
+    </section>
+
+    <div class="divider"></div>
+
+    <!-- Testimonials Section -->
+    <section class="testimonial-section">
+        <h2>What Our Members Say</h2>
+        
+        <div class="testimonial-grid">
+            <div class="testimonial-card">
+                <p>"ASL University changed my trading game completely. The signals are incredibly accurate and the training is top-notch!"</p>
+                <div class="testimonial-author">— Ahmed M. | Active Trader</div>
+            </div>
+
+            <div class="testimonial-card">
+                <p>"Best investment I've made. Zero fees plus the growth program has already paid for itself multiple times over."</p>
+                <div class="testimonial-author">— Sarah K. | Crypto Investor</div>
+            </div>
+
+            <div class="testimonial-card">
+                <p>"The community and support here is unmatched. I earned my prop account within 2 months of joining!"</p>
+                <div class="testimonial-author">— Mike T. | Professional Trader</div>
+            </div>
+        </div>
+    </section>
+
+    <div class="divider"></div>
+
+    <!-- Pricing Section -->
+    <section class="pricing-section" id="pricing">
+        <h2>Simple, Transparent Pricing</h2>
+        <p>No hidden fees. Cancel anytime. Join over 100+ active traders in our exclusive community.</p>
+
+        <div class="pricing-card">
+            <h3>Premium Membership</h3>
+            <div class="price-big">
+                <span class="currency">$</span>49<br>
+                <span class="period">per month</span>
+            </div>
+
+            <ul class="pricing-features">
+                <li>Zero trading fees</li>
+                <li>Weekly growth program (2-5% target)</li>
+                <li>10% monthly promotional credit</li>
+                <li>Exclusive signals channel (80% win rate)</li>
+                <li>Accredited trader certificate</li>
+                <li>$1,000 prop account opportunity</li>
+                <li>Expert training courses</li>
+                <li>Personal risk management guidance</li>
+                <li>24/7 support access</li>
+                <li>Cancel anytime, no lock-in</li>
+            </ul>
+            <button class="btn btn-primary" id="join">🚀 Join Now - Secure Your Spot</button>
+        </div>
+    </section>
+
+    <!-- Final CTA Section -->
+    <section class="final-cta">
+        <h2>Ready to Transform Your Trading?</h2>
+        <p>Join 100+ active traders who are already earning consistent returns with ASL University.</p>
+        <button class="btn">Claim Your Membership Today</button>
+    </section>
+
+    <!-- Telegram Support Button -->
+    <a href="https://t.me/mrasltl" class="telegram-support" title="Contact us on Telegram">✉️</a>
+
+    <!-- Footer -->
+    <footer>
+        <div class="disclaimer">
+            <p><strong>Disclaimer:</strong> Historical results do not guarantee future performance. Past performance is not indicative of future results. Terms & conditions apply. Trading cryptocurrency carries risk. Always understand the risks before investing. This membership is not financial advice.</p>
+        </div>
+        <div class="footer-info">
+            <p>© 2024 ASL University. All rights reserved. | Support: @mrasltl on Telegram</p>
+        </div>
+    </footer>
+
+    <script>
+        // Smooth scrolling for nav links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if(target) {
+                    target.scrollIntoView({behavior: 'smooth'});
+                }
+            });
+        });
+    </script>
+</body>
+</html>
