@@ -11,11 +11,33 @@
             box-sizing: border-box;
         }
 
+        /* ============ THEME VARIABLES ============ */
+        :root {
+            --page-bg: linear-gradient(135deg, #e8f4f8 0%, #f0f9fc 100%);
+            --text-color: #1a4d5c;
+            --heading-color: #0a5f7a;
+            --muted-color: #4a7c8a;
+            --surface-bg: #ffffff;
+            --card-bg: linear-gradient(135deg, rgba(23, 162, 184, 0.08) 0%, rgba(255, 255, 255, 0.5) 100%);
+            --pricing-bg: linear-gradient(135deg, #ffffff 0%, rgba(23, 162, 184, 0.05) 100%);
+        }
+
+        body.dark-theme {
+            --page-bg: linear-gradient(135deg, #0d1b22 0%, #122630 100%);
+            --text-color: #dceef4;
+            --heading-color: #7fd8ea;
+            --muted-color: #9fc3cf;
+            --surface-bg: #16323d;
+            --card-bg: linear-gradient(135deg, rgba(23, 162, 184, 0.18) 0%, rgba(22, 50, 61, 0.6) 100%);
+            --pricing-bg: linear-gradient(135deg, #16323d 0%, rgba(23, 162, 184, 0.15) 100%);
+        }
+
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #e8f4f8 0%, #f0f9fc 100%);
-            color: #1a4d5c;
+            background: var(--page-bg);
+            color: var(--text-color);
             line-height: 1.6;
+            transition: background 0.3s ease, color 0.3s ease;
         }
 
         /* Navigation */
@@ -45,6 +67,12 @@
             text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
 
+        .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 25px;
+        }
+
         .nav-links {
             display: flex;
             gap: 30px;
@@ -64,6 +92,28 @@
         .nav-links a:hover {
             color: #ffd700;
             text-shadow: 0 0 8px rgba(255, 215, 0, 0.3);
+        }
+
+        /* ============ THEME TOGGLE BUTTON ============ */
+        .theme-toggle {
+            width: 42px;
+            height: 42px;
+            border: 2px solid rgba(255, 255, 255, 0.5);
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.15);
+            color: #ffffff;
+            font-size: 19px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            flex-shrink: 0;
+        }
+
+        .theme-toggle:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: scale(1.08);
         }
 
         /* ============ HERO SECTION 1 ============ */
@@ -125,7 +175,7 @@
             font-size: 52px;
             font-weight: 900;
             line-height: 1.2;
-            color: #0a5f7a;
+            color: var(--heading-color);
             letter-spacing: -1px;
         }
 
@@ -139,7 +189,7 @@
 
         .hero-content p {
             font-size: 18px;
-            color: #4a7c8a;
+            color: var(--muted-color);
             font-weight: 400;
             line-height: 1.8;
         }
@@ -150,12 +200,13 @@
             gap: 12px;
             margin: 20px 0;
         }
-      .feature-item {
+
+        .feature-item {
             display: flex;
             align-items: flex-start;
             gap: 12px;
             font-size: 15px;
-            color: #1a4d5c;
+            color: var(--text-color);
             font-weight: 600;
         }
 
@@ -210,7 +261,7 @@
         }
 
         .btn-secondary {
-            background: white;
+            background: var(--surface-bg);
             color: #0BB1D2;
             border: 2px solid #0BB1D2;
             box-shadow: 0 4px 15px rgba(23, 162, 184, 0.1);
@@ -238,7 +289,7 @@
 
         .price-tag .period {
             font-size: 14px;
-            color: #4a7c8a;
+            color: var(--muted-color);
             font-weight: 500;
         }
 
@@ -259,17 +310,18 @@
             max-width: 1200px;
             margin: 80px auto;
             padding: 60px 20px;
-            background: white;
+            background: var(--surface-bg);
             border-radius: 20px;
             box-shadow: 0 10px 40px rgba(23, 162, 184, 0.15);
             border: 2px solid rgba(23, 162, 184, 0.1);
+            transition: background 0.3s ease;
         }
 
         .section-title {
             text-align: center;
             font-size: 42px;
             font-weight: 900;
-            color: #0a5f7a;
+            color: var(--heading-color);
             margin-bottom: 50px;
             line-height: 1.2;
         }
@@ -285,18 +337,18 @@
         }
 
         .benefit-card {
-            background: linear-gradient(135deg, rgba(23, 162, 184, 0.08) 0%, rgba(255, 255, 255, 0.5) 100%);
+            background: var(--card-bg);
             padding: 30px;
             border-radius: 15px;
             border: 2px solid rgba(23, 162, 184, 0.2);
             transition: all 0.3s ease;
             text-align: center;
         }
-      .benefit-card:hover {
+
+        .benefit-card:hover {
             transform: translateY(-8px);
             box-shadow: 0 20px 50px rgba(23, 162, 184, 0.2);
             border-color: #0BB1D2;
-            background: linear-gradient(135deg, rgba(23, 162, 184, 0.12) 0%, rgba(255, 215, 0, 0.05) 100%);
         }
 
         .benefit-icon {
@@ -308,14 +360,14 @@
         .benefit-card h3 {
             font-size: 18px;
             font-weight: 800;
-            color: #0a5f7a;
+            color: var(--heading-color);
             margin-bottom: 10px;
             letter-spacing: -0.5px;
         }
 
         .benefit-card p {
             font-size: 14px;
-            color: #4a7c8a;
+            color: var(--muted-color);
             line-height: 1.7;
             font-weight: 500;
         }
@@ -331,7 +383,7 @@
         .testimonial-section h2 {
             font-size: 42px;
             font-weight: 900;
-            color: #0a5f7a;
+            color: var(--heading-color);
             margin-bottom: 50px;
         }
 
@@ -342,15 +394,16 @@
         }
 
         .testimonial-card {
-            background: white;
+            background: var(--surface-bg);
             padding: 30px;
             border-radius: 15px;
             border-left: 4px solid #0BB1D2;
             box-shadow: 0 5px 20px rgba(23, 162, 184, 0.1);
+            transition: background 0.3s ease;
         }
 
         .testimonial-card p {
-            color: #4a7c8a;
+            color: var(--muted-color);
             font-size: 15px;
             line-height: 1.8;
             margin-bottom: 15px;
@@ -358,7 +411,7 @@
         }
 
         .testimonial-author {
-            color: #0a5f7a;
+            color: var(--heading-color);
             font-weight: 700;
             font-size: 14px;
         }
@@ -374,29 +427,30 @@
         .pricing-section h2 {
             font-size: 48px;
             font-weight: 900;
-            color: #0a5f7a;
+            color: var(--heading-color);
             margin-bottom: 20px;
         }
 
         .pricing-section > p {
             font-size: 18px;
-            color: #4a7c8a;
+            color: var(--muted-color);
             margin-bottom: 50px;
         }
 
         .pricing-card {
-            background: linear-gradient(135deg, white 0%, rgba(23, 162, 184, 0.05) 100%);
+            background: var(--pricing-bg);
             border: 3px solid #0BB1D2;
             border-radius: 20px;
             padding: 50px;
             max-width: 500px;
             margin: 0 auto;
             box-shadow: 0 20px 60px rgba(23, 162, 184, 0.25);
+            transition: background 0.3s ease;
         }
 
         .pricing-card h3 {
             font-size: 28px;
-            color: #0a5f7a;
+            color: var(--heading-color);
             margin-bottom: 20px;
             font-weight: 900;
         }
@@ -414,7 +468,7 @@
 
         .price-big .period {
             font-size: 18px;
-            color: #4a7c8a;
+            color: var(--muted-color);
             font-weight: 500;
         }
 
@@ -429,7 +483,7 @@
         .pricing-features li {
             list-style: none;
             padding: 12px 0;
-            color: #1a4d5c;
+            color: var(--text-color);
             font-weight: 600;
             display: flex;
             align-items: center;
@@ -438,7 +492,7 @@
         }
 
         .pricing-features li::before {
-          content: '✓';
+            content: '✓';
             color: #0BB1D2;
             font-weight: bold;
             font-size: 20px;
@@ -532,6 +586,10 @@
             padding: 40px 20px;
         }
 
+        body.dark-theme footer {
+            background: #08222c;
+        }
+
         .disclaimer {
             font-size: 12px;
             color: rgba(255, 255, 255, 0.8);
@@ -569,6 +627,16 @@
                 font-size: 12px;
             }
 
+            .nav-right {
+                gap: 12px;
+            }
+
+            .theme-toggle {
+                width: 38px;
+                height: 38px;
+                font-size: 17px;
+            }
+
             .section-title {
                 font-size: 32px;
             }
@@ -590,7 +658,8 @@
             .pricing-card {
                 padding: 30px;
             }
-          .telegram-support {
+
+            .telegram-support {
                 bottom: 20px;
                 right: 20px;
             }
@@ -606,11 +675,14 @@
     <nav>
         <div class="nav-container">
             <div class="logo">ASL UNIVERSITY</div>
-            <ul class="nav-links">
-                <li><a href="#benefits">Benefits</a></li>
-                <li><a href="#pricing">Pricing</a></li>
-                <li><a href="#join">Join Now</a></li>
-            </ul>
+            <div class="nav-right">
+                <ul class="nav-links">
+                    <li><a href="#benefits">Benefits</a></li>
+                    <li><a href="#pricing">Pricing</a></li>
+                    <li><a href="#join">Join Now</a></li>
+                </ul>
+                <button id="theme-toggle" class="theme-toggle" type="button" aria-label="Toggle dark mode">🌙</button>
+            </div>
         </div>
     </nav>
 
@@ -623,7 +695,7 @@
             <div class="badge">🚀 Limited to 100 Members</div>
             <h1>Unlock Your <span class="highlight">Trading Potential</span></h1>
             <p>Join ASL University's exclusive Premium Trading Membership and gain access to professional tools, verified signals, and a structured growth program designed for active traders.</p>
-            
+
             <div class="features-list">
                 <div class="feature-item">Zero trading fees on all transactions</div>
                 <div class="feature-item">Weekly growth program targeting 2-5% returns</div>
@@ -653,7 +725,7 @@
             <div class="badge">✨ Premium Benefits</div>
             <h1>Become One of <span class="highlight">The Best Traders</span></h1>
             <p>Experience an all-in-one monthly membership packed with exceptional benefits designed for serious traders who want to scale their trading business and achieve financial independence.</p>
-            
+
             <div class="features-list">
                 <div class="feature-item">Specialized and custom trading robot for your account</div>
                 <div class="feature-item">Access to top investor training courses</div>
@@ -673,7 +745,7 @@
     <!-- Benefits Section -->
     <section class="benefits-section" id="benefits">
         <h2 class="section-title">What's Included in Your <span class="highlight">Premium Membership</span></h2>
-        
+
         <div class="benefits-grid">
             <div class="benefit-card">
                 <div class="benefit-icon">💰</div>
@@ -686,6 +758,7 @@
                 <h3>Weekly Growth Program</h3>
                 <p>Structured plan targeting 2-5% weekly returns with clear entry and exit signals daily.</p>
             </div>
+
             <div class="benefit-card">
                 <div class="benefit-icon">🎯</div>
                 <h3>80% Accurate Signals</h3>
@@ -735,7 +808,7 @@
     <!-- Testimonials Section -->
     <section class="testimonial-section">
         <h2>What Our Members Say</h2>
-        
+
         <div class="testimonial-grid">
             <div class="testimonial-card">
                 <p>"ASL University changed my trading game completely. The signals are incredibly accurate and the training is top-notch!"</p>
@@ -814,6 +887,21 @@
                     target.scrollIntoView({behavior: 'smooth'});
                 }
             });
+        });
+
+        // ============ THEME TOGGLE ============
+        const themeToggle = document.getElementById('theme-toggle');
+
+        // Restore saved theme
+        if (localStorage.getItem('theme') === 'dark') {
+            document.body.classList.add('dark-theme');
+            themeToggle.textContent = '☀️';
+        }
+
+        themeToggle.addEventListener('click', function () {
+            const isDark = document.body.classList.toggle('dark-theme');
+            themeToggle.textContent = isDark ? '☀️' : '🌙';
+            localStorage.setItem('theme', isDark ? 'dark' : 'light');
         });
     </script>
 </body>
