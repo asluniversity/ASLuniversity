@@ -669,6 +669,7 @@
             }
         }
     </style>
+          } 
 </head>
 <body>
     <!-- Navigation -->
@@ -895,12 +896,12 @@
         // Restore saved theme
         if (localStorage.getItem('theme') === 'dark') {
             document.body.classList.add('dark-theme');
-            themeToggle.textContent = '☀️';
+            themeToggle.textContent = '☼';
         }
 
         themeToggle.addEventListener('click', function () {
             const isDark = document.body.classList.toggle('dark-theme');
-            themeToggle.textContent = isDark ? '☀️' : '🌙';
+            themeToggle.textContent = isDark ? '☼' : '☽';
             localStorage.setItem('theme', isDark ? 'dark' : 'light');
         });
     </script>
