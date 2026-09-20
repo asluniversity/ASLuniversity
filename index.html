@@ -4,6 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ASL University - Premium Trading Membership</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
     <style>
         * {
             margin: 0;
@@ -11,40 +14,70 @@
             box-sizing: border-box;
         }
 
-        /* ============ THEME VARIABLES ============ */
+        /* ============ THEME VARIABLES (ASL trading-dashboard theme) ============ */
         :root {
-            --page-bg: linear-gradient(135deg, #e8f4f8 0%, #f0f9fc 100%);
-            --text-color: #1a4d5c;
-            --heading-color: #0a5f7a;
-            --muted-color: #4a7c8a;
-            --surface-bg: #ffffff;
-            --card-bg: linear-gradient(135deg, rgba(23, 162, 184, 0.08) 0%, rgba(255, 255, 255, 0.5) 100%);
-            --pricing-bg: linear-gradient(135deg, #ffffff 0%, rgba(23, 162, 184, 0.05) 100%);
+            --page-bg: linear-gradient(135deg, #0B1416 0%, #122630 100%);
+            --text-color: #dceef4;
+            --heading-color: #F5F7F8;
+            --muted-color: #9fc3cf;
+            --surface-bg: #16323d;
+            --card-bg: linear-gradient(165deg, #1a3a46 0%, #16323d 70%);
+            --pricing-bg: linear-gradient(160deg, #1a3a46 0%, #122630 100%);
+            --hairline: rgba(11,177,210,0.22);
+            --sans: 'IBM Plex Sans', sans-serif;
+            --display: 'Space Grotesk', sans-serif;
+            --mono: 'JetBrains Mono', monospace;
         }
 
         body.dark-theme {
-            --page-bg: linear-gradient(135deg, #0B1416 0%, #122630 100%);
-            --text-color: #dceef4;
-            --heading-color: #7fd8ea;
-            --muted-color: #9fc3cf;
-            --surface-bg: #16323d;
-            --card-bg: linear-gradient(135deg, rgba(23, 162, 184, 0.18) 0%, rgba(22, 50, 61, 0.6) 100%);
-            --pricing-bg: linear-gradient(135deg, #16323d 0%, rgba(23, 162, 184, 0.15) 100%);
+            --page-bg: linear-gradient(135deg, #0A0A0B 0%, #0B1416 100%);
+            --text-color: #F5F7F8;
+            --heading-color: #F5F7F8;
+            --muted-color: #8A9096;
+            --surface-bg: #111214;
+            --card-bg: linear-gradient(165deg, #14181A 0%, #111214 100%);
+            --pricing-bg: linear-gradient(160deg, #14181A 0%, #0A0A0B 100%);
+            --hairline: rgba(11,177,210,0.28);
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: var(--sans);
             background: var(--page-bg);
             color: var(--text-color);
             line-height: 1.6;
             transition: background 0.3s ease, color 0.3s ease;
+            position: relative;
         }
+        body::before{
+            content:"";
+            position:fixed; inset:0;
+            background:
+                radial-gradient(ellipse 1100px 600px at 10% -10%, rgba(11,177,210,0.14), transparent 60%),
+                radial-gradient(ellipse 800px 500px at 105% 12%, rgba(11,177,210,0.09), transparent 60%),
+                radial-gradient(ellipse 900px 600px at 50% 60%, rgba(11,177,210,0.07), transparent 65%),
+                radial-gradient(ellipse 900px 550px at 100% 100%, rgba(11,177,210,0.10), transparent 60%);
+            pointer-events:none; z-index:0;
+        }
+        body::after{
+            content:"";
+            position:fixed; inset:0;
+            background-image:
+                linear-gradient(rgba(11,177,210,0.05) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(11,177,210,0.05) 1px, transparent 1px);
+            background-size:44px 44px;
+            mask-image:radial-gradient(ellipse 1200px 900px at 50% 0%, black, transparent 75%);
+            -webkit-mask-image:radial-gradient(ellipse 1200px 900px at 50% 0%, black, transparent 75%);
+            pointer-events:none; z-index:0;
+        }
+        nav, .hero-section, .divider, .benefits-section, .testimonial-section,
+        .pricing-section, .final-cta, footer, .telegram-support { position:relative; z-index:1; }
 
         /* Navigation */
         nav {
-            background: linear-gradient(135deg, #0BB1D2 0%, #1eb3cc 100%);
+            background: linear-gradient(135deg, #0d1f26 0%, #0A0A0B 100%);
             padding: 20px 0;
-            box-shadow: 0 4px 15px rgba(23, 162, 184, 0.2);
+            border-bottom: 1px solid var(--hairline);
+            box-shadow: 0 4px 25px rgba(11,177,210,0.15);
             position: sticky;
             top: 0;
             z-index: 100;
@@ -60,11 +93,12 @@
         }
 
         .logo {
-            font-size: 28px;
-            font-weight: 900;
+            font-family: var(--display);
+            font-size: 26px;
+            font-weight: 700;
             color: #ffffff;
-            letter-spacing: 3px;
-            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            letter-spacing: 2px;
+            text-shadow: 0 0 20px rgba(11,177,210,0.5);
         }
 
         .nav-right {
@@ -80,13 +114,14 @@
         }
 
         .nav-links a {
+            font-family: var(--mono);
             text-decoration: none;
             color: white;
-            font-weight: 600;
+            font-weight: 500;
             transition: all 0.3s;
-            font-size: 14px;
+            font-size: 12px;
             text-transform: uppercase;
-            letter-spacing: 0.5px;
+            letter-spacing: 0.08em;
         }
 
         .nav-links a:hover {
@@ -156,6 +191,7 @@
         }
 
         .badge {
+            font-family: var(--mono);
             display: inline-flex;
             align-items: center;
             gap: 8px;
@@ -163,20 +199,23 @@
             color: #0BB1D2;
             padding: 12px 20px;
             border-radius: 50px;
-            font-size: 13px;
-            font-weight: 700;
+            font-size: 12px;
+            font-weight: 600;
             width: fit-content;
-            border: 2px solid #0BB1D2;
+            border: 1px solid #0BB1D2;
+            box-shadow: 0 0 20px rgba(11,177,210,0.25);
             text-transform: uppercase;
-            letter-spacing: 0.5px;
+            letter-spacing: 0.06em;
         }
 
         .hero-content h1 {
+            font-family: var(--display);
             font-size: 52px;
-            font-weight: 900;
+            font-weight: 700;
             line-height: 1.2;
             color: var(--heading-color);
-            letter-spacing: -1px;
+            letter-spacing: -0.01em;
+            text-shadow: 0 0 30px rgba(11,177,210,0.35);
         }
 
         .hero-content .highlight {
@@ -234,10 +273,11 @@
         }
 
         .btn {
+            font-family: var(--mono);
             padding: 16px 32px;
-            border-radius: 10px;
-            font-size: 15px;
-            font-weight: 700;
+            border-radius: 4px;
+            font-size: 13px;
+            font-weight: 600;
             border: none;
             cursor: pointer;
             transition: all 0.3s ease;
@@ -245,14 +285,14 @@
             display: inline-flex;
             align-items: center;
             gap: 8px;
-            letter-spacing: 0.5px;
+            letter-spacing: 0.06em;
             text-transform: uppercase;
         }
 
         .btn-primary {
             background: linear-gradient(135deg, #0BB1D2 0%, #1eb3cc 100%);
-            color: white;
-            box-shadow: 0 8px 25px rgba(23, 162, 184, 0.35);
+            color: #0A0A0B;
+            box-shadow: 0 0 30px rgba(11,177,210,0.45);
         }
 
         .btn-primary:hover {
@@ -261,10 +301,10 @@
         }
 
         .btn-secondary {
-            background: var(--surface-bg);
+            background: transparent;
             color: #0BB1D2;
-            border: 2px solid #0BB1D2;
-            box-shadow: 0 4px 15px rgba(23, 162, 184, 0.1);
+            border: 1px solid #0BB1D2;
+            box-shadow: 0 0 16px rgba(11,177,210,0.15);
         }
 
         .btn-secondary:hover {
@@ -274,8 +314,9 @@
         }
 
         .price-tag {
+            font-family: var(--display);
             font-size: 28px;
-            font-weight: 900;
+            font-weight: 700;
             color: #0BB1D2;
             margin-top: 10px;
             display: flex;
@@ -311,19 +352,21 @@
             margin: 80px auto;
             padding: 60px 20px;
             background: var(--surface-bg);
-            border-radius: 20px;
-            box-shadow: 0 10px 40px rgba(23, 162, 184, 0.15);
-            border: 2px solid rgba(23, 162, 184, 0.1);
+            border-radius: 4px;
+            box-shadow: 0 0 60px rgba(11,177,210,0.1);
+            border: 1px solid var(--hairline);
             transition: background 0.3s ease;
         }
 
         .section-title {
+            font-family: var(--display);
             text-align: center;
             font-size: 42px;
-            font-weight: 900;
+            font-weight: 700;
             color: var(--heading-color);
             margin-bottom: 50px;
             line-height: 1.2;
+            text-shadow: 0 0 24px rgba(11,177,210,0.3);
         }
 
         .section-title .highlight {
@@ -339,15 +382,15 @@
         .benefit-card {
             background: var(--card-bg);
             padding: 30px;
-            border-radius: 15px;
-            border: 2px solid rgba(23, 162, 184, 0.2);
+            border-radius: 4px;
+            border: 1px solid var(--hairline);
             transition: all 0.3s ease;
             text-align: center;
         }
 
         .benefit-card:hover {
-            transform: translateY(-8px);
-            box-shadow: 0 20px 50px rgba(23, 162, 184, 0.2);
+            transform: translateY(-6px);
+            box-shadow: 0 0 45px rgba(11,177,210,0.3);
             border-color: #0BB1D2;
         }
 
@@ -358,11 +401,12 @@
         }
 
         .benefit-card h3 {
+            font-family: var(--display);
             font-size: 18px;
-            font-weight: 800;
+            font-weight: 700;
             color: var(--heading-color);
             margin-bottom: 10px;
-            letter-spacing: -0.5px;
+            letter-spacing: -0.01em;
         }
 
         .benefit-card p {
@@ -381,10 +425,12 @@
         }
 
         .testimonial-section h2 {
+            font-family: var(--display);
             font-size: 42px;
-            font-weight: 900;
+            font-weight: 700;
             color: var(--heading-color);
             margin-bottom: 50px;
+            text-shadow: 0 0 24px rgba(11,177,210,0.3);
         }
 
         .testimonial-grid {
@@ -394,11 +440,12 @@
         }
 
         .testimonial-card {
-            background: var(--surface-bg);
+            background: var(--card-bg);
             padding: 30px;
-            border-radius: 15px;
-            border-left: 4px solid #0BB1D2;
-            box-shadow: 0 5px 20px rgba(23, 162, 184, 0.1);
+            border-radius: 4px;
+            border: 1px solid var(--hairline);
+            border-left: 3px solid #0BB1D2;
+            box-shadow: 0 0 30px rgba(11,177,210,0.08);
             transition: background 0.3s ease;
         }
 
@@ -411,9 +458,10 @@
         }
 
         .testimonial-author {
+            font-family: var(--mono);
             color: var(--heading-color);
-            font-weight: 700;
-            font-size: 14px;
+            font-weight: 600;
+            font-size: 13px;
         }
 
         /* ============ PRICING SECTION ============ */
@@ -425,10 +473,12 @@
         }
 
         .pricing-section h2 {
+            font-family: var(--display);
             font-size: 48px;
-            font-weight: 900;
+            font-weight: 700;
             color: var(--heading-color);
             margin-bottom: 20px;
+            text-shadow: 0 0 24px rgba(11,177,210,0.3);
         }
 
         .pricing-section > p {
@@ -439,27 +489,31 @@
 
         .pricing-card {
             background: var(--pricing-bg);
-            border: 3px solid #0BB1D2;
-            border-radius: 20px;
+            border: 1px solid #0BB1D2;
+            border-top: 3px solid #0BB1D2;
+            border-radius: 4px;
             padding: 50px;
             max-width: 500px;
             margin: 0 auto;
-            box-shadow: 0 20px 60px rgba(23, 162, 184, 0.25);
+            box-shadow: 0 0 70px rgba(11,177,210,0.25);
             transition: background 0.3s ease;
         }
 
         .pricing-card h3 {
+            font-family: var(--display);
             font-size: 28px;
             color: var(--heading-color);
             margin-bottom: 20px;
-            font-weight: 900;
+            font-weight: 700;
         }
 
         .price-big {
+            font-family: var(--display);
             font-size: 56px;
-            font-weight: 900;
+            font-weight: 700;
             color: #0BB1D2;
             margin: 30px 0;
+            text-shadow: 0 0 30px rgba(11,177,210,0.4);
         }
 
         .price-big .currency {
@@ -476,8 +530,8 @@
             text-align: left;
             margin: 30px 0;
             padding: 30px 0;
-            border-top: 2px solid rgba(23, 162, 184, 0.2);
-            border-bottom: 2px solid rgba(23, 162, 184, 0.2);
+            border-top: 1px solid var(--hairline);
+            border-bottom: 1px solid var(--hairline);
         }
 
         .pricing-features li {
@@ -516,7 +570,10 @@
 
         /* ============ CTA FINAL SECTION ============ */
         .final-cta {
-            background: linear-gradient(135deg, #0BB1D2 0%, #1eb3cc 50%, #0a5f7a 100%);
+            background: linear-gradient(135deg, #0d1f26 0%, #0A0A0B 100%);
+            border-top: 1px solid var(--hairline);
+            border-bottom: 1px solid var(--hairline);
+            box-shadow: 0 0 60px rgba(11,177,210,0.12) inset;
             padding: 60px 20px;
             text-align: center;
             margin: 80px 0 0 0;
@@ -524,11 +581,13 @@
         }
 
         .final-cta h2 {
+            font-family: var(--display);
             font-size: 42px;
-            font-weight: 900;
+            font-weight: 700;
             color: white;
             margin-bottom: 20px;
-            letter-spacing: -1px;
+            letter-spacing: -0.01em;
+            text-shadow: 0 0 30px rgba(11,177,210,0.5);
         }
 
         .final-cta p {
@@ -538,11 +597,11 @@
         }
 
         .final-cta .btn {
-            background: white;
-            color: #0BB1D2;
-            font-size: 18px;
+            background: linear-gradient(135deg, #0BB1D2 0%, #1eb3cc 100%);
+            color: #0A0A0B;
+            font-size: 15px;
             padding: 18px 50px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 0 40px rgba(11,177,210,0.45);
         }
 
         .final-cta .btn:hover {
@@ -580,10 +639,11 @@
 
         /* ============ FOOTER ============ */
         footer {
-            background: #0a5f7a;
+            background: #08222c;
             color: white;
             text-align: center;
             padding: 40px 20px;
+            border-top: 1px solid var(--hairline);
         }
 
         body.dark-theme footer {
@@ -599,11 +659,13 @@
         }
 
         .footer-info {
+            font-family: var(--mono);
             margin-top: 20px;
             padding-top: 20px;
             border-top: 1px solid rgba(255, 255, 255, 0.2);
             color: rgba(255, 255, 255, 0.6);
-            font-size: 12px;
+            font-size: 11px;
+            letter-spacing: 0.03em;
         }
 
         /* ============ RESPONSIVE ============ */
@@ -667,9 +729,8 @@
             .final-cta h2 {
                 font-size: 32px;
             }
-        
+        }
     </style>
-          
 </head>
 <body>
     <!-- Navigation -->
@@ -694,7 +755,7 @@
         </div>
         <div class="hero-content">
             <div class="badge">🚀 Limited to 100 Members</div>
-            <h1>Unlock Your Trading Potential</h1>
+            <h1>Unlock Your <span class="highlight">Trading Potential</span></h1>
             <p>Join ASL University's exclusive Premium Trading Membership and gain access to professional tools, verified signals, and a structured growth program designed for active traders.</p>
 
             <div class="features-list">
@@ -724,7 +785,7 @@
         </div>
         <div class="hero-content">
             <div class="badge">✨ Premium Benefits</div>
-            <h1>Become One of The Best Traders</h1>
+            <h1>Become One of <span class="highlight">The Best Traders</span></h1>
             <p>Experience an all-in-one monthly membership packed with exceptional benefits designed for serious traders who want to scale their trading business and achieve financial independence.</p>
 
             <div class="features-list">
@@ -896,12 +957,12 @@
         // Restore saved theme
         if (localStorage.getItem('theme') === 'dark') {
             document.body.classList.add('dark-theme');
-            themeToggle.textContent = '☼';
+            themeToggle.textContent = '☀️';
         }
 
         themeToggle.addEventListener('click', function () {
             const isDark = document.body.classList.toggle('dark-theme');
-            themeToggle.textContent = isDark ? '☼' : '☽';
+            themeToggle.textContent = isDark ? '☀️' : '🌙';
             localStorage.setItem('theme', isDark ? 'dark' : 'light');
         });
     </script>
