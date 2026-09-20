@@ -1,9 +1,16 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ASL University - Premium Trading Membership</title>
+    <meta name="color-scheme" content="dark light">
+    <script>
+        /* apply the saved theme before first paint (default = dark) */
+        try { document.documentElement.setAttribute('data-theme', localStorage.getItem('asl-theme') === 'light' ? 'light' : 'dark'); }
+        catch (e) { document.documentElement.setAttribute('data-theme', 'dark'); }
+    </script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
@@ -14,8 +21,10 @@
             box-sizing: border-box;
         }
 
-        /* ============ THEME VARIABLES (ASL trading-dashboard theme) ============ */
+        /* ============ THEME VARIABLES ============ */
+        /* DARK (default) */
         :root {
+            color-scheme: dark;
             --page-bg: linear-gradient(135deg, #0B1416 0%, #122630 100%);
             --text-color: #dceef4;
             --heading-color: #F5F7F8;
@@ -24,20 +33,79 @@
             --card-bg: linear-gradient(165deg, #1a3a46 0%, #16323d 70%);
             --pricing-bg: linear-gradient(160deg, #1a3a46 0%, #122630 100%);
             --hairline: rgba(11,177,210,0.22);
+            --accent: #0BB1D2;
+
+            --nav-bg: linear-gradient(135deg, #0d1f26 0%, #0A0A0B 100%);
+            --nav-text: #ffffff;
+            --nav-hover: #ffd700;
+            --nav-shadow: 0 4px 25px rgba(11,177,210,0.15);
+            --logo-glow: 0 0 20px rgba(11,177,210,0.5);
+
+            --cta-bg: linear-gradient(135deg, #0d1f26 0%, #0A0A0B 100%);
+            --cta-heading: #ffffff;
+            --cta-text: rgba(255,255,255,0.95);
+
+            --footer-bg: #08222c;
+            --footer-strong: #ffffff;
+            --footer-text: rgba(255,255,255,0.8);
+            --footer-muted: rgba(255,255,255,0.6);
+            --footer-line: rgba(255,255,255,0.2);
+
+            --glow-h: 0 0 30px rgba(11,177,210,0.35);
+            --glow-s: 0 0 24px rgba(11,177,210,0.3);
+            --glow-price: 0 0 30px rgba(11,177,210,0.4);
+            --glow-cta: 0 0 30px rgba(11,177,210,0.5);
+
+            --toggle-bg: rgba(255,255,255,0.08);
+            --toggle-border: rgba(255,255,255,0.28);
+            --toggle-text: rgba(255,255,255,0.72);
+            --toggle-active-bg: rgba(11,177,210,0.22);
+            --toggle-active-text: #0BB1D2;
+
             --sans: 'IBM Plex Sans', sans-serif;
             --display: 'Space Grotesk', sans-serif;
             --mono: 'JetBrains Mono', monospace;
         }
 
-        body.dark-theme {
-            --page-bg: linear-gradient(135deg, #0A0A0B 0%, #0B1416 100%);
-            --text-color: #F5F7F8;
-            --heading-color: #F5F7F8;
-            --muted-color: #8A9096;
-            --surface-bg: #111214;
-            --card-bg: linear-gradient(165deg, #14181A 0%, #111214 100%);
-            --pricing-bg: linear-gradient(160deg, #14181A 0%, #0A0A0B 100%);
-            --hairline: rgba(11,177,210,0.28);
+        /* LIGHT */
+        :root[data-theme="light"] {
+            color-scheme: light;
+            --page-bg: linear-gradient(135deg, #F6FAFB 0%, #E5EFF3 100%);
+            --text-color: #1E2F36;
+            --heading-color: #0B1A20;
+            --muted-color: #4F6670;
+            --surface-bg: #FFFFFF;
+            --card-bg: linear-gradient(165deg, #FFFFFF 0%, #F3F8FA 70%);
+            --pricing-bg: linear-gradient(160deg, #FFFFFF 0%, #E6F5F9 100%);
+            --hairline: rgba(6,135,162,0.24);
+            --accent: #0687A2;
+
+            --nav-bg: linear-gradient(135deg, #FFFFFF 0%, #EAF4F7 100%);
+            --nav-text: #0B1A20;
+            --nav-hover: #A86F00;
+            --nav-shadow: 0 4px 22px rgba(15,28,34,0.09);
+            --logo-glow: none;
+
+            --cta-bg: linear-gradient(135deg, #DDF2F8 0%, #F1F7F9 100%);
+            --cta-heading: #0B1A20;
+            --cta-text: #2A424B;
+
+            --footer-bg: #E1EAEE;
+            --footer-strong: #0B1A20;
+            --footer-text: #33484F;
+            --footer-muted: #5A6F77;
+            --footer-line: rgba(15,28,34,0.16);
+
+            --glow-h: none;
+            --glow-s: none;
+            --glow-price: none;
+            --glow-cta: none;
+
+            --toggle-bg: rgba(15,28,34,0.05);
+            --toggle-border: rgba(15,28,34,0.18);
+            --toggle-text: #4F6670;
+            --toggle-active-bg: rgba(6,135,162,0.14);
+            --toggle-active-text: #05677D;
         }
 
         body {
@@ -74,10 +142,10 @@
 
         /* Navigation */
         nav {
-            background: linear-gradient(135deg, #0d1f26 0%, #0A0A0B 100%);
+            background: var(--nav-bg);
             padding: 20px 0;
             border-bottom: 1px solid var(--hairline);
-            box-shadow: 0 4px 25px rgba(11,177,210,0.15);
+            box-shadow: var(--nav-shadow);
             position: sticky;
             top: 0;
             z-index: 100;
@@ -96,9 +164,9 @@
             font-family: var(--display);
             font-size: 26px;
             font-weight: 700;
-            color: #ffffff;
+            color: var(--nav-text);
             letter-spacing: 2px;
-            text-shadow: 0 0 20px rgba(11,177,210,0.5);
+            text-shadow: var(--logo-glow);
         }
 
         .nav-right {
@@ -116,7 +184,7 @@
         .nav-links a {
             font-family: var(--mono);
             text-decoration: none;
-            color: white;
+            color: var(--nav-text);
             font-weight: 500;
             transition: all 0.3s;
             font-size: 12px;
@@ -125,30 +193,52 @@
         }
 
         .nav-links a:hover {
-            color: #ffd700;
-            text-shadow: 0 0 8px rgba(255, 215, 0, 0.3);
+            color: var(--nav-hover);
         }
 
-        /* ============ THEME TOGGLE BUTTON ============ */
+        /* ============ THEME TOGGLE (DARK | LIGHT) ============ */
         .theme-toggle {
-            width: 42px;
-            height: 42px;
-            border: 2px solid rgba(255, 255, 255, 0.5);
-            border-radius: 50%;
-            background: rgba(255, 255, 255, 0.15);
-            color: #ffffff;
-            font-size: 19px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.3s ease;
+            display: inline-flex;
+            padding: 3px;
+            gap: 2px;
+            border: 1px solid var(--toggle-border);
+            border-radius: 999px;
+            background: var(--toggle-bg);
             flex-shrink: 0;
         }
 
-        .theme-toggle:hover {
-            background: rgba(255, 255, 255, 0.3);
-            transform: scale(1.08);
+        .theme-toggle button {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-family: var(--mono);
+            font-size: 11px;
+            letter-spacing: 0.06em;
+            color: var(--toggle-text);
+            background: transparent;
+            border: 0;
+            border-radius: 999px;
+            padding: 7px 13px;
+            cursor: pointer;
+            transition: all 0.15s ease;
+        }
+
+        .theme-toggle button:hover { color: var(--nav-text); }
+
+        .theme-toggle button[aria-pressed="true"] {
+            color: var(--toggle-active-text);
+            background: var(--toggle-active-bg);
+            box-shadow: inset 0 0 0 1px var(--toggle-active-text);
+        }
+
+        .theme-toggle svg {
+            width: 14px;
+            height: 14px;
+            fill: none;
+            stroke: currentColor;
+            stroke-width: 2;
+            stroke-linecap: round;
+            stroke-linejoin: round;
         }
 
         /* ============ HERO SECTION 1 ============ */
@@ -196,13 +286,13 @@
             align-items: center;
             gap: 8px;
             background: linear-gradient(135deg, rgba(23, 162, 184, 0.2) 0%, rgba(255, 215, 0, 0.1) 100%);
-            color: #0BB1D2;
+            color: var(--accent);
             padding: 12px 20px;
             border-radius: 50px;
             font-size: 12px;
             font-weight: 600;
             width: fit-content;
-            border: 1px solid #0BB1D2;
+            border: 1px solid var(--accent);
             box-shadow: 0 0 20px rgba(11,177,210,0.25);
             text-transform: uppercase;
             letter-spacing: 0.06em;
@@ -215,11 +305,11 @@
             line-height: 1.2;
             color: var(--heading-color);
             letter-spacing: -0.01em;
-            text-shadow: 0 0 30px rgba(11,177,210,0.35);
+            text-shadow: var(--glow-h);
         }
 
         .hero-content .highlight {
-            color: #0BB1D2;
+            color: var(--accent);
             text-decoration: underline;
             text-decoration-color: #ffd700;
             text-decoration-thickness: 3px;
@@ -251,7 +341,7 @@
 
         .feature-item::before {
             content: '✓';
-            color: #0BB1D2;
+            color: var(--accent);
             font-weight: bold;
             font-size: 20px;
             flex-shrink: 0;
@@ -302,8 +392,8 @@
 
         .btn-secondary {
             background: transparent;
-            color: #0BB1D2;
-            border: 1px solid #0BB1D2;
+            color: var(--accent);
+            border: 1px solid var(--accent);
             box-shadow: 0 0 16px rgba(11,177,210,0.15);
         }
 
@@ -317,7 +407,7 @@
             font-family: var(--display);
             font-size: 28px;
             font-weight: 700;
-            color: #0BB1D2;
+            color: var(--accent);
             margin-top: 10px;
             display: flex;
             align-items: baseline;
@@ -337,7 +427,7 @@
         /* ============ DIVIDER ============ */
         .divider {
             height: 2px;
-            background: linear-gradient(90deg, transparent, #0BB1D2, transparent);
+            background: linear-gradient(90deg, transparent, var(--accent), transparent);
             margin: 80px 0;
         }
 
@@ -366,11 +456,11 @@
             color: var(--heading-color);
             margin-bottom: 50px;
             line-height: 1.2;
-            text-shadow: 0 0 24px rgba(11,177,210,0.3);
+            text-shadow: var(--glow-s);
         }
 
         .section-title .highlight {
-            color: #0BB1D2;
+            color: var(--accent);
         }
 
         .benefits-grid {
@@ -391,7 +481,7 @@
         .benefit-card:hover {
             transform: translateY(-6px);
             box-shadow: 0 0 45px rgba(11,177,210,0.3);
-            border-color: #0BB1D2;
+            border-color: var(--accent);
         }
 
         .benefit-icon {
@@ -430,7 +520,7 @@
             font-weight: 700;
             color: var(--heading-color);
             margin-bottom: 50px;
-            text-shadow: 0 0 24px rgba(11,177,210,0.3);
+            text-shadow: var(--glow-s);
         }
 
         .testimonial-grid {
@@ -444,7 +534,7 @@
             padding: 30px;
             border-radius: 4px;
             border: 1px solid var(--hairline);
-            border-left: 3px solid #0BB1D2;
+            border-left: 3px solid var(--accent);
             box-shadow: 0 0 30px rgba(11,177,210,0.08);
             transition: background 0.3s ease;
         }
@@ -478,7 +568,7 @@
             font-weight: 700;
             color: var(--heading-color);
             margin-bottom: 20px;
-            text-shadow: 0 0 24px rgba(11,177,210,0.3);
+            text-shadow: var(--glow-s);
         }
 
         .pricing-section > p {
@@ -489,8 +579,8 @@
 
         .pricing-card {
             background: var(--pricing-bg);
-            border: 1px solid #0BB1D2;
-            border-top: 3px solid #0BB1D2;
+            border: 1px solid var(--accent);
+            border-top: 3px solid var(--accent);
             border-radius: 4px;
             padding: 50px;
             max-width: 500px;
@@ -511,9 +601,9 @@
             font-family: var(--display);
             font-size: 56px;
             font-weight: 700;
-            color: #0BB1D2;
+            color: var(--accent);
             margin: 30px 0;
-            text-shadow: 0 0 30px rgba(11,177,210,0.4);
+            text-shadow: var(--glow-price);
         }
 
         .price-big .currency {
@@ -547,7 +637,7 @@
 
         .pricing-features li::before {
             content: '✓';
-            color: #0BB1D2;
+            color: var(--accent);
             font-weight: bold;
             font-size: 20px;
             background: rgba(23, 162, 184, 0.1);
@@ -570,7 +660,7 @@
 
         /* ============ CTA FINAL SECTION ============ */
         .final-cta {
-            background: linear-gradient(135deg, #0d1f26 0%, #0A0A0B 100%);
+            background: var(--cta-bg);
             border-top: 1px solid var(--hairline);
             border-bottom: 1px solid var(--hairline);
             box-shadow: 0 0 60px rgba(11,177,210,0.12) inset;
@@ -584,15 +674,15 @@
             font-family: var(--display);
             font-size: 42px;
             font-weight: 700;
-            color: white;
+            color: var(--cta-heading);
             margin-bottom: 20px;
             letter-spacing: -0.01em;
-            text-shadow: 0 0 30px rgba(11,177,210,0.5);
+            text-shadow: var(--glow-cta);
         }
 
         .final-cta p {
             font-size: 18px;
-            color: rgba(255, 255, 255, 0.95);
+            color: var(--cta-text);
             margin-bottom: 30px;
         }
 
@@ -639,20 +729,16 @@
 
         /* ============ FOOTER ============ */
         footer {
-            background: #08222c;
-            color: white;
+            background: var(--footer-bg);
+            color: var(--footer-strong);
             text-align: center;
             padding: 40px 20px;
             border-top: 1px solid var(--hairline);
         }
 
-        body.dark-theme footer {
-            background: #08222c;
-        }
-
         .disclaimer {
             font-size: 12px;
-            color: rgba(255, 255, 255, 0.8);
+            color: var(--footer-text);
             line-height: 1.8;
             max-width: 800px;
             margin: 0 auto;
@@ -662,8 +748,8 @@
             font-family: var(--mono);
             margin-top: 20px;
             padding-top: 20px;
-            border-top: 1px solid rgba(255, 255, 255, 0.2);
-            color: rgba(255, 255, 255, 0.6);
+            border-top: 1px solid var(--footer-line);
+            color: var(--footer-muted);
             font-size: 11px;
             letter-spacing: 0.03em;
         }
@@ -693,11 +779,8 @@
                 gap: 12px;
             }
 
-            .theme-toggle {
-                width: 38px;
-                height: 38px;
-                font-size: 17px;
-            }
+            .theme-toggle button { padding: 8px 10px; }
+            .theme-toggle button span { display: none; }
 
             .section-title {
                 font-size: 32px;
@@ -743,7 +826,14 @@
                     <li><a href="#pricing">Pricing</a></li>
                     <li><a href="#join">Join Now</a></li>
                 </ul>
-                <button id="theme-toggle" class="theme-toggle" type="button" aria-label="Toggle dark mode">🌙</button>
+                <div class="theme-toggle" role="group" aria-label="Color theme">
+                    <button type="button" data-theme-btn="dark" aria-pressed="true" title="Dark mode">
+                        <svg viewBox="0 0 24 24"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg><span>DARK</span>
+                    </button>
+                    <button type="button" data-theme-btn="light" aria-pressed="false" title="Light mode">
+                        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg><span>LIGHT</span>
+                    </button>
+                </div>
             </div>
         </div>
     </nav>
@@ -951,20 +1041,22 @@
             });
         });
 
-        // ============ THEME TOGGLE ============
-        const themeToggle = document.getElementById('theme-toggle');
-
-        // Restore saved theme
-        if (localStorage.getItem('theme') === 'dark') {
-            document.body.classList.add('dark-theme');
-            themeToggle.textContent = '☀️';
+        // ============ THEME TOGGLE (DARK | LIGHT) ============
+        function applyTheme(theme, persist) {
+            document.documentElement.setAttribute('data-theme', theme);
+            document.querySelectorAll('[data-theme-btn]').forEach(function (b) {
+                b.setAttribute('aria-pressed', String(b.dataset.themeBtn === theme));
+            });
+            if (persist) {
+                try { localStorage.setItem('asl-theme', theme); } catch (e) { /* storage blocked */ }
+            }
         }
 
-        themeToggle.addEventListener('click', function () {
-            const isDark = document.body.classList.toggle('dark-theme');
-            themeToggle.textContent = isDark ? '☀️' : '🌙';
-            localStorage.setItem('theme', isDark ? 'dark' : 'light');
+        document.querySelectorAll('[data-theme-btn]').forEach(function (btn) {
+            btn.addEventListener('click', function () { applyTheme(btn.dataset.themeBtn, true); });
         });
+
+        applyTheme(document.documentElement.getAttribute('data-theme') === 'light' ? 'light' : 'dark', false);
     </script>
 </body>
 </html>
