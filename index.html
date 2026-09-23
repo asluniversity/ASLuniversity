@@ -108,6 +108,7 @@
             --toggle-active-text: #05677D;
         }
 
+        html { overflow-x: hidden; }
         body {
             font-family: var(--sans);
             background: var(--page-bg);
@@ -115,7 +116,10 @@
             line-height: 1.6;
             transition: background 0.3s ease, color 0.3s ease;
             position: relative;
+            overflow-x: hidden;
+            width: 100%;
         }
+        img { max-width: 100%; height: auto; }
         body::before{
             content:"";
             position:fixed; inset:0;
@@ -156,8 +160,10 @@
             margin: 0 auto;
             padding: 0 20px;
             display: flex;
+            flex-wrap: wrap;
             justify-content: space-between;
             align-items: center;
+            row-gap: 10px;
         }
 
         .logo {
@@ -307,6 +313,42 @@
         .site-menu-link .smt b { font-family: var(--display); font-size: 13.5px; color: var(--heading-color); font-weight: 600; }
         .site-menu-link .smt span { font-size: 11.5px; color: var(--muted-color); line-height: 1.4; }
         .site-menu-sep { height: 1px; background: var(--hairline); margin: 6px 4px; }
+
+        /* ============ WELCOME BANNER ============ */
+        .welcome-banner {
+            text-align: center;
+            padding: 46px 20px 38px;
+            border-bottom: 1px solid var(--hairline);
+            background: radial-gradient(ellipse 70% 120% at 50% 0%, rgba(11,177,210,0.12), transparent 70%);
+        }
+        .welcome-banner .wb-eyebrow {
+            font-family: var(--mono);
+            font-size: 11.5px;
+            letter-spacing: 0.22em;
+            text-transform: uppercase;
+            color: var(--accent);
+            margin-bottom: 14px;
+        }
+        .welcome-banner h1 {
+            font-family: var(--display);
+            font-weight: 700;
+            font-size: clamp(28px, 4.5vw, 44px);
+            line-height: 1.2;
+            color: var(--heading-color);
+            text-shadow: var(--glow-h);
+            letter-spacing: -0.01em;
+        }
+        .welcome-banner h1 .wb-accent { color: var(--accent); }
+        .welcome-banner p {
+            font-family: var(--mono);
+            font-size: 14px;
+            letter-spacing: 0.04em;
+            color: var(--muted-color);
+            margin-top: 16px;
+        }
+        @media (max-width: 768px) {
+            .welcome-banner { padding: 36px 18px 28px; }
+        }
 
         /* ============ HERO SECTION 1 ============ */
         .hero-section {
@@ -822,6 +864,12 @@
         }
 
         /* ============ RESPONSIVE ============ */
+        @media (max-width: 860px) {
+            .nav-links { display: none; }
+        }
+        @media (min-width: 861px) {
+            .mobile-only-menu-label, .mobile-only-menu-item { display: none; }
+        }
         @media (max-width: 768px) {
             .hero-section {
                 flex-direction: column;
@@ -837,18 +885,16 @@
                 font-size: 36px;
             }
 
-            .nav-links {
-                gap: 15px;
-                font-size: 12px;
-            }
+            .nav-container { padding: 0 14px; }
+            .logo { font-size: 20px; letter-spacing: 1px; }
 
             .nav-right {
-                gap: 12px;
+                gap: 8px;
             }
 
             .theme-toggle button { padding: 8px 10px; }
             .theme-toggle button span { display: none; }
-            .site-menu-panel { right: -10px; min-width: 240px; }
+            .site-menu-panel { right: -10px; min-width: 240px; max-width: calc(100vw - 28px); }
 
             .section-title {
                 font-size: 32px;
@@ -881,6 +927,10 @@
                 font-size: 32px;
             }
         }
+        @media (max-width: 380px) {
+            .logo { font-size: 17px; }
+            .theme-toggle button { padding: 7px 8px; }
+        }
     </style>
 </head>
 <body>
@@ -907,6 +957,20 @@
                         <svg viewBox="0 0 24 24"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg>
                     </button>
                     <div class="site-menu-panel" id="site-menu-panel" role="menu">
+                        <div class="site-menu-label mobile-only-menu-label">This Page</div>
+                        <a class="site-menu-link mobile-only-menu-item" role="menuitem" href="#benefits">
+                            <span class="smi">🎁</span>
+                            <span class="smt"><b>Benefits</b></span>
+                        </a>
+                        <a class="site-menu-link mobile-only-menu-item" role="menuitem" href="#pricing">
+                            <span class="smi">💳</span>
+                            <span class="smt"><b>Pricing</b></span>
+                        </a>
+                        <a class="site-menu-link mobile-only-menu-item" role="menuitem" href="#join">
+                            <span class="smi">🚀</span>
+                            <span class="smt"><b>Join Now</b></span>
+                        </a>
+                        <div class="site-menu-sep mobile-only-menu-item"></div>
                         <div class="site-menu-label">ASL University Network</div>
                         <a class="site-menu-link" role="menuitem" href="asl-xauusd-analysis.html" target="_blank" rel="noopener">
                             <span class="smi">📊</span>
@@ -926,6 +990,13 @@
             </div>
         </div>
     </nav>
+
+    <!-- Welcome Banner -->
+    <div class="welcome-banner">
+        <div class="wb-eyebrow">✨ Welcome</div>
+        <h1>Welcome to <span class="wb-accent">ASL University</span></h1>
+        <p>Architect your success, master your growth.</p>
+    </div>
 
     <!-- Hero Section 1 -->
     <section class="hero-section">
@@ -1159,6 +1230,9 @@
             btn.addEventListener('click', function (e) {
                 e.stopPropagation();
                 setOpen(!wrap.classList.contains('open'));
+            });
+            wrap.querySelectorAll('.site-menu-link').forEach(function (link) {
+                link.addEventListener('click', function () { setOpen(false); });
             });
             document.addEventListener('click', function (e) {
                 if (!wrap.contains(e.target)) setOpen(false);
