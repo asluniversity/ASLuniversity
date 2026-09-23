@@ -241,6 +241,73 @@
             stroke-linejoin: round;
         }
 
+        /* ============ SITE MENU (three dots + dropdown) ============ */
+        .site-menu { position: relative; }
+        .site-menu-btn {
+            display: flex; align-items: center; justify-content: center;
+            width: 34px; height: 34px;
+            border: 1px solid var(--toggle-border);
+            border-radius: 999px;
+            background: var(--toggle-bg);
+            color: var(--nav-text);
+            cursor: pointer;
+            transition: all 0.15s ease;
+            flex-shrink: 0;
+        }
+        .site-menu-btn:hover { border-color: var(--accent); color: var(--accent); }
+        .site-menu-btn[aria-expanded="true"] { border-color: var(--accent); color: var(--accent); background: var(--toggle-active-bg); }
+        .site-menu-btn svg { width: 17px; height: 17px; fill: currentColor; }
+
+        .site-menu-panel {
+            position: absolute;
+            top: calc(100% + 10px);
+            right: 0;
+            min-width: 260px;
+            background: var(--card-bg);
+            border: 1px solid var(--hairline);
+            border-radius: 6px;
+            box-shadow: 0 14px 40px rgba(0,0,0,0.28);
+            padding: 8px;
+            z-index: 200;
+            opacity: 0;
+            transform: translateY(-6px);
+            pointer-events: none;
+            transition: opacity 0.15s ease, transform 0.15s ease;
+        }
+        .site-menu.open .site-menu-panel { opacity: 1; transform: translateY(0); pointer-events: auto; }
+
+        .site-menu-label {
+            font-family: var(--mono);
+            font-size: 10px;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: var(--muted-color);
+            padding: 8px 10px 6px;
+        }
+        .site-menu-link {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 11px 10px;
+            border-radius: 4px;
+            text-decoration: none;
+            color: var(--text-color);
+            transition: background 0.15s ease;
+        }
+        .site-menu-link:hover { background: var(--toggle-active-bg); }
+        .site-menu-link .smi {
+            display: flex; align-items: center; justify-content: center;
+            width: 34px; height: 34px; flex-shrink: 0;
+            border-radius: 6px;
+            background: var(--toggle-bg);
+            color: var(--accent);
+            font-size: 16px;
+        }
+        .site-menu-link .smt { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+        .site-menu-link .smt b { font-family: var(--display); font-size: 13.5px; color: var(--heading-color); font-weight: 600; }
+        .site-menu-link .smt span { font-size: 11.5px; color: var(--muted-color); line-height: 1.4; }
+        .site-menu-sep { height: 1px; background: var(--hairline); margin: 6px 4px; }
+
         /* ============ HERO SECTION 1 ============ */
         .hero-section {
             max-width: 1200px;
@@ -781,6 +848,7 @@
 
             .theme-toggle button { padding: 8px 10px; }
             .theme-toggle button span { display: none; }
+            .site-menu-panel { right: -10px; min-width: 240px; }
 
             .section-title {
                 font-size: 32px;
@@ -834,6 +902,27 @@
                         <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg><span>LIGHT</span>
                     </button>
                 </div>
+                <div class="site-menu" id="site-menu">
+                    <button type="button" class="site-menu-btn" id="site-menu-btn" aria-haspopup="true" aria-expanded="false" aria-label="More ASL University sites" title="More sites">
+                        <svg viewBox="0 0 24 24"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg>
+                    </button>
+                    <div class="site-menu-panel" id="site-menu-panel" role="menu">
+                        <div class="site-menu-label">ASL University Network</div>
+                        <a class="site-menu-link" role="menuitem" href="asl-xauusd-analysis.html" target="_blank" rel="noopener">
+                            <span class="smi">📊</span>
+                            <span class="smt"><b>Technical &amp; Fundamental Analysis</b><span>Live XAU/USD chart, daily outlook &amp; levels</span></span>
+                        </a>
+                        <a class="site-menu-link" role="menuitem" href="asl-account-journal.html" target="_blank" rel="noopener">
+                            <span class="smi">📓</span>
+                            <span class="smt"><b>Account Journal &amp; Analysis</b><span>Upload your statement &amp; track your progress</span></span>
+                        </a>
+                        <div class="site-menu-sep"></div>
+                        <a class="site-menu-link" role="menuitem" href="https://t.me/mrasltl" target="_blank" rel="noopener">
+                            <span class="smi">✉️</span>
+                            <span class="smt"><b>Telegram Support</b><span>@mrasltl</span></span>
+                        </a>
+                    </div>
+                </div>
             </div>
         </div>
     </nav>
@@ -845,7 +934,7 @@
         </div>
         <div class="hero-content">
             <div class="badge">🚀 Limited to 100 Members</div>
-            <h1>Unlock Your Trading Potential</span></h1>
+            <h1>Unlock Your <span class="highlight">Trading Potential</span></h1>
             <p>Join ASL University's exclusive Premium Trading Membership and gain access to professional tools, verified signals, and a structured growth program designed for active traders.</p>
 
             <div class="features-list">
@@ -875,7 +964,7 @@
         </div>
         <div class="hero-content">
             <div class="badge">✨ Premium Benefits</div>
-            <h1>Become One of The Best Traders</span></h1>
+            <h1>Become One of <span class="highlight">The Best Traders</span></h1>
             <p>Experience an all-in-one monthly membership packed with exceptional benefits designed for serious traders who want to scale their trading business and achieve financial independence.</p>
 
             <div class="features-list">
@@ -1002,8 +1091,8 @@
                 <li>$1,000 prop account opportunity</li>
                 <li>Expert training courses</li>
                 <li>Personal Risk Management Guide: A Personalized Strategy Tailored to Each Individual</li>
-                <li>Journal and Account Analysis Panel</li>
-                <li>Daily Analysis & Technical Outlook</li>
+                <li>24/7 support access</li>
+                <li>Cancel anytime, no lock-in</li>
             </ul>
             <button class="btn btn-primary" id="join">🚀 Join Now - Secure Your Spot</button>
         </div>
@@ -1057,6 +1146,27 @@
         });
 
         applyTheme(document.documentElement.getAttribute('data-theme') === 'light' ? 'light' : 'dark', false);
+
+        // ============ SITE MENU (three-dot dropdown) ============
+        (function () {
+            var wrap = document.getElementById('site-menu');
+            var btn = document.getElementById('site-menu-btn');
+            if (!wrap || !btn) return;
+            function setOpen(open) {
+                wrap.classList.toggle('open', open);
+                btn.setAttribute('aria-expanded', String(open));
+            }
+            btn.addEventListener('click', function (e) {
+                e.stopPropagation();
+                setOpen(!wrap.classList.contains('open'));
+            });
+            document.addEventListener('click', function (e) {
+                if (!wrap.contains(e.target)) setOpen(false);
+            });
+            document.addEventListener('keydown', function (e) {
+                if (e.key === 'Escape') setOpen(false);
+            });
+        })();
     </script>
 </body>
 </html>
