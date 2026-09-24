@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -749,6 +750,40 @@
             transition: transform 0.3s ease;
         }
         .testimonial-proof:hover img { transform: scale(1.04); }
+        /* Account Analysis CTA under each member testimonial */
+        .testimonial-analysis-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            width: 100%;
+            margin-top: 14px;
+            padding: 13px 18px;
+            border: 1px solid var(--accent);
+            border-radius: 4px;
+            background: linear-gradient(135deg, rgba(11,177,210,0.16), rgba(11,177,210,0.05));
+            color: var(--accent);
+            font-family: var(--mono);
+            font-size: 12px;
+            font-weight: 600;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            text-decoration: none;
+            box-shadow: 0 0 16px rgba(11,177,210,0.12);
+            transition: all 0.25s ease;
+        }
+
+        .testimonial-analysis-btn:hover {
+            transform: translateY(-2px);
+            color: #0A0A0B;
+            background: linear-gradient(135deg, #0BB1D2 0%, #1eb3cc 100%);
+            box-shadow: 0 8px 25px rgba(11,177,210,0.28);
+        }
+
+        :root[data-theme="light"] .testimonial-analysis-btn:hover {
+            color: #ffffff;
+        }
+
         .testimonial-proof .tp-label {
             position: absolute;
             left: 10px;
@@ -1252,6 +1287,9 @@
                     <img src="certificates/jon-m-result.jpg" alt="Jon M. verified trading result">
                     <span class="tp-label">Verified Result</span>
                 </a>
+                <a class="testimonial-analysis-btn" href="asl-account-journal.html">
+                    📊 Analyze Account
+                </a>
             </div>
 
             <div class="testimonial-card">
@@ -1261,6 +1299,9 @@
                     <img src="certificates/sarah-k-result.jpg" alt="Sarah K. verified trading result">
                     <span class="tp-label">Verified Result</span>
                 </a>
+                <a class="testimonial-analysis-btn" href="asl-account-journal.html">
+                    📊 Analyze Account
+                </a>
             </div>
 
             <div class="testimonial-card">
@@ -1269,6 +1310,9 @@
                 <a class="testimonial-proof" href="certificates/mike-t-certificate.jpg" target="_blank" rel="noopener">
                     <img src="certificates/mike-t-certificate.jpg" alt="Mike T. prop account certificate">
                     <span class="tp-label">Certificate</span>
+                </a>
+                <a class="testimonial-analysis-btn" href="asl-account-journal.html">
+                    📊 Analyze Account
                 </a>
             </div>
         </div>
