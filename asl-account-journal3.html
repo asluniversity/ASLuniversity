@@ -1,0 +1,1113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>ASL University - Account Statement</title>
+
+<style>
+/* ===============================
+   ASL UNIVERSITY ACCOUNT STATEMENT
+   =============================== */
+
+.asl-statement-page {
+    --asl-blue: #0BB1D2;
+    --asl-blue-dark: #E8F7FA;
+    --asl-blue-light: #10242A;
+    --asl-gold: #D8B56A;
+    --asl-gold-light: #F0DCA8;
+    --asl-white: #F4F7F8;
+    --asl-text: #E7EEF0;
+    --asl-muted: #8EA3AA;
+    --asl-border: rgba(255,255,255,.08);
+    --asl-green: #31C48D;
+
+    width: 100%;
+    min-height: 100vh;
+    background:
+        radial-gradient(
+            circle at top right,
+            rgba(92,169,230,.10),
+            transparent 35%
+        ),
+        linear-gradient(
+            135deg,
+            #f8fcff 0%,
+            #ffffff 50%,
+            #f5faff 100%
+        );
+
+    padding: 50px 20px;
+    box-sizing: border-box;
+
+    font-family:
+        Inter,
+        "Segoe UI",
+        Arial,
+        sans-serif;
+
+    color: var(--asl-text);
+}
+
+.asl-statement-container {
+    width: 100%;
+    max-width: 1180px;
+    margin: 0 auto;
+
+    background: rgba(13,20,23,.94);
+
+    border: 1px solid rgba(92,169,230,.18);
+
+    border-radius: 24px;
+
+    box-shadow:
+        0 25px 70px rgba(24,59,99,.10),
+        0 4px 18px rgba(24,59,99,.05);
+
+    overflow: hidden;
+}
+
+
+/* ===============================
+   HEADER
+   =============================== */
+
+.asl-statement-header {
+    padding: 28px 42px;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    border-bottom: 1px solid var(--asl-border);
+
+    background:
+        linear-gradient(
+            135deg,
+            #ffffff,
+            #f7fbff
+        );
+}
+
+.asl-brand {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+.asl-brand-logo {
+    width: 48px;
+    height: 48px;
+
+    border-radius: 14px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    font-size: 20px;
+    font-weight: 800;
+
+    color: #081013;
+
+    background:
+        linear-gradient(
+            135deg,
+            #75c0f2,
+            #3f8fce
+        );
+
+    box-shadow:
+        0 8px 20px rgba(11,177,210,.22);
+}
+
+.asl-brand-text h2 {
+    margin: 0;
+
+    font-size: 22px;
+    font-weight: 800;
+
+    letter-spacing: .4px;
+
+    color: var(--asl-blue-dark);
+}
+
+.asl-brand-text span {
+    display: block;
+
+    margin-top: 3px;
+
+    font-size: 11px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+
+    color: var(--asl-gold);
+}
+
+.asl-statement-meta {
+    text-align: right;
+}
+
+.asl-statement-meta strong {
+    display: block;
+
+    font-size: 19px;
+    color: var(--asl-blue-dark);
+}
+
+.asl-statement-meta span {
+    display: block;
+
+    margin-top: 5px;
+
+    font-size: 12px;
+
+    color: var(--asl-muted);
+}
+
+
+/* ===============================
+   CONTENT
+   =============================== */
+
+.asl-statement-content {
+    padding: 42px;
+}
+
+.asl-title-row {
+    margin-bottom: 30px;
+}
+
+.asl-title-row h1 {
+    margin: 0;
+
+    font-size: 30px;
+
+    color: var(--asl-blue-dark);
+
+    letter-spacing: -.5px;
+}
+
+.asl-title-row p {
+    margin: 8px 0 0;
+
+    font-size: 13px;
+
+    color: var(--asl-muted);
+}
+
+
+/* ===============================
+   SUMMARY GRID
+   =============================== */
+
+.asl-summary-grid {
+    display: grid;
+
+    grid-template-columns:
+        minmax(0, 1fr)
+        minmax(320px, .8fr);
+
+    gap: 28px;
+
+    margin-bottom: 30px;
+}
+
+
+/* ===============================
+   ACCOUNT SUMMARY
+   =============================== */
+
+.asl-summary-card {
+    border: 1px solid var(--asl-border);
+
+    border-radius: 18px;
+
+    overflow: hidden;
+
+    background: #0D1518;
+}
+
+.asl-summary-card-header {
+    padding: 16px 20px;
+
+    background:
+        linear-gradient(
+            90deg,
+            rgba(11,177,210,.10),
+            #ffffff
+        );
+
+    border-bottom: 1px solid var(--asl-border);
+
+    font-size: 15px;
+    font-weight: 800;
+
+    color: var(--asl-blue-dark);
+}
+
+.asl-summary-row {
+    display: flex;
+ justify-content: space-between;
+    align-items: center;
+
+    padding: 15px 20px;
+
+    border-bottom: 1px solid rgba(255,255,255,.06);
+}
+
+.asl-summary-row:last-child {
+    border-bottom: none;
+}
+
+.asl-summary-label {
+    font-size: 13px;
+    color: #8EA3AA;
+}
+
+.asl-summary-value {
+    font-size: 14px;
+    font-weight: 700;
+
+    text-align: right;
+
+    color: var(--asl-text);
+}
+
+.asl-summary-value.profit {
+    color: var(--asl-green);
+}
+
+.asl-summary-value.gold {
+    color: #a37b2e;
+}
+
+
+/* ===============================
+   PERFORMANCE CARD
+   =============================== */
+
+.asl-performance-card {
+    border-radius: 18px;
+
+    border: 1px solid var(--asl-border);
+
+    padding: 22px;
+
+    background:
+        linear-gradient(
+            145deg,
+            #ffffff,
+            #f7fbff
+        );
+
+    position: relative;
+}
+
+.asl-performance-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    margin-bottom: 18px;
+}
+
+.asl-performance-header h3 {
+    margin: 0;
+
+    font-size: 16px;
+
+    color: var(--asl-blue-dark);
+}
+
+.asl-roi {
+    font-size: 18px;
+    font-weight: 800;
+
+    color: var(--asl-green);
+}
+
+
+/* ===============================
+   SIMPLE CHART
+   =============================== */
+
+.asl-chart {
+    position: relative;
+
+    height: 235px;
+
+    border-radius: 14px;
+
+    overflow: hidden;
+
+    background:
+        linear-gradient(
+            to bottom,
+            rgba(11,177,210,.06),
+            rgba(11,177,210,.015)
+        );
+
+    border: 1px solid rgba(255,255,255,.07);
+}
+
+.asl-chart-grid {
+    position: absolute;
+    inset: 20px;
+
+    background-image:
+        linear-gradient(
+            rgba(11,177,210,.12) 1px,
+            transparent 1px
+        ),
+        linear-gradient(
+            90deg,
+            rgba(11,177,210,.12) 1px,
+            transparent 1px
+        );
+
+    background-size:
+        25% 25%;
+}
+
+.asl-chart-line {
+    position: absolute;
+
+    left: 5%;
+    right: 5%;
+    bottom: 12%;
+
+    height: 72%;
+}
+
+.asl-chart-line svg {
+    width: 100%;
+    height: 100%;
+
+    overflow: visible;
+}
+
+.asl-chart-labels {
+    position: absolute;
+
+    left: 18px;
+    right: 18px;
+    bottom: 5px;
+
+    display: flex;
+    justify-content: space-between;
+
+    font-size: 9px;
+
+    color: #7E949B;
+}
+
+
+/* ===============================
+   ACCOUNT INFORMATION
+   =============================== */
+
+.asl-information-card {
+    margin-top: 30px;
+
+    border: 1px solid var(--asl-border);
+
+    border-radius: 18px;
+
+    overflow: hidden;
+
+    background: #0D1518;
+}
+
+.asl-information-title {
+    padding: 17px 22px;
+
+    background:
+        linear-gradient(
+            90deg,
+            #edf8ff,
+            #ffffff
+        );
+
+    border-bottom: 1px solid var(--asl-border);
+
+    font-size: 15px;
+    font-weight: 800;
+
+    color: var(--asl-blue-dark);
+}
+
+.asl-information-table {
+    width: 100%;
+
+    border-collapse: collapse;
+}
+
+.asl-information-table tr {
+    border-bottom: 1px solid rgba(255,255,255,.06);
+}
+
+.asl-information-table tr:last-child {
+    border-bottom: none;
+}
+
+.asl-information-table td {
+    padding: 14px 22px;
+
+    font-size: 13px;
+}
+
+.asl-information-table td:first-child {
+    width: 35%;
+
+    color: #718096;
+
+    font-weight: 600;
+}
+
+.asl-information-table td:last-child {
+    color: var(--asl-text);
+
+    font-weight: 700;
+}
+
+
+/* ===============================
+   FOOTER
+   =============================== */
+
+.asl-statement-footer {
+    padding: 24px 42px;
+
+    border-top: 1px solid var(--asl-border);
+
+    display: flex;
+
+    justify-content: space-between;
+    align-items: center;
+
+    background: #0A1113;
+}
+
+.asl-footer-brand {
+    font-size: 14px;
+
+    font-weight: 800;
+
+    color: var(--asl-blue-dark);
+}
+
+.asl-footer-brand span {
+    color: var(--asl-gold);
+}
+
+.asl-footer-center {
+    font-size: 11px;
+
+    color: #74878E;
+
+    text-align: center;
+}
+
+.asl-footer-date {
+    font-size: 11px;
+
+    color: #718096;
+}
+
+
+/* ===============================
+   PRINT
+   =============================== */
+
+@media print {
+
+    .asl-statement-page {
+        padding: 0;
+
+        background: white;
+    }
+.asl-statement-container {
+        box-shadow: none;
+
+        border: none;
+
+        border-radius: 0;
+    }
+
+    .asl-statement-header,
+    .asl-statement-footer {
+        background: white;
+    }
+}
+
+
+/* ===============================
+   MOBILE
+   =============================== */
+
+@media (max-width: 850px) {
+
+    .asl-summary-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .asl-statement-header {
+        padding: 24px;
+    }
+
+    .asl-statement-content {
+        padding: 24px;
+    }
+
+    .asl-statement-footer {
+        padding: 20px 24px;
+
+        flex-direction: column;
+
+        gap: 12px;
+    }
+
+    .asl-statement-meta {
+        text-align: left;
+    }
+}
+
+@media (max-width: 600px) {
+
+    .asl-statement-page {
+        padding: 15px;
+    }
+
+    .asl-title-row h1 {
+        font-size: 24px;
+    }
+
+    .asl-summary-row {
+        flex-direction: column;
+
+        align-items: flex-start;
+
+        gap: 5px;
+    }
+
+    .asl-summary-value {
+        text-align: left;
+    }
+
+    .asl-information-table td {
+        padding: 12px 14px;
+    }
+}
+
+
+/* Premium ASL dark trading UI */
+.asl-statement-page::before{content:"";position:fixed;inset:0;pointer-events:none;background:radial-gradient(circle at 12% 18%,rgba(11,177,210,.08),transparent 28%),radial-gradient(circle at 88% 82%,rgba(216,181,106,.05),transparent 24%);}
+.asl-statement-container{position:relative;backdrop-filter:blur(10px);}
+.asl-title-row h1{font-family:"Space Grotesk",Inter,"Segoe UI",sans-serif;}
+.asl-title-row h1::after{content:"";display:block;width:54px;height:2px;margin-top:12px;background:linear-gradient(90deg,var(--asl-blue),var(--asl-gold));box-shadow:0 0 12px rgba(11,177,210,.45);}
+.asl-summary-card,.asl-performance-card,.asl-information-card{box-shadow:inset 0 1px 0 rgba(255,255,255,.025),0 16px 40px rgba(0,0,0,.18);}
+.asl-summary-card-header,.asl-information-title{letter-spacing:.04em;text-transform:uppercase;font-size:11px;}
+.asl-summary-value,.asl-information-table td:last-child{font-family:"JetBrains Mono",Consolas,monospace;}
+.asl-roi{font-family:"JetBrains Mono",Consolas,monospace;text-shadow:0 0 18px rgba(49,196,141,.22);}
+</style>
+</head>
+
+
+<body>
+
+<div class="asl-statement-page">
+
+<div class="asl-statement-container">
+
+
+<!-- ===============================
+     HEADER
+     =============================== -->
+
+<header class="asl-statement-header">
+
+    <div class="asl-brand">
+
+        <div class="asl-brand-logo">
+            ASL
+        </div>
+
+        <div class="asl-brand-text">
+
+            <h2>ASL University</h2>
+
+            <span>
+                Financial Markets Education
+            </span>
+
+        </div>
+
+    </div>
+
+
+    <div class="asl-statement-meta">
+
+        <strong>
+            Account Statement
+        </strong>
+
+        <span>
+            24 September 2026
+        </span>
+
+    </div>
+
+</header>
+
+
+
+<!-- ===============================
+     MAIN CONTENT
+     =============================== -->
+
+<main class="asl-statement-content">
+
+
+<div class="asl-title-row">
+
+    <h1>
+        Account Statement Summary
+    </h1>
+
+    <p>
+        Official trading account performance statement
+    </p>
+
+</div>
+
+
+
+<!-- ===============================
+     SUMMARY
+     =============================== -->
+
+<div class="asl-summary-grid">
+
+
+<!-- LEFT -->
+
+<div class="asl-summary-card">
+
+    <div class="asl-summary-card-header">
+        Account Performance
+    </div>
+
+
+    <div class="asl-summary-row">
+
+        <span class="asl-summary-label">
+            Account Holder
+        </span>
+
+        <span class="asl-summary-value">
+            Michael Tyler
+        </span>
+
+    </div>
+
+
+    <div class="asl-summary-row">
+
+        <span class="asl-summary-label">
+            Account Type
+        </span>
+
+        <span class="asl-summary-value">
+            Forex Micro Account (USD)
+        </span>
+
+    </div>
+
+
+    <div class="asl-summary-row">
+
+        <span class="asl-summary-label">
+            Starting Balance
+        </span>
+
+        <span class="asl-summary-value">
+            $1,000.00
+        </span>
+
+    </div>
+
+
+    <div class="asl-summary-row">
+
+        <span class="asl-summary-label">
+            Current Balance
+        </span>
+
+        <span class="asl-summary-value">
+            $1,520.00
+        </span>
+
+    </div>
+
+
+    <div class="asl-summary-row">
+
+        <span class="asl-summary-label">
+            Total Net Profit
+        </span>
+
+        <span class="asl-summary-value profit">
+            +$520.00
+        </span>
+
+    </div>
+
+
+    <div class="asl-summary-row">
+
+        <span class="asl-summary-label">
+            Percentage Return (ROI)
+        </span>
+
+        <span class="asl-summary-value profit">
+            +52.0%
+        </span>
+
+    </div>
+
+
+    <div class="asl-summary-row">
+
+        <span class="asl-summary-label">
+            Status
+        </span>
+
+        <span class="asl-summary-value profit">
+            Active / High Performance
+        </span>
+
+    </div>
+
+
+    <div class="asl-summary-row">
+
+        <span class="asl-summary-label">
+            Trading Strategy
+        </span>
+
+        <span class="asl-summary-value gold">
+            Risk Managed (1.5% per trade)
+        </span>
+[9/24/2026 5:09 PM] Mr asl: </div>
+
+</div>
+
+
+
+<!-- RIGHT -->
+
+<div class="asl-performance-card">
+
+    <div class="asl-performance-header">
+
+        <h3>
+            Balance Performance
+        </h3>
+
+        <div class="asl-roi">
+            +52.0%
+        </div>
+
+    </div>
+
+
+    <div class="asl-chart">
+
+        <div class="asl-chart-grid"></div>
+
+
+        <div class="asl-chart-line">
+
+            <svg viewBox="0 0 600 220"
+                 preserveAspectRatio="none">
+
+                <defs>
+
+                    <linearGradient
+                        id="aslArea"
+                        x1="0"
+                        y1="0"
+                        x2="0"
+                        y2="1">
+
+                        <stop
+                            offset="0%"
+                            stop-color="#0BB1D2"
+                            stop-opacity=".25"/>
+
+                        <stop
+                            offset="100%"
+                            stop-color="#0BB1D2"
+                            stop-opacity="0"/>
+
+                    </linearGradient>
+
+                </defs>
+
+
+                <!-- Area -->
+
+                <path
+                    d="
+                    M0 190
+                    L35 175
+                    L70 165
+                    L105 145
+                    L140 150
+                    L175 125
+                    L210 135
+                    L245 110
+                    L280 120
+                    L315 95
+                    L350 105
+                    L385 80
+                    L420 90
+                    L455 65
+                    L490 72
+                    L525 42
+                    L560 50
+                    L600 18
+                    L600 220
+                    L0 220
+                    Z"
+                    fill="url(#aslArea)"
+                />
+
+
+                <!-- Line -->
+
+                <polyline
+                    points="
+                    0,190
+                    35,175
+                    70,165
+                    105,145
+                    140,150
+                    175,125
+                    210,135
+                    245,110
+                    280,120
+                    315,95
+                    350,105
+                    385,80
+                    420,90
+                    455,65
+                    490,72
+                    525,42
+                    560,50
+                    600,18"
+                    fill="none"
+                    stroke="#0BB1D2"
+                    stroke-width="4"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                />
+
+            </svg>
+
+        </div>
+
+
+        <div class="asl-chart-labels">
+
+            <span>START</span>
+            <span>PROGRESS</span>
+            <span>CURRENT</span>
+
+        </div>
+
+    </div>
+
+</div>
+
+</div>
+
+
+
+<!-- ===============================
+     ACCOUNT INFORMATION
+     =============================== -->
+
+<div class="asl-information-card">
+
+    <div class="asl-information-title">
+        Account Information
+    </div>
+
+
+    <table class="asl-information-table">
+
+        <tr>
+
+            <td>
+                Account Number
+            </td>
+
+            <td>
+                78452196
+            </td>
+
+        </tr>
+
+
+        <tr>
+
+            <td>
+                Server
+            </td>
+
+            <td>
+                Forex Micro Server
+            </td>
+
+        </tr>
+
+
+        <tr>
+
+            <td>
+                Leverage
+            </td>
+
+            <td>
+                1:100
+            </td>
+
+        </tr>
+
+
+        <tr>
+
+            <td>
+                Currency
+            </td>
+
+            <td>
+                USD
+            </td>
+
+        </tr>
+
+
+        <tr>
+
+            <td>
+                Platform
+            </td>
+
+            <td>
+                MetaTrader 5
+            </td>
+
+        </tr>
+
+
+        <tr>
+
+            <td>
+                Account Type
+            </td>
+
+            <td>
+                Funded Prop Account
+            </td>
+
+        </tr>
+
+
+        <tr>
+[9/24/2026 5:09 PM] Mr asl: <td>
+                Trading Instrument
+            </td>
+
+            <td>
+                Forex Trading
+            </td>
+
+        </tr>
+
+
+        <tr>
+
+            <td>
+                Trading Style
+            </td>
+
+            <td>
+                Scalping
+            </td>
+
+        </tr>
+
+
+        <tr>
+
+            <td>
+                Account Status
+            </td>
+
+            <td>
+                Active
+            </td>
+
+        </tr>
+
+    </table>
+
+</div>
+
+
+</main>
+
+
+
+<!-- ===============================
+     FOOTER
+     =============================== -->
+
+<footer class="asl-statement-footer">
+
+    <div class="asl-footer-brand">
+
+        ASL <span>University</span>
+
+    </div>
+
+
+    <div class="asl-footer-center">
+
+        Financial Markets Education
+        <br>
+        Account Performance Statement
+
+    </div>
+
+
+    <div class="asl-footer-date">
+
+        Generated: 24 Sep 2026
+
+    </div>
+
+</footer>
+
+
+</div>
+
+</div>
+
+
+</body>
+</html>
