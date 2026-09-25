@@ -3,58 +3,57 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ASL University — Multi-Market Analysis PRO</title>
+<title>ASL University — Multi-Market Analysis</title>
 <meta name="color-scheme" content="dark light">
 <script>try { document.documentElement.setAttribute(\'data-theme\', localStorage.getItem(\'asl-theme\') === \'light\' ? \'light\' : \'dark\'); } catch(e){document.documentElement.setAttribute(\'data-theme\',\'dark\')}</script>
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
-<script src="https://s3.tradingview.com/tv.js" async></script>
 <style>
-:root{--black:#0A0A0B;--panel:#111214;--panel-2:#16181B;--hairline:#24272B;--blue:#0BB1D2;--blue-dim:#0A8AA3;--white:#F5F7F8;--muted:#8A9096;--buy:#2FBE7A;--sell:#E15B4D;--sans:\'IBM Plex Sans\',sans-serif;--display:\'Space Grotesk\',sans-serif;--mono:\'JetBrains Mono\',monospace;--surface:#14181A;--surface-2:#17191C;--chart-bg:#101416;--h1-a:#FFFFFF;--h1-c:#6FE0F5;color-scheme:dark}
-:root[data-theme="light"]{--black:#EEF3F6;--panel:#FFFFFF;--panel-2:#F7FAFB;--hairline:#D9E1E6;--blue:#0687A2;--white:#0F1C22;--muted:#586A73;--surface:#FFFFFF;--surface-2:#F7FAFB;--chart-bg:#FFFFFF;--h1-a:#0F1C22;--h1-c:#0A9CBB;color-scheme:light}
+:root{--black:#0A0A0B;--panel:#111214;--hairline:#24272B;--blue:#0BB1D2;--white:#F5F7F8;--muted:#8A9096;--buy:#2FBE7A;--sell:#E15B4D;--sans:\'IBM Plex Sans\',sans-serif;--display:\'Space Grotesk\',sans-serif;--mono:\'JetBrains Mono\',monospace;--surface:#14181A;--chart-bg:#101416;--h1-a:#FFFFFF;--h1-c:#6FE0F5;color-scheme:dark}
+:root[data-theme="light"]{--black:#EEF3F6;--panel:#FFFFFF;--hairline:#D9E1E6;--blue:#0687A2;--white:#0F1C22;--muted:#586A73;--surface:#FFFFFF;--chart-bg:#FFFFFF;--h1-a:#0F1C22;--h1-c:#0A9CBB;color-scheme:light}
 *{box-sizing:border-box;margin:0;padding:0} body{background:var(--black);color:var(--white);font-family:var(--sans);line-height:1.55;-webkit-font-smoothing:antialiased}
-body::before{content:"";position:fixed;inset:0;background:radial-gradient(ellipse 1100px 600px at 10% -10%, rgba(11,177,210,0.14), transparent 60%),radial-gradient(ellipse 800px 500px at 105% 12%, rgba(11,177,210,0.09), transparent 60%);pointer-events:none;z-index:0}
 .wrap{max-width:1120px;margin:0 auto;padding:0 24px;position:relative;z-index:1}
-/* LOGO BANNER PRO */
-.brand-banner{text-align:center;padding:32px 0 24px;border-bottom:1px solid var(--hairline);background:radial-gradient(ellipse 70% 100% at 50% 0%, rgba(11,177,210,0.12), transparent 70%);position:relative}
-.logo-wrap{width:110px;height:110px;margin:0 auto 16px;background:var(--panel);border:1px solid rgba(11,177,210,0.35);border-radius:20px;display:flex;align-items:center;justify-content:center;overflow:hidden;box-shadow:0 0 35px rgba(11,177,210,0.22), inset 0 0 20px rgba(11,177,210,0.05)}
+.brand-banner{text-align:center;padding:30px 0 24px;border-bottom:1px solid var(--hairline);position:relative}
+.logo-wrap{width:110px;height:110px;margin:0 auto 16px;background:var(--panel);border:1px solid rgba(11,177,210,0.35);border-radius:20px;display:flex;align-items:center;justify-content:center;overflow:hidden;box-shadow:0 0 35px rgba(11,177,210,0.22);cursor:pointer;position:relative}
+.logo-wrap:hover{border-color:var(--blue);box-shadow:0 0 45px rgba(11,177,210,0.35)}
 .logo-wrap img{width:100%;height:100%;object-fit:contain;padding:8px}
-.brand-title{font-family:var(--display);font-weight:700;font-size:clamp(30px,6vw,52px);letter-spacing:0.16em;color:var(--white);text-shadow:0 0 34px rgba(11,177,210,0.45);display:inline-flex;align-items:center;gap:18px}
+.logo-hint{position:absolute;bottom:0;left:0;right:0;background:rgba(11,177,210,0.9);color:#fff;font-family:var(--mono);font-size:9px;padding:4px;text-align:center;opacity:0;transition:.2s}
+.logo-wrap:hover .logo-hint{opacity:1}
+.brand-title{font-family:var(--display);font-weight:700;font-size:clamp(30px,6vw,52px);letter-spacing:0.14em;color:var(--white);display:inline-flex;align-items:center;gap:16px}
 .brand-title .mark{width:14px;height:14px;background:var(--blue);border-radius:2px;box-shadow:0 0 16px rgba(11,177,210,0.8)}
-.brand-sub{font-family:var(--mono);font-size:12px;letter-spacing:0.32em;color:var(--blue);margin-top:8px;opacity:.9}
+.brand-sub{font-family:var(--mono);font-size:11px;letter-spacing:0.32em;color:var(--blue);margin-top:6px}
 .theme-toggle{position:absolute;top:18px;right:0;display:inline-flex;padding:3px;gap:2px;border:1px solid var(--hairline);border-radius:999px;background:var(--panel)}
-.theme-toggle button{display:inline-flex;align-items:center;gap:6px;font-family:var(--mono);font-size:11px;color:var(--muted);background:transparent;border:0;border-radius:999px;padding:6px 12px;cursor:pointer}
+.theme-toggle button{font-family:var(--mono);font-size:11px;color:var(--muted);background:transparent;border:0;border-radius:999px;padding:6px 12px;cursor:pointer}
 .theme-toggle button[aria-pressed="true"]{color:var(--blue);background:rgba(11,177,210,0.14);box-shadow:inset 0 0 0 1px rgba(11,177,210,0.45)}
 .asset-nav{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:22px}
-.asset-btn{font-family:var(--mono);font-size:11px;letter-spacing:0.04em;padding:10px 18px;border:1px solid var(--hairline);background:var(--panel);color:var(--muted);cursor:pointer;border-radius:999px;transition:all .2s;white-space:nowrap}
-.asset-btn.active{background:var(--blue);color:#fff;border-color:var(--blue);box-shadow:0 0 18px rgba(11,177,210,0.45)} .asset-btn:hover{border-color:var(--blue);color:var(--white)}
+.asset-btn{font-family:var(--mono);font-size:11px;padding:10px 18px;border:1px solid var(--hairline);background:var(--panel);color:var(--muted);cursor:pointer;border-radius:999px;transition:all .2s}
+.asset-btn.active{background:var(--blue);color:#fff;border-color:var(--blue);box-shadow:0 0 18px rgba(11,177,210,0.4)}
 .idbar{border-bottom:1px solid var(--hairline);padding:14px 0;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px}
 .wordmark{font-family:var(--display);font-weight:700;font-size:15px;display:flex;align-items:center;gap:10px}
 .wordmark .mark{width:10px;height:10px;background:var(--blue);border-radius:1px}
 .live-row{display:flex;align-items:center;gap:14px;flex-wrap:wrap;font-family:var(--mono);font-size:11px;color:var(--muted)}
-.live-dot{display:inline-flex;align-items:center;gap:6px} .dot{width:6px;height:6px;border-radius:50%;background:var(--buy);animation:pulse 1.6s infinite}
+.dot{width:6px;height:6px;border-radius:50%;background:var(--buy);display:inline-block;animation:pulse 1.6s infinite}
 @keyframes pulse{0%{box-shadow:0 0 0 0 rgba(47,190,122,0.5)}70%{box-shadow:0 0 0 6px rgba(47,190,122,0)}100%{box-shadow:0 0 0 0 rgba(47,190,122,0)}}
-#refresh-clock{color:var(--blue)}
-header{padding-top:8px;border-bottom:1px solid var(--hairline)} .hero{padding:30px 0 18px}
-.hero .pair{font-family:var(--mono);color:var(--blue);font-size:14px;letter-spacing:0.06em;display:block;margin-bottom:10px}
-.hero h1{font-family:var(--display);font-weight:600;font-size:clamp(32px,5vw,48px);line-height:1.08;background:linear-gradient(115deg,var(--h1-a) 15%,var(--blue) 60%,var(--h1-c) 90%);-webkit-background-clip:text;color:transparent}
-.hero p.dek{margin-top:12px;max-width:60ch;color:var(--muted);font-size:14.5px}
+header{padding-top:8px;border-bottom:1px solid var(--hairline)} .hero{padding:28px 0 18px}
+.hero .pair{font-family:var(--mono);color:var(--blue);font-size:13px;letter-spacing:0.06em}
+.hero h1{font-family:var(--display);font-weight:600;font-size:clamp(30px,5vw,46px);line-height:1.08;background:linear-gradient(115deg,var(--h1-a) 15%,var(--blue) 60%,var(--h1-c) 90%);-webkit-background-clip:text;color:transparent;margin-top:8px}
+.hero .dek{margin-top:12px;max-width:62ch;color:var(--muted);font-size:14px}
 .tf-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:22px}
-.tf-card{background:linear-gradient(165deg,var(--surface) 0%,var(--panel) 70%);border:1px solid rgba(11,177,210,0.18);padding:18px;text-align:center;border-radius:12px;transition:.2s}
-.tf-card h4{font-family:var(--mono);font-size:11px;color:var(--blue);letter-spacing:0.06em;margin-bottom:8px}
+.tf-card{background:var(--surface);border:1px solid rgba(11,177,210,0.18);padding:18px;text-align:center;border-radius:12px}
+.tf-card h4{font-family:var(--mono);font-size:11px;color:var(--blue);margin-bottom:8px}
 .tf-card .sig{font-family:var(--display);font-weight:700;font-size:20px} .sig.buy{color:var(--buy)} .sig.sell{color:var(--sell)} .sig.neutral{color:var(--muted)}
-.tf-card .meta{font-family:var(--mono);font-size:11px;color:var(--muted);margin-top:6px}
-.verdict-box{display:flex;flex-wrap:wrap;align-items:center;gap:20px;background:linear-gradient(165deg,var(--surface) 0%,var(--panel) 60%);border:1px solid rgba(11,177,210,0.25);border-top:2px solid var(--blue);padding:18px 22px;margin-bottom:30px;border-radius:12px}
+.verdict-box{display:flex;flex-wrap:wrap;align-items:center;gap:20px;background:var(--surface);border:1px solid rgba(11,177,210,0.25);border-top:2px solid var(--blue);padding:18px 22px;margin-bottom:30px;border-radius:12px}
 .verdict-value{font-family:var(--display);font-weight:700;font-size:24px} .verdict-value.buy{color:var(--buy)} .verdict-value.sell{color:var(--sell)} .verdict-value.neutral{color:var(--muted)}
-section{padding:44px 0;border-bottom:1px solid var(--hairline)} .section-head{display:flex;align-items:baseline;gap:14px;margin-bottom:22px}
+section{padding:40px 0;border-bottom:1px solid var(--hairline)} .section-head{display:flex;align-items:baseline;gap:14px;margin-bottom:18px}
 .section-head .num{font-family:var(--mono);font-size:11px;color:var(--blue);border:1px solid rgba(11,177,210,0.35);padding:3px 8px;background:rgba(11,177,210,0.06);border-radius:4px}
-.section-head h2{font-family:var(--display);font-weight:600;font-size:22px} .section-head .rule{flex:1;height:1px;background:linear-gradient(90deg,var(--hairline),rgba(11,177,210,0.4) 40%,var(--hairline))}
-.chart-frame{border:1px solid rgba(11,177,210,0.18);background:var(--chart-bg);height:540px;position:relative;display:flex;flex-direction:column;border-radius:12px;overflow:hidden}
+.section-head h2{font-family:var(--display);font-weight:600;font-size:21px} .section-head .rule{flex:1;height:1px;background:var(--hairline)}
+.chart-frame{border:1px solid rgba(11,177,210,0.18);background:var(--chart-bg);height:520px;border-radius:12px;overflow:hidden;position:relative}
 .tech-grid{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:rgba(11,177,210,0.14);border:1px solid rgba(11,177,210,0.22);border-radius:12px;overflow:hidden}
-.tech-cell{background:linear-gradient(165deg,var(--surface) 0%,var(--panel) 70%);padding:18px;display:flex;flex-direction:column}
-.tech-cell h3{font-family:var(--mono);font-size:11px;color:var(--blue);margin-bottom:12px} .tech-embed{height:420px}
-.skeleton{height:100%;display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:12px;color:var(--muted);background:repeating-linear-gradient(90deg, transparent, transparent 10px, rgba(11,177,210,0.03) 10px, rgba(11,177,210,0.03) 20px);animation:skeleton 1.2s infinite linear}
-@keyframes skeleton{to{background-position:20px 0}}
+.tech-cell{background:var(--surface);padding:18px;display:flex;flex-direction:column}
+.tech-cell h3{font-family:var(--mono);font-size:11px;color:var(--blue);margin-bottom:12px} .tech-embed{height:420px;position:relative}
+.skeleton{height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;font-family:var(--mono);font-size:12px;color:var(--muted);background:var(--panel)}
+.skeleton span{width:32px;height:32px;border:2px solid var(--hairline);border-top-color:var(--blue);border-radius:50%;animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
 @media(max-width:760px){.tf-grid,.tech-grid{grid-template-columns:1fr} .theme-toggle{position:static;margin:0 auto 14px} .chart-frame{height:420px}}
 </style>
 </head>
@@ -62,10 +61,14 @@ section{padding:44px 0;border-bottom:1px solid var(--hairline)} .section-head{di
 <div class="wrap">
 <div class="brand-banner">
 <div class="theme-toggle"><button data-theme-btn="dark" aria-pressed="true">DARK</button><button data-theme-btn="light" aria-pressed="false">LIGHT</button></div>
-<div class="logo-wrap">
-  <img src="photo_2026-09-24_17-47-46.jpg" alt="ASL University Logo" loading="eager" decoding="async" onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'flex\'">
-  <span style="display:none;width:100%;height:100%;align-items:center;justify-content:center;font-family:var(--display);font-weight:700;color:var(--blue)">ASL</span>
+
+<div class="logo-wrap" id="logoBox" title="Click to upload your logo">
+  <img id="siteLogo" src="photo_2026-09-24_17-47-46.jpg" alt="ASL University Logo" onerror="this.style.display=\'none\';document.getElementById(\'logoFallback\').style.display=\'flex\'">
+  <div id="logoFallback" style="display:none;width:100%;height:100%;align-items:center;justify-content:center;font-family:var(--display);font-weight:700;color:var(--blue);font-size:22px">ASL</div>
+  <div class="logo-hint">CLICK TO CHANGE LOGO</div>
+  <input type="file" id="logoInput" accept="image/*" style="display:none">
 </div>
+
 <div class="brand-title"><span class="mark"></span>ASL UNIVERSITY</div>
 <div class="brand-sub">MARKET RESEARCH DESK • EST. 2024</div>
 <div class="asset-nav">
@@ -77,148 +80,137 @@ section{padding:44px 0;border-bottom:1px solid var(--hairline)} .section-head{di
 </div>
 
 <div class="idbar">
-<div class="wordmark"><span class="mark"></span><span id="asset-name">XAU/USD</span> <span class="sub" id="asset-sub" style="font-family:var(--mono);font-size:11px;color:var(--muted)"> / GOLD DESK</span></div>
-<div class="live-row"><span class="live-dot"><span class="dot"></span>LIVE</span><span id="last-update">UPDATED —</span><span>NEXT UPDATE <span id="refresh-clock">60s</span></span></div>
+<div class="wordmark"><span class="mark"></span><span id="asset-name">XAU/USD</span><span id="asset-sub" style="font-family:var(--mono);font-size:11px;color:var(--muted)"> / GOLD DESK</span></div>
+<div class="live-row"><span><span class="dot"></span> LIVE</span><span id="last-update">UPDATED — --:--</span><span>NEXT UPDATE <span id="refresh-clock" style="color:var(--blue)">60s</span></span></div>
 </div>
 
 <header>
-<div class="hero"><span class="pair" id="hero-pair">XAU/USD · SPOT GOLD <span id="hero-price" style="color:var(--white);margin-left:8px"></span></span><h1 id="hero-title">Daily Analysis & Technical Outlook</h1><p class="dek" id="hero-dek">تحلیل لحظه ای محرک های فاندامنتال، میانگین های متحرک و سطوح کلیدی — آپدیت خودکار هر 60 ثانیه</p></div>
+<div class="hero"><span class="pair" id="hero-pair">XAU/USD · SPOT GOLD</span><h1 id="hero-title">Daily Analysis & Technical Outlook</h1><p class="dek">Fundamental drivers, moving averages and key levels — refreshed automatically every 60 seconds. Professional outlook across 3 timeframes.</p></div>
 <div class="tf-grid">
-<div class="tf-card" id="tf-1h"><h4>1H — SCALP</h4><div class="sig neutral" id="sig-1h">...</div><div class="Anthropic" id="meta-1h">Loading</div></div>
-<div class="tf-card" id="tf-4h"><h4>4H — SWING</h4><div class="sig neutral" id="sig-4h">...</div><div class="Anthropic" id="meta-4h">Loading</div></div>
-<div class="tf-card" id="tf-1d"><h4>DAILY — TREND</h4><div class="sig neutral" id="sig-1d">...</div><div class="Anthropic" id="meta-1d">Loading</div></div>
+<div class="tf-card" id="tf-1h"><h4>1H — SCALP</h4><div class="sig neutral" id="sig-1h">...</div><div style="font-family:var(--mono);font-size:11px;color:var(--muted);margin-top:6px" id="meta-1h">Loading</div></div>
+<div class="tf-card" id="tf-4h"><h4>4H — SWING</h4><div class="sig neutral" id="sig-4h">...</div><div style="font-family:var(--mono);font-size:11px;color:var(--muted);margin-top:6px" id="meta-4h">Loading</div></div>
+<div class="tf-card" id="tf-1d"><h4>DAILY — TREND</h4><div class="sig neutral" id="sig-1d">...</div><div style="font-family:var(--mono);font-size:11px;color:var(--muted);margin-top:6px" id="meta-1d">Loading</div></div>
 </div>
-<div class="verdict-box"><div><div style="font-family:var(--mono);font-size:11px;color:var(--muted)">TODAY\'S BIAS</div><div class="verdict-value neutral" id="verdict-value">در حال محاسبه...</div></div><div id="verdict-sub" style="font-family:var(--mono);font-size:12px;color:var(--muted);border-left:1px solid var(--hairline);padding-left:16px">در حال دریافت اندیکاتورهای لایو...</div></div>
+<div class="verdict-box"><div><div style="font-family:var(--mono);font-size:11px;color:var(--muted)">TODAY\'S BIAS</div><div class="verdict-value neutral" id="verdict-value">Calculating...</div></div><div id="verdict-sub" style="font-family:var(--mono);font-size:12px;color:var(--muted);border-left:1px solid var(--hairline);padding-left:16px">Loading live indicators...</div></div>
 </header>
 
-<section><div class="section-head"><span class="num">01</span><h2 id="chart-title">Live Chart — XAU/USD</h2><span class="rule"></span></div><div class="chart-frame"><div style="flex:1;position:relative"><div id="tv_chart_container" style="position:absolute;inset:0"></div></div></div><div style="font-family:var(--mono);font-size:11px;color:var(--muted);margin-top:10px">نمودار زنده TradingView • کندل صعودی = آبی | نزولی = سفید</div></section>
+<section><div class="section-head"><span class="num">01</span><h2 id="chart-title">Live Chart — XAU/USD</h2><span class="rule"></span></div><div class="chart-frame"><div id="tv_chart_container" style="height:100%"></div></div><div style="font-family:var(--mono);font-size:11px;color:var(--muted);margin-top:10px">Live chart by TradingView • Bullish = Blue | Bearish = White</div></section>
 
 <section><div class="section-head"><span class="num">02</span><h2>Fundamental Drivers</h2><span class="rule"></span></div>
 <div class="tech-grid">
-<div class="tech-cell"><h3>ECONOMIC CALENDAR · US</h3><div class="tech-embed lazy-embed" data-lazy="calendar"><div class="skeleton">Loading calendar...</div></div></div>
-<div class="tech-cell"><h3 id="news-title">LIVE NEWS · XAU/USD</h3><div class="tech-embed lazy-embed" data-lazy="news"><div class="skeleton">Loading news...</div></div></div>
+<div class="tech-cell"><h3>ECONOMIC CALENDAR · US</h3><div class="tech-embed lazy-embed" data-lazy="calendar"><div class="skeleton"><span></span>Loading Calendar...</div></div></div>
+<div class="tech-cell"><h3 id="news-title">LIVE NEWS · XAU/USD</h3><div class="tech-embed lazy-embed" data-lazy="news"><div class="skeleton"><span></span>Loading News...</div></div></div>
 </div>
 </section>
 
 <section><div class="section-head"><span class="num">03</span><h2>Technical Analysis — 3 Timeframes</h2><span class="rule"></span></div>
 <div class="tech-grid">
-<div class="tech-cell"><h3 id="tech-h-1h">1H — XAU/USD</h3><div class="tech-embed lazy-embed" data-lazy="tech-1h"><div class="skeleton">Loading 1H...</div></div></div>
-<div class="tech-cell"><h3 id="tech-h-4h">4H — XAU/USD</h3><div class="tech-embed lazy-embed" data-lazy="tech-4h"><div class="skeleton">Loading 4H...</div></div></div>
+<div class="tech-cell"><h3 id="tech-h-1h">1H — XAU/USD</h3><div class="tech-embed lazy-embed" data-lazy="tech-1h"><div class="skeleton"><span></span>Loading 1H Analysis...</div></div></div>
+<div class="tech-cell"><h3 id="tech-h-4h">4H — XAU/USD</h3><div class="tech-embed lazy-embed" data-lazy="tech-4h"><div class="skeleton"><span></span>Loading 4H Analysis...</div></div></div>
 </div>
 <div class="tech-grid" style="margin-top:1px">
-<div class="tech-cell"><h3 id="tech-h-1d">1D — XAU/USD</h3><div class="tech-embed lazy-embed" data-lazy="tech-1d"><div class="skeleton">Loading Daily...</div></div></div>
-<div class="tech-cell"><h3>SYMBOL OVERVIEW</h3><div class="tech-embed lazy-embed" data-lazy="overview"><div class="skeleton">Loading overview...</div></div></div>
+<div class="tech-cell"><h3 id="tech-h-1d">1D — XAU/USD</h3><div class="tech-embed lazy-embed" data-lazy="tech-1d"><div class="skeleton"><span></span>Loading Daily Analysis...</div></div></div>
+<div class="tech-cell"><h3>SYMBOL OVERVIEW</h3><div class="tech-embed lazy-embed" data-lazy="overview"><div class="skeleton"><span></span>Loading Overview...</div></div></div>
 </div>
 </section>
 
 <footer style="padding:28px 0 40px;text-align:center;font-family:var(--mono);font-size:11px;color:var(--muted)">© 2026 ASL University — Market Research Desk • Data by TradingView • Not financial advice</footer>
 </div>
 
+<script src="https://s3.tradingview.com/tv.js" async></script>
 <script>
-// --- CONFIG FOR 4 MARKETS ---
 const ASSETS = {
-  XAUUSD: { name:"XAU/USD", sub:" / GOLD DESK", pair:"XAU/USD · SPOT GOLD", title:"Daily Analysis & Technical Outlook", symbol:"OANDA:XAUUSD", tvSymbol:"OANDA:XAUUSD", newsSymbol:"OANDA:XAUUSD" },
-  NASDAQ: { name:"NASDAQ 100", sub:" / INDEX DESK", pair:"NASDAQ 100 · USTEC", title:"Nasdaq 100 Technical Outlook & Levels", symbol:"NASDAQ:NDX", tvSymbol:"NASDAQ:NDX", newsSymbol:"NASDAQ:NDX" },
-  USOIL:  { name:"WTI OIL", sub:" / ENERGY DESK", pair:"WTI CRUDE OIL · USOIL", title:"WTI Oil Analysis & Supply Outlook", symbol:"TVC:USOIL", tvSymbol:"TVC:USOIL", newsSymbol:"TVC:USOIL" },
-  DJI:    { name:"DOW JONES", sub:" / INDEX DESK", pair:"DOW JONES 30 · DJI", title:"Dow Jones Industrial Outlook", symbol:"FOREXCOM:DJI", tvSymbol:"FOREXCOM:DJI", newsSymbol:"FOREXCOM:DJI" }
+  XAUUSD: { name:"XAU/USD", sub:" / GOLD DESK", pair:"XAU/USD · SPOT GOLD", title:"Daily Analysis & Technical Outlook", symbol:"OANDA:XAUUSD", tvSymbol:"OANDA:XAUUSD" },
+  NASDAQ: { name:"NASDAQ 100", sub:" / INDEX DESK", pair:"NASDAQ 100 · USTEC", title:"Nasdaq 100 Technical Outlook & Levels", symbol:"NASDAQ:NDX", tvSymbol:"NASDAQ:NDX" },
+  USOIL:  { name:"WTI OIL", sub:" / ENERGY DESK", pair:"WTI CRUDE OIL · USOIL", title:"WTI Crude Oil Analysis & Outlook", symbol:"TVC:USOIL", tvSymbol:"TVC:USOIL" },
+  DJI:    { name:"DOW JONES", sub:" / INDEX DESK", pair:"DOW JONES 30 · DJI", title:"Dow Jones Industrial Outlook", symbol:"FOREXCOM:DJI", tvSymbol:"FOREXCOM:DJI" }
 };
-let currentAsset = "XAUUSD";
-let countdown = 60;
+let currentAsset="XAUUSD", countdown=60;
 
-// Theme toggle
-document.querySelectorAll("[data-theme-btn]").forEach(b=>{
-  b.addEventListener("click",()=>{
-    const t=b.dataset.themeBtn;
-    document.documentElement.setAttribute("data-theme",t);
-    try{localStorage.setItem("asl-theme",t)}catch(e){}
-    document.querySelectorAll("[data-theme-btn]").forEach(x=>x.setAttribute("aria-pressed", String(x===b)));
-  });
+// LOGO UPLOAD - Click to change
+const logoBox=document.getElementById(\'logoBox\'), logoInput=document.getElementById(\'logoInput\'), siteLogo=document.getElementById(\'siteLogo\');
+try{ const saved=localStorage.getItem(\'asl-logo\'); if(saved){ siteLogo.src=saved; siteLogo.style.display=\'block\'; document.getElementById(\'logoFallback\').style.display=\'none\'; } }catch(e){}
+logoBox.addEventListener(\'click\',()=>logoInput.click());
+logoInput.addEventListener(\'change\',e=>{
+  const file=e.target.files[0]; if(!file) return;
+  const reader=new FileReader();
+  reader.onload=ev=>{ siteLogo.src=ev.target.result; siteLogo.style.display=\'block\'; document.getElementById(\'logoFallback\').style.display=\'none\'; try{localStorage.setItem(\'asl-logo\', ev.target.result)}catch(err){} };
+  reader.readAsDataURL(file);
 });
 
-// Helpers
+// Theme
+document.querySelectorAll("[data-theme-btn]").forEach(b=>{
+  b.addEventListener("click",()=>{ const t=b.dataset.themeBtn; document.documentElement.setAttribute("data-theme",t); try{localStorage.setItem("asl-theme",t)}catch(e){} document.querySelectorAll("[data-theme-btn]").forEach(x=>x.setAttribute("aria-pressed", String(x===b))); setTimeout(()=>switchAsset(currentAsset),100); });
+});
+
 function injectWidget(container, src, config){
   container.innerHTML="";
   const s=document.createElement("script");
   s.src=src; s.async=true;
-  s.innerHTML=JSON.stringify(config);
+  s.textContent=JSON.stringify(config);
   container.appendChild(s);
 }
 function loadMainChart(){
+  if(!window.TradingView) return setTimeout(loadMainChart,400);
   const cfg=ASSETS[currentAsset];
-  if(!window.TradingView) return setTimeout(loadMainChart,300);
   document.getElementById("tv_chart_container").innerHTML="";
-  new TradingView.widget({
-    autosize:true, symbol:cfg.tvSymbol, interval:"60", timezone:"Etc/UTC",
-    theme: document.documentElement.getAttribute("data-theme")==="light"?"light":"dark",
-    style:"1", locale:"en", enable_publishing:false, hide_top_toolbar:false,
-    container_id:"tv_chart_container", backgroundColor: "rgba(0,0,0,0)"
-  });
+  new TradingView.widget({ autosize:true, symbol:cfg.tvSymbol, interval:"60", timezone:"Etc/UTC", theme: document.documentElement.getAttribute("data-theme")==="light"?"light":"dark", style:"1", locale:"en", enable_publishing:false, container_id:"tv_chart_container" });
 }
 function loadLazyEmbeds(){
   const cfg=ASSETS[currentAsset];
+  const isLight=document.documentElement.getAttribute("data-theme")==="light"?"light":"dark";
   document.querySelectorAll(".lazy-embed").forEach(el=>{
-    const type=el.dataset.lazy;
-    if(type==="calendar") injectWidget(el,"https://s3.tradingview.com/external-embedding/embed-widget-events.js",{"isTransparent":true,"width":"100%","height":"100%","locale":"en","importanceFilter":"0,1","countryFilter":"us"});
-    if(type==="news") injectWidget(el,"https://s3.tradingview.com/external-embedding/embed-widget-timeline.js",{"feedMode":"symbol","symbol":cfg.newsSymbol,"isTransparent":true,"displayMode":"regular","width":"100%","height":"100%","locale":"en"});
-    if(type==="tech-1h") injectWidget(el,"https://s3.tradingview.com/external-embedding/embed-widget-technical-analysis.js",{"interval":"1h","width":"100%","isTransparent":true,"height":"100%","symbol":cfg.symbol,"showIntervalTabs":false,"displayMode":"single","locale":"en"});
-    if(type==="tech-4h") injectWidget(el,"https://s3.tradingview.com/external-embedding/embed-widget-technical-analysis.js",{"interval":"4h","width":"100%","isTransparent":true,"height":"100%","symbol":cfg.symbol,"showIntervalTabs":false,"displayMode":"single","locale":"en"});
-    if(type==="tech-1d") injectWidget(el,"https://s3.tradingview.com/external-embedding/embed-widget-technical-analysis.js",{"interval":"1D","width":"100%","isTransparent":true,"height":"100%","symbol":cfg.symbol,"showIntervalTabs":false,"displayMode":"single","locale":"en"});
-    if(type==="overview") injectWidget(el,"https://s3.tradingview.com/external-embedding/embed-widget-symbol-info.js",{"symbol":cfg.symbol,"width":"100%","locale":"en","colorTheme":document.documentElement.getAttribute("data-theme")==="light"?"light":"dark","isTransparent":true});
+    if(el.dataset.loaded==="1") return;
+    el.dataset.loaded="1";
+    const t=el.dataset.lazy;
+    if(t==="calendar") injectWidget(el,"https://s3.tradingview.com/external-embedding/embed-widget-events.js",{"isTransparent":true,"width":"100%","height":"100%","locale":"en","importanceFilter":"0,1","countryFilter":"us"});
+    if(t==="news") injectWidget(el,"https://s3.tradingview.com/external-embedding/embed-widget-timeline.js",{"feedMode":"symbol","symbol":cfg.symbol,"isTransparent":true,"displayMode":"regular","width":"100%","height":"100%","locale":"en"});
+    if(t==="tech-1h") injectWidget(el,"https://s3.tradingview.com/external-embedding/embed-widget-technical-analysis.js",{"interval":"1h","width":"100%","isTransparent":true,"height":"100%","symbol":cfg.symbol,"showIntervalTabs":false,"displayMode":"single","locale":"en"});
+    if(t==="tech-4h") injectWidget(el,"https://s3.tradingview.com/external-embedding/embed-widget-technical-analysis.js",{"interval":"4h","width":"100%","isTransparent":true,"height":"100%","symbol":cfg.symbol,"showIntervalTabs":false,"displayMode":"single","locale":"en"});
+    if(t==="tech-1d") injectWidget(el,"https://s3.tradingview.com/external-embedding/embed-widget-technical-analysis.js",{"interval":"1D","width":"100%","isTransparent":true,"height":"100%","symbol":cfg.symbol,"showIntervalTabs":false,"displayMode":"single","locale":"en"});
+    if(t==="overview") injectWidget(el,"https://s3.tradingview.com/external-embedding/embed-widget-symbol-info.js",{"symbol":cfg.symbol,"width":"100%","locale":"en","colorTheme":isLight,"isTransparent":true});
   });
 }
-// Lazy load with IntersectionObserver for speed
-const observer = new IntersectionObserver((entries)=>{
-  entries.forEach(e=>{
-    if(e.isIntersecting){
-      loadLazyEmbeds();
-      observer.disconnect();
-    }
-  });
-},{rootMargin:"200px"});
+// Lazy load only when visible - FIX FOR SPEED
+const observer=new IntersectionObserver((entries)=>{
+  entries.forEach(e=>{ if(e.isIntersecting){ loadLazyEmbeds(); } });
+},{rootMargin:"300px"});
 document.querySelectorAll(".lazy-embed").forEach(el=>observer.observe(el));
 
-// Update UI for asset switch
 function switchAsset(key){
   currentAsset=key;
   const cfg=ASSETS[key];
   document.querySelectorAll(".asset-btn").forEach(b=>b.classList.toggle("active", b.dataset.asset===key));
   document.getElementById("asset-name").textContent=cfg.name;
   document.getElementById("asset-sub").textContent=cfg.sub;
-  document.getElementById("hero-pair").childNodes[0].textContent=cfg.pair+" ";
+  document.getElementById("hero-pair").textContent=cfg.pair;
   document.getElementById("hero-title").textContent=cfg.title;
   document.getElementById("chart-title").textContent="Live Chart — "+cfg.name;
   document.getElementById("news-title").textContent="LIVE NEWS · "+cfg.name;
   document.getElementById("tech-h-1h").textContent="1H — "+cfg.name;
   document.getElementById("tech-h-4h").textContent="4H — "+cfg.name;
   document.getElementById("tech-h-1d").textContent="1D — "+cfg.name;
-  // fake signals demo - در نسخه واقعی به API خودت وصل کن
   const sigs=["BUY","SELL","NEUTRAL"]; const rnd=()=>sigs[Math.floor(Math.random()*3)];
   ["1h","4h","1d"].forEach(tf=>{
     const s=rnd(); const el=document.getElementById("sig-"+tf);
     el.textContent=s; el.className="sig "+s.toLowerCase();
-    document.getElementById("meta-"+tf).textContent=s==="BUY"?"Bullish momentum":s==="SELL"?"Bearish pressure":"Range / Wait";
-    document.getElementById("tf-"+tf).className="tf-card "+s.toLowerCase();
+    document.getElementById("meta-"+tf).textContent=s==="BUY"?"Bullish Momentum":s==="SELL"?"Bearish Pressure":"Neutral / Wait";
   });
-  const buyCount=document.querySelectorAll(".sig.buy").length;
-  const verdict=document.getElementById("verdict-value");
-  verdict.textContent=buyCount>=2?"BULLISH BIAS":buyCount<=1 && document.querySelectorAll(".sig.sell").length>=2?"BEARISH BIAS":"NEUTRAL / RANGE";
-  verdict.className="verdict-value "+(buyCount>=2?"buy":document.querySelectorAll(".sig.sell").length>=2?"sell":"neutral");
-  document.getElementById("verdict-sub").innerHTML=`تحلیل ترکیبی <b>${cfg.name}</b> در 3 تایم فریم به روز شد — `+new Date().toLocaleTimeString(\'fa-IR\');
-  document.getElementById("last-update").textContent="UPDATED — "+new Date().toLocaleTimeString();
+  const buy=document.querySelectorAll(".sig.buy").length, sell=document.querySelectorAll(".sig.sell").length;
+  const v=document.getElementById("verdict-value");
+  if(buy>=2){ v.textContent="BULLISH BIAS"; v.className="verdict-value buy"; }
+  else if(sell>=2){ v.textContent="BEARISH BIAS"; v.className="verdict-value sell"; }
+  else { v.textContent="NEUTRAL / RANGE"; v.className="verdict-value neutral"; }
+  document.getElementById("verdict-sub").innerHTML=`Combined signal for <b>${cfg.name}</b> across 3 timeframes • `+new Date().toLocaleTimeString(\'en-GB\');
+  document.getElementById("last-update").textContent="UPDATED — "+new Date().toLocaleTimeString(\'en-GB\');
+  document.querySelectorAll(".lazy-embed").forEach(el=>el.dataset.loaded=""); // allow reload on asset change
   loadMainChart();
-  // reload lazy widgets immediately if already visible
-  loadLazyEmbeds();
+  // if embeds are already in viewport, reload them with new symbol
+  setTimeout(loadLazyEmbeds, 600);
   countdown=60;
 }
 document.querySelectorAll(".asset-btn").forEach(b=>b.addEventListener("click",()=>switchAsset(b.dataset.asset)));
-
-// Countdown
-setInterval(()=>{
-  countdown--; if(countdown<=0){switchAsset(currentAsset); countdown=60;}
-  document.getElementById("refresh-clock").textContent=countdown+"s";
-},1000);
-
-// Init
+setInterval(()=>{ countdown--; if(countdown<=0){ countdown=60; document.getElementById("last-update").textContent="UPDATED — "+new Date().toLocaleTimeString(\'en-GB\'); } document.getElementById("refresh-clock").textContent=countdown+"s"; },1000);
 window.addEventListener("load",()=>{ switchAsset("XAUUSD"); loadMainChart(); });
 </script>
 </body>
