@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -14,7 +13,6 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
-<script src="https://s3.tradingview.com/tv.js"></script>
 <style>
   :root{
     --black:#0A0A0B;
@@ -127,6 +125,16 @@
   }
   .wrap{max-width:1100px; margin:0 auto; padding:0 24px; position:relative; z-index:1;}
 
+  /* ===== Logo ===== */
+  .logo-wrap{
+    width:88px; height:88px; margin:0 auto 18px;
+    background:var(--panel); border:1px solid rgba(11,177,210,0.3); border-radius:16px;
+    display:flex; align-items:center; justify-content:center; overflow:hidden;
+    box-shadow:0 0 30px rgba(11,177,210,0.18);
+  }
+  .logo-wrap img{width:100%; height:100%; object-fit:contain; padding:8px;}
+  .logo-fallback{display:none; font-family:var(--mono); font-size:10px; letter-spacing:0.08em; color:var(--muted);}
+
   /* ===== Top identity bar ===== */
   .idbar{
     border-bottom:1px solid var(--hairline);
@@ -164,7 +172,7 @@
 
   /* ===== Brand banner ===== */
   .brand-banner{
-    text-align:center; padding:38px 0 30px;
+    text-align:center; padding:32px 0 26px;
     border-bottom:1px solid var(--hairline);
     background:radial-gradient(ellipse 60% 100% at 50% 0%, rgba(11,177,210,0.12), transparent 70%);
   }
@@ -182,6 +190,16 @@
     font-family:var(--mono); font-size:12px; letter-spacing:0.28em;
     color:var(--blue); margin-top:12px;
   }
+
+  /* ===== Market switcher ===== */
+  .asset-nav{display:flex; gap:8px; justify-content:center; flex-wrap:wrap; margin-top:22px;}
+  .asset-btn{
+    font-family:var(--mono); font-size:11px; letter-spacing:0.05em;
+    padding:9px 16px; border:1px solid var(--hairline); background:var(--panel);
+    color:var(--muted); cursor:pointer; border-radius:999px; transition:all .2s ease;
+  }
+  .asset-btn:hover{border-color:rgba(11,177,210,0.5); color:var(--white);}
+  .asset-btn.active{background:var(--blue); color:#fff; border-color:var(--blue); box-shadow:0 0 18px rgba(11,177,210,0.4);}
 
   /* ===== Live dashboard additions ===== */
   .idbar{flex-wrap:wrap; gap:10px 20px;}
@@ -204,6 +222,14 @@
   }
   #tech-commentary p{max-width:74ch; color:var(--white); font-size:15.5px; margin-bottom:14px;}
   #tech-commentary p:last-child{margin-bottom:0;}
+  .other-market-note{
+    font-family:var(--sans); font-size:13.5px; color:var(--muted); line-height:1.7;
+    background:linear-gradient(160deg, var(--surface) 0%, var(--panel) 100%);
+    border:1px solid rgba(11,177,210,0.16); border-left:2px solid var(--blue);
+    padding:20px 24px;
+  }
+  .other-market-note b{color:var(--white);}
+  .gold-only.is-hidden, .other-market-note.is-hidden{display:none;}
 
   /* ===== Hero ===== */
   header{padding-top:8px; border-bottom:1px solid var(--hairline);}
@@ -348,6 +374,19 @@
   .impact.high{color:var(--sell);}
   .impact.medium{color:var(--blue);}
   .impact.low{color:var(--muted);}
+
+  /* ===== 3-timeframe signal cards ===== */
+  .tf-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:12px; margin-bottom:1px;}
+  .tf-card{
+    background:linear-gradient(165deg, var(--surface) 0%, var(--panel) 70%);
+    border:1px solid rgba(11,177,210,0.18);
+    display:flex; flex-direction:column;
+  }
+  .tf-card h4{
+    font-family:var(--mono); font-size:11px; letter-spacing:0.08em; color:var(--blue);
+    padding:14px 16px 0;
+  }
+  .tf-card .tv-embed{height:190px; margin-top:6px;}
 
   /* ===== Technical widgets grid ===== */
   .tech-grid{
@@ -514,7 +553,7 @@
   @media (max-width:760px){
     .verdict-box{flex-direction:column; align-items:stretch;}
     .verdict-sub{border-left:none; padding-left:0; border-top:1px solid var(--hairline); padding-top:10px;}
-    .tech-grid, .levels, .two-col, .two-col.conf-grid{grid-template-columns:1fr;}
+    .tech-grid, .levels, .two-col, .two-col.conf-grid, .tf-grid{grid-template-columns:1fr;}
     .perf-stats{grid-template-columns:repeat(2,1fr);}
     .news-item{grid-template-columns:1fr;}
     .idbar{flex-direction:column; align-items:flex-start; gap:10px;}
@@ -534,12 +573,22 @@
         <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>LIGHT
       </button>
     </div>
+    <div class="logo-wrap">
+      <img src="photo_2026-09-24_17-47-46.jpg" alt="ASL University logo" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+      <span class="logo-fallback">ASL</span>
+    </div>
     <div class="brand-title"><span class="mark"></span>ASL UNIVERSITY</div>
     <div class="brand-sub">MARKET RESEARCH DESK</div>
+    <div class="asset-nav" role="group" aria-label="Market">
+      <button type="button" class="asset-btn active" data-asset="XAUUSD">XAU/USD GOLD</button>
+      <button type="button" class="asset-btn" data-asset="NASDAQ">NASDAQ 100</button>
+      <button type="button" class="asset-btn" data-asset="USOIL">WTI CRUDE OIL</button>
+      <button type="button" class="asset-btn" data-asset="DJI">DOW JONES</button>
+    </div>
   </div>
 
   <div class="idbar">
-    <div class="wordmark"><span class="mark"></span>XAU/USD <span class="sub">/ GOLD DESK</span></div>
+    <div class="wordmark"><span class="mark"></span><span id="asset-name">XAU/USD</span> <span class="sub" id="asset-sub">/ GOLD DESK</span></div>
     <div class="live-row">
       <span class="live-dot" id="feed-status"><span class="dot"></span><span id="feed-text">LIVE</span></span>
       <span class="live-dot" id="last-update">UPDATED —</span>
@@ -549,9 +598,9 @@
 
   <header>
     <div class="hero">
-      <span class="pair">XAU/USD · SPOT GOLD<span class="hero-price" id="hero-price"></span></span>
-      <h1>Daily Analysis &amp; Technical Outlook</h1>
-      <p class="dek">Fundamental drivers, moving averages, oscillators and key levels for gold — rebuilt from the economic calendar and live indicator data, refreshed automatically every minute.</p>
+      <span class="pair" id="hero-pair">XAU/USD · SPOT GOLD<span class="hero-price" id="hero-price"></span></span>
+      <h1 id="hero-title">Daily Analysis &amp; Technical Outlook</h1>
+      <p class="dek" id="hero-dek">Fundamental drivers, moving averages, oscillators and key levels for gold — rebuilt from the economic calendar and live indicator data, refreshed automatically every minute.</p>
     </div>
     <div class="verdict-box">
       <div class="verdict-main">
@@ -583,16 +632,39 @@
         <div id="tv_chart_container" style="position:absolute; inset:0;"></div>
       </div>
     </div>
-    <div class="section-note" style="margin-top:14px;">Live XAU/USD chart · OANDA feed via TradingView · streams prices in real time, no refresh needed</div>
+    <div class="section-note" id="chart-note" style="margin-top:14px;">Live XAU/USD chart · OANDA feed via TradingView · streams prices in real time, no refresh needed</div>
   </section>
 
   <section>
     <div class="section-head">
       <span class="num">02</span>
+      <h2>Signal Snapshot — 3 Timeframes</h2>
+      <span class="rule"></span>
+    </div>
+    <div class="section-note">Live TradingView technical rating (moving averages + oscillators combined) for the selected market · updates on its own</div>
+    <div class="tf-grid">
+      <div class="tf-card">
+        <h4>1H</h4>
+        <div class="tv-embed" id="tv-tf-1h" data-src="https://s3.tradingview.com/external-embedding/embed-widget-technical-analysis.js" data-config='{"interval":"1h","width":"100%","isTransparent":true,"height":"100%","symbol":"OANDA:XAUUSD","showIntervalTabs":false,"displayMode":"single","locale":"en"}'></div>
+      </div>
+      <div class="tf-card">
+        <h4>4H</h4>
+        <div class="tv-embed" id="tv-tf-4h" data-src="https://s3.tradingview.com/external-embedding/embed-widget-technical-analysis.js" data-config='{"interval":"4h","width":"100%","isTransparent":true,"height":"100%","symbol":"OANDA:XAUUSD","showIntervalTabs":false,"displayMode":"single","locale":"en"}'></div>
+      </div>
+      <div class="tf-card">
+        <h4>DAILY</h4>
+        <div class="tv-embed" id="tv-tf-1d" data-src="https://s3.tradingview.com/external-embedding/embed-widget-technical-analysis.js" data-config='{"interval":"1D","width":"100%","isTransparent":true,"height":"100%","symbol":"OANDA:XAUUSD","showIntervalTabs":false,"displayMode":"single","locale":"en"}'></div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="section-head">
+      <span class="num">03</span>
       <h2>Fundamental Drivers</h2>
       <span class="rule"></span>
     </div>
-    <div class="section-note">Live economic calendar and gold headlines · both feeds update on their own in real time</div>
+    <div class="section-note">Live economic calendar and market headlines · both feeds update on their own in real time</div>
     <div class="tech-grid">
       <div class="tech-cell">
         <h3>ECONOMIC CALENDAR · US · MEDIUM &amp; HIGH IMPACT</h3>
@@ -601,9 +673,9 @@
         </div>
       </div>
       <div class="tech-cell">
-        <h3>LIVE GOLD NEWS · XAU/USD</h3>
+        <h3 id="news-title">LIVE GOLD NEWS · XAU/USD</h3>
         <div class="tech-embed" style="height:520px;">
-          <div class="tv-embed" style="height:100%;width:100%" data-src="https://s3.tradingview.com/external-embedding/embed-widget-timeline.js" data-config='{"feedMode":"symbol","symbol":"OANDA:XAUUSD","isTransparent":true,"displayMode":"regular","width":"100%","height":"100%","locale":"en"}'></div>
+          <div class="tv-embed" id="tv-news" style="height:100%;width:100%" data-src="https://s3.tradingview.com/external-embedding/embed-widget-timeline.js" data-config='{"feedMode":"symbol","symbol":"OANDA:XAUUSD","isTransparent":true,"displayMode":"regular","width":"100%","height":"100%","locale":"en"}'></div>
         </div>
       </div>
     </div>
@@ -611,40 +683,47 @@
 
   <section>
     <div class="section-head">
-      <span class="num">03</span>
-      <h2>Technical Analysis</h2>
+      <span class="num">04</span>
+      <h2 id="tech-section-title">Technical Analysis</h2>
       <span class="rule"></span>
     </div>
     <div class="tech-grid">
       <div class="tech-cell">
         <h3>MOVING AVERAGES + OSCILLATORS + SUMMARY</h3>
         <div class="tech-embed">
-          <div class="tv-embed" style="height:100%;width:100%" data-src="https://s3.tradingview.com/external-embedding/embed-widget-technical-analysis.js" data-config='{"interval":"1h","width":"100%","isTransparent":true,"height":"100%","symbol":"OANDA:XAUUSD","showIntervalTabs":true,"displayMode":"multiple","locale":"en"}'></div>
+          <div class="tv-embed" id="tv-tech-main" style="height:100%;width:100%" data-src="https://s3.tradingview.com/external-embedding/embed-widget-technical-analysis.js" data-config='{"interval":"1h","width":"100%","isTransparent":true,"height":"100%","symbol":"OANDA:XAUUSD","showIntervalTabs":true,"displayMode":"multiple","locale":"en"}'></div>
         </div>
-        <div class="tech-note">Combined read across moving averages and oscillators on the 1H timeframe, with tabs for 15M, 1H, 4H and 1D. Green = Buy, red = Sell, grey = Neutral.</div>
+        <div class="tech-note">Combined read across moving averages and oscillators, with tabs for 15M, 1H, 4H and 1D. Green = Buy, red = Sell, grey = Neutral.</div>
       </div>
       <div class="tech-cell">
         <h3>SYMBOL OVERVIEW</h3>
         <div class="tech-embed">
-          <div class="tv-embed" style="height:100%;width:100%" data-src="https://s3.tradingview.com/external-embedding/embed-widget-symbol-overview.js" data-config='{"symbols":[["OANDA:XAUUSD|1D"]],"chartOnly":false,"width":"100%","height":"100%","locale":"en","autosize":true,"showVolume":false,"lineWidth":2,"lineType":0,"dateRanges":["1d|1","1m|30","3m|60","12m|1D"]}'></div>
+          <div class="tv-embed" id="tv-overview" style="height:100%;width:100%" data-src="https://s3.tradingview.com/external-embedding/embed-widget-symbol-overview.js" data-config='{"symbols":[["OANDA:XAUUSD|1D"]],"chartOnly":false,"width":"100%","height":"100%","locale":"en","autosize":true,"showVolume":false,"lineWidth":2,"lineType":0,"dateRanges":["1d|1","1m|30","3m|60","12m|1D"]}'></div>
         </div>
         <div class="tech-note">Price action across five ranges — 1 day to 12 months — for quick context on where the current move sits inside the broader trend.</div>
       </div>
     </div>
 
-    <div class="section-note" id="tech-note-live" style="margin-top:32px;">Indicator breakdown (Daily timeframe) · loading live data…</div>
-    <table class="indicator-table">
-      <thead><tr><th>Indicator</th><th>Value</th><th>Signal</th></tr></thead>
-      <tbody id="ind-body"><tr><td colspan="3">Loading live indicators…</td></tr></tbody>
-    </table>
+    <div class="gold-only">
+      <div class="section-note" id="tech-note-live" style="margin-top:32px;">Indicator breakdown (Daily timeframe) · loading live data…</div>
+      <table class="indicator-table">
+        <thead><tr><th>Indicator</th><th>Value</th><th>Signal</th></tr></thead>
+        <tbody id="ind-body"><tr><td colspan="3">Loading live indicators…</td></tr></tbody>
+      </table>
 
-    <div class="section-note" style="margin-top:32px;">Technical commentary · generated automatically from the live indicators above</div>
-    <div id="tech-commentary"><p>Loading live commentary…</p></div>
+      <div class="section-note" style="margin-top:32px;">Technical commentary · generated automatically from the live indicators above</div>
+      <div id="tech-commentary"><p>Loading live commentary…</p></div>
+    </div>
+    <div class="other-market-note is-hidden" id="tech-other-note" style="margin-top:32px;">
+      The numeric indicator table and auto-written commentary above are computed from ASL's own gold data feed, so they only run for <b>XAU/USD</b>.
+      For this market, use the live <b>TradingView rating widgets</b> above (Signal Snapshot and Moving Averages + Oscillators) — they compute real Buy / Sell / Neutral ratings for this exact symbol on every timeframe.
+    </div>
   </section>
 
+  <div class="gold-only" id="gold-levels-section">
   <section>
     <div class="section-head">
-      <span class="num">04</span>
+      <span class="num">05</span>
       <h2>Key Levels &amp; Pivots</h2>
       <span class="rule"></span>
     </div>
@@ -673,22 +752,27 @@
     </div>
     <div class="level-price" id="level-price"></div>
   </section>
+  </div>
 
   <section>
     <div class="section-head">
-      <span class="num">05</span>
+      <span class="num">06</span>
       <h2>Correlations &amp; Session Watch</h2>
       <span class="rule"></span>
     </div>
     <div class="two-col">
-      <div class="cell">
-        <h4>CROSS-ASSET CORRELATION (30D)</h4>
+      <div class="cell gold-only">
+        <h4>CROSS-ASSET CORRELATION (30D) · GOLD</h4>
         <div class="corr-row"><span>DXY (Dollar Index)</span><span id="corr-dxy" class="corr-na">—</span></div>
         <div class="corr-row"><span>S&amp;P 500</span><span id="corr-sp500" class="corr-na">—</span></div>
         <div class="corr-row"><span>Silver (XAG/USD)</span><span id="corr-silver" class="corr-na">—</span></div>
         <div class="corr-row"><span>WTI Crude Oil</span><span id="corr-oil" class="corr-na">—</span></div>
         <div class="corr-row"><span>Gold / Silver ratio (live)</span><span id="corr-gsr" style="color:var(--white)">—</span></div>
         <div class="corr-note">Correlation of the last 30 daily returns vs gold · recalculated automatically</div>
+      </div>
+      <div class="cell other-market-note is-hidden" id="corr-other-note">
+        <h4 style="color:var(--muted)">CROSS-ASSET CORRELATION</h4>
+        30-day correlation numbers are computed from ASL's gold data feed and are only available for <b>XAU/USD</b>. Switch to Gold to see the DXY / S&amp;P 500 / Silver / Oil correlation table.
       </div>
       <div class="cell">
         <h4>SESSION OVERLAP</h4>
@@ -701,13 +785,14 @@
     </div>
   </section>
 
+  <div class="gold-only" id="gold-confluence-section">
   <section>
     <div class="section-head">
-      <span class="num">06</span>
+      <span class="num">07</span>
       <h2>Confluence &amp; Strategy</h2>
       <span class="rule"></span>
     </div>
-    <div class="section-note">Confluence breakdown · how many independent factors agree · recalculated every minute</div>
+    <div class="section-note">Confluence breakdown · how many independent factors agree · recalculated every minute · gold only</div>
     <div class="two-col conf-grid">
       <div class="cell">
         <h4>CONFLUENCE BREAKDOWN</h4>
@@ -724,14 +809,15 @@
       </div>
     </div>
   </section>
+  </div>
 
-  <section class="summary">
+  <section class="summary gold-only" id="gold-outlook-section">
     <div class="section-head">
-      <span class="num">07</span>
+      <span class="num">08</span>
       <h2>Daily Outlook</h2>
       <span class="rule"></span>
     </div>
-    <div class="section-note">Based on Friday, 18 September 2026 close · gold market closed for the weekend</div>
+    <div class="section-note">Based on Friday, 18 September 2026 close · gold market closed for the weekend · written by the desk, gold only</div>
     <div class="outlook-panel">
     <p>Gold heads into the weekend near $4,380, having recovered from a one-and-a-half-month low below $4,250 earlier in the week and set to close out a three-week losing streak. The bounce came as Treasury yields pulled back from multi-year highs — the 10-year slipped to roughly 4.9% after briefly topping 5% — while falling oil prices eased inflation worries and helped offset the hawkish message of the Fed's first rate hike in three years.</p>
     <p>The technical picture, however, is a recovery rather than a reversal. Price is still trading below the 200-day moving average, daily RSI sits just above neutral, and MACD remains in negative territory, which suggests upside attempts are fragile. The $4,450 area is the ceiling to watch, having capped rallies on September 8, 9 and 10, while the recent low below $4,250 marks the floor buyers need to defend.</p>
@@ -741,21 +827,35 @@
 
   <footer>
     <div class="disclaimer">
-      Market data on this page (spot price, pivot levels, indicators, correlations, session status) is calculated automatically from third-party feeds and is indicative only — it may be delayed, incomplete or differ from your broker's prices. The trade plan (entry, stop-loss, take-profit), the confluence score and the 30-day strategy chart are generated automatically by fixed rules for educational illustration; the strategy chart is a hypothetical simulation, not actual trading results. The written Daily Outlook is the desk's own commentary and is updated by the research team. This page is for educational purposes only and does not constitute investment advice or a recommendation to buy or sell any financial instrument; trading gold and other leveraged instruments carries a high level of risk, and you should consult an independent financial advisor before making trading decisions.
+      Market data on this page (spot price, pivot levels, indicators, correlations, session status) is calculated automatically from third-party feeds and is indicative only — it may be delayed, incomplete or differ from your broker's prices. The trade plan (entry, stop-loss, take-profit), the confluence score and the 30-day strategy chart are generated automatically by fixed rules for educational illustration and currently run for XAU/USD only; the strategy chart is a hypothetical simulation, not actual trading results. Technical ratings shown for NASDAQ 100, WTI Crude Oil and Dow Jones are computed live by TradingView's own technical-analysis engine, not by ASL. The written Daily Outlook is the desk's own commentary on gold and is updated by the research team. This page is for educational purposes only and does not constitute investment advice or a recommendation to buy or sell any financial instrument; trading gold, indices, oil and other leveraged instruments carries a high level of risk, and you should consult an independent financial advisor before making trading decisions.
     </div>
     <div class="foot-brand"><b>ASL UNIVERSITY</b> — Market Research Desk · Market data refreshes every 60 seconds · Spot &amp; candles via XAUS.com · Chart, news &amp; calendar via TradingView</div>
   </footer>
 
 </div>
 
+<!-- tv.js is loaded here, right before the scripts that need it, instead of in <head>.
+     This lets the whole page (fonts, layout, text) paint immediately; only the
+     TradingView-powered widgets below wait the extra moment for this file. -->
+<script src="https://s3.tradingview.com/tv.js"></script>
 <script>
   /* =========================================================
      THEME + TRADINGVIEW WIDGETS (chart, technicals, news, calendar)
      Dark / light toggle: page colors switch through CSS variables,
      the TradingView widgets are rebuilt in the matching theme.
      Bullish candles = ASL blue, bearish candles = white.
+     Multi-market: MARKETS below drives the chart symbol and every
+     TradingView widget's "symbol" field when the desk switches assets.
      ========================================================= */
   const UP_COLOR = '#0BB1D2';
+
+  const MARKETS = {
+    XAUUSD: { label: 'XAU/USD', sub: '/ GOLD DESK', pair: 'XAU/USD · SPOT GOLD', tv: 'OANDA:XAUUSD', hasDeepData: true,  newsTitle: 'LIVE GOLD NEWS · XAU/USD', chartNote: 'Live XAU/USD chart · OANDA feed via TradingView · streams prices in real time, no refresh needed' },
+    NASDAQ: { label: 'NASDAQ 100', sub: '/ TECH INDEX DESK', pair: 'NASDAQ · NDX', tv: 'NASDAQ:NDX', hasDeepData: false, newsTitle: 'LIVE MARKET NEWS · NASDAQ 100', chartNote: 'Live NASDAQ 100 chart via TradingView · streams prices in real time, no refresh needed' },
+    USOIL:  { label: 'WTI CRUDE OIL', sub: '/ ENERGY DESK', pair: 'WTI · USOIL', tv: 'TVC:USOIL', hasDeepData: false, newsTitle: 'LIVE MARKET NEWS · WTI CRUDE OIL', chartNote: 'Live WTI crude oil chart via TradingView · streams prices in real time, no refresh needed' },
+    DJI:    { label: 'DOW JONES', sub: '/ US30 DESK', pair: 'DOW · DJI', tv: 'TVC:DJI', hasDeepData: false, newsTitle: 'LIVE MARKET NEWS · DOW JONES', chartNote: 'Live Dow Jones (US30) chart via TradingView · streams prices in real time, no refresh needed' }
+  };
+  let currentMarket = 'XAUUSD';
 
   function mountChart(theme) {
     const light = theme === 'light';
@@ -769,7 +869,7 @@
     new TradingView.widget({
       container_id: 'tv_chart_container',
       autosize: true,
-      symbol: 'OANDA:XAUUSD',
+      symbol: MARKETS[currentMarket].tv,
       interval: '60',
       style: '1',
       theme: light ? 'light' : 'dark',
@@ -801,6 +901,20 @@
     });
   }
 
+  /* Point every TradingView embed's config at the current market before (re)building it */
+  function retargetEmbeds() {
+    const sym = MARKETS[currentMarket].tv;
+    document.querySelectorAll('.tv-embed').forEach(host => {
+      if (!host.dataset.config) return;
+      try {
+        const cfg = JSON.parse(host.dataset.config);
+        if (Array.isArray(cfg.symbols)) cfg.symbols = [[sym + '|1D']]; // symbol-overview widget shape
+        else if ('symbol' in cfg) cfg.symbol = sym;                    // technical-analysis / timeline widgets
+        host.dataset.config = JSON.stringify(cfg);
+      } catch (e) { /* calendar widget has no "symbol" field - leave it alone */ }
+    });
+  }
+
   function mountEmbeds(theme) {
     const light = theme === 'light';
     const BG = light ? '#FFFFFF' : '#0A0A0B';
@@ -827,6 +941,10 @@
     });
   }
 
+  function currentTheme() {
+    return document.documentElement.getAttribute('data-theme') === 'light' ? 'light' : 'dark';
+  }
+
   function applyTheme(theme, persist) {
     document.documentElement.setAttribute('data-theme', theme);
     document.querySelectorAll('[data-theme-btn]').forEach(b =>
@@ -841,17 +959,62 @@
       if (document.documentElement.getAttribute('data-theme') !== btn.dataset.themeBtn) applyTheme(btn.dataset.themeBtn, true);
     }));
 
+  /* ---- market switcher ---- */
+  function switchMarket(key) {
+    if (!MARKETS[key] || key === currentMarket) return;
+    currentMarket = key;
+    const m = MARKETS[key];
+
+    document.querySelectorAll('.asset-btn').forEach(b => b.classList.toggle('active', b.dataset.asset === key));
+    document.getElementById('asset-name').textContent = m.label;
+    document.getElementById('asset-sub').textContent = m.sub;
+    document.getElementById('hero-pair').firstChild.textContent = m.pair + ' ';
+    document.getElementById('news-title').textContent = m.newsTitle;
+    document.getElementById('chart-note').textContent = m.chartNote;
+    document.getElementById('tech-section-title').textContent = 'Technical Analysis — ' + m.label;
+
+    document.querySelectorAll('.gold-only').forEach(el => el.classList.toggle('is-hidden', !m.hasDeepData));
+    document.querySelectorAll('.other-market-note').forEach(el => el.classList.toggle('is-hidden', m.hasDeepData));
+
+    if (m.hasDeepData) {
+      document.getElementById('hero-title').textContent = 'Daily Analysis & Technical Outlook';
+      document.getElementById('hero-dek').textContent = 'Fundamental drivers, moving averages, oscillators and key levels for gold — rebuilt from the economic calendar and live indicator data, refreshed automatically every minute.';
+    } else {
+      document.getElementById('hero-title').textContent = m.label + ' — Live Technical Outlook';
+      document.getElementById('hero-dek').textContent = 'Live chart, economic calendar, headlines and TradingView technical ratings across three timeframes for ' + m.label + ', refreshed automatically.';
+      const v = document.getElementById('verdict-value');
+      if (v) { v.textContent = 'See ratings below'; v.className = 'verdict-value neutral'; }
+      const sub = document.getElementById('verdict-sub');
+      if (sub) sub.innerHTML = 'ASL\u2019s confluence bias and trade plan run for <b>XAU/USD</b> only. For ' + m.label + ', read the Signal Snapshot and Moving Averages + Oscillators ratings below \u2014 both are computed live by TradingView for this exact symbol.';
+      const tp = document.getElementById('trade-plan');
+      if (tp) tp.style.display = 'none';
+    }
+    if (m.hasDeepData) { const tp = document.getElementById('trade-plan'); if (tp) tp.style.display = ''; }
+
+    retargetEmbeds();
+    mountChart(currentTheme());
+    mountEmbeds(currentTheme());
+    if (m.hasDeepData && S.hist) renderAll();
+  }
+
+  document.querySelectorAll('.asset-btn').forEach(btn =>
+    btn.addEventListener('click', () => switchMarket(btn.dataset.asset)));
+
   applyTheme(document.documentElement.getAttribute('data-theme') === 'light' ? 'light' : 'dark', false);
 </script>
 
 <script>
 (function(){
 /* =========================================================
-   ASL LIVE DASHBOARD ENGINE
+   ASL LIVE DASHBOARD ENGINE — GOLD (XAU/USD) ONLY
    Data feed : xaus.com public API (no key, CORS open)
      /spot     -> live XAU/USD, silver, gold/silver ratio
      /history  -> daily XAU/USD candles (up to 5y, h/l/c)
      /chart    -> daily candles for DXY, S&P 500, silver, oil
+   This engine only covers gold, because it's the only market
+   with a matching daily-bar feed; NASDAQ, oil and Dow Jones use
+   TradingView's own live rating widgets instead (see switchMarket
+   in the previous script block).
    Everything below recomputes automatically every minute.
    ========================================================= */
 const API_BASE = 'https://xaus.com/api/v1';
@@ -1292,7 +1455,7 @@ function renderHeader() {
   if (live) live.classList.toggle('err', !S.feedOk);
   setText('feed-text', S.feedOk ? 'LIVE' : 'RECONNECTING');
   if (S.lastOk) setText('last-update', 'UPDATED ' + utcClock(S.lastOk));
-  if (S.spot) setText('hero-price', '$' + fmt(S.spot.price));
+  if (S.spot && currentMarket === 'XAUUSD') setText('hero-price', '$' + fmt(S.spot.price));
 }
 
 function renderTechnical(A) {
@@ -1569,6 +1732,7 @@ function renderSessions(now = new Date()) {
 
 function renderAll() {
   renderHeader();
+  if (currentMarket !== 'XAUUSD') { renderSessions(); return; }
   renderCorrelations();
   if (S.hist) {
     const A = analyse(S.hist, S.spot ? S.spot.price : null);
