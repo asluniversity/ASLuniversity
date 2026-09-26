@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -387,6 +388,9 @@
     padding:14px 16px 0;
   }
   .tf-card .tv-embed{height:190px; margin-top:6px;}
+  .tf-fallback{display:none; padding:16px; text-align:center;}
+  .tf-fallback .sig{font-size:19px; display:block; margin-bottom:8px;}
+  .tf-fallback .fb-meta{font-family:var(--mono); font-size:11px; color:var(--muted);}
 
   /* ===== Technical widgets grid ===== */
   .tech-grid{
@@ -641,19 +645,22 @@
       <h2>Signal Snapshot — 3 Timeframes</h2>
       <span class="rule"></span>
     </div>
-    <div class="section-note">Live TradingView technical rating (moving averages + oscillators combined) for the selected market · updates on its own</div>
+    <div class="section-note" id="tf-grid-note">Live TradingView technical rating (moving averages + oscillators combined) for the selected market · updates on its own</div>
     <div class="tf-grid">
       <div class="tf-card">
         <h4>1H</h4>
         <div class="tv-embed" id="tv-tf-1h" data-src="https://s3.tradingview.com/external-embedding/embed-widget-technical-analysis.js" data-config='{"interval":"1h","width":"100%","isTransparent":true,"height":"100%","symbol":"OANDA:XAUUSD","showIntervalTabs":false,"displayMode":"single","locale":"en"}'></div>
+        <div class="tf-fallback" id="tf-fb-1h"></div>
       </div>
       <div class="tf-card">
         <h4>4H</h4>
         <div class="tv-embed" id="tv-tf-4h" data-src="https://s3.tradingview.com/external-embedding/embed-widget-technical-analysis.js" data-config='{"interval":"4h","width":"100%","isTransparent":true,"height":"100%","symbol":"OANDA:XAUUSD","showIntervalTabs":false,"displayMode":"single","locale":"en"}'></div>
+        <div class="tf-fallback" id="tf-fb-4h"></div>
       </div>
       <div class="tf-card">
         <h4>DAILY</h4>
         <div class="tv-embed" id="tv-tf-1d" data-src="https://s3.tradingview.com/external-embedding/embed-widget-technical-analysis.js" data-config='{"interval":"1D","width":"100%","isTransparent":true,"height":"100%","symbol":"OANDA:XAUUSD","showIntervalTabs":false,"displayMode":"single","locale":"en"}'></div>
+        <div class="tf-fallback" id="tf-fb-1d"></div>
       </div>
     </div>
   </section>
