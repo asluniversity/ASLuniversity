@@ -127,12 +127,11 @@
 
   /* ===== Logo ===== */
   .logo-wrap{
-    width:88px; height:88px; margin:0 auto 18px;
-    background:var(--panel); border:1px solid rgba(11,177,210,0.3); border-radius:16px;
-    display:flex; align-items:center; justify-content:center; overflow:hidden;
-    box-shadow:0 0 30px rgba(11,177,210,0.18);
+    width:96px; height:96px; margin:0 auto 14px;
+    display:flex; align-items:center; justify-content:center; overflow:visible;
+    background:transparent; border:none; box-shadow:none;
   }
-  .logo-wrap img{width:100%; height:100%; object-fit:contain; padding:8px;}
+  .logo-wrap img{width:100%; height:100%; object-fit:contain; display:block; background:transparent;}
   .logo-fallback{display:none; font-family:var(--mono); font-size:10px; letter-spacing:0.08em; color:var(--muted);}
 
   /* ===== Top identity bar ===== */
@@ -387,6 +386,10 @@
     padding:14px 16px 0;
   }
   .tf-card .tv-embed{height:190px; margin-top:6px;}
+  .tf-fallback{display:none; padding:16px; text-align:center; height:190px; margin-top:6px; flex-direction:column; justify-content:center;}
+  .tf-fallback.show{display:flex;}
+  .tf-fallback .sig{font-size:19px; display:block; margin-bottom:8px;}
+  .tf-fallback .fb-meta{font-family:var(--mono); font-size:11px; color:var(--muted);}
 
   /* ===== Technical widgets grid ===== */
   .tech-grid{
@@ -641,19 +644,22 @@
       <h2>Signal Snapshot — 3 Timeframes</h2>
       <span class="rule"></span>
     </div>
-    <div class="section-note">Live TradingView technical rating (moving averages + oscillators combined) for the selected market · updates on its own</div>
+    <div class="section-note" id="tf-grid-note">Live TradingView technical rating (moving averages + oscillators combined) for the selected market · updates on its own</div>
     <div class="tf-grid">
       <div class="tf-card">
         <h4>1H</h4>
         <div class="tv-embed" id="tv-tf-1h" data-src="https://s3.tradingview.com/external-embedding/embed-widget-technical-analysis.js" data-config='{"interval":"1h","width":"100%","isTransparent":true,"height":"100%","symbol":"OANDA:XAUUSD","showIntervalTabs":false,"displayMode":"single","locale":"en"}'></div>
+        <div class="tf-fallback" id="tf-fb-1h"></div>
       </div>
       <div class="tf-card">
         <h4>4H</h4>
         <div class="tv-embed" id="tv-tf-4h" data-src="https://s3.tradingview.com/external-embedding/embed-widget-technical-analysis.js" data-config='{"interval":"4h","width":"100%","isTransparent":true,"height":"100%","symbol":"OANDA:XAUUSD","showIntervalTabs":false,"displayMode":"single","locale":"en"}'></div>
+        <div class="tf-fallback" id="tf-fb-4h"></div>
       </div>
       <div class="tf-card">
         <h4>DAILY</h4>
         <div class="tv-embed" id="tv-tf-1d" data-src="https://s3.tradingview.com/external-embedding/embed-widget-technical-analysis.js" data-config='{"interval":"1D","width":"100%","isTransparent":true,"height":"100%","symbol":"OANDA:XAUUSD","showIntervalTabs":false,"displayMode":"single","locale":"en"}'></div>
+        <div class="tf-fallback" id="tf-fb-1d"></div>
       </div>
     </div>
   </section>
@@ -704,23 +710,16 @@
       </div>
     </div>
 
-    <div class="gold-only">
-      <div class="section-note" id="tech-note-live" style="margin-top:32px;">Indicator breakdown (Daily timeframe) · loading live data…</div>
-      <table class="indicator-table">
-        <thead><tr><th>Indicator</th><th>Value</th><th>Signal</th></tr></thead>
-        <tbody id="ind-body"><tr><td colspan="3">Loading live indicators…</td></tr></tbody>
-      </table>
+    <div id="tech-note-live" style="margin-top:32px;" class="section-note">Indicator breakdown (Daily timeframe) · loading live data…</div>
+    <table class="indicator-table">
+      <thead><tr><th>Indicator</th><th>Value</th><th>Signal</th></tr></thead>
+      <tbody id="ind-body"><tr><td colspan="3">Loading live indicators…</td></tr></tbody>
+    </table>
 
-      <div class="section-note" style="margin-top:32px;">Technical commentary · generated automatically from the live indicators above</div>
-      <div id="tech-commentary"><p>Loading live commentary…</p></div>
-    </div>
-    <div class="other-market-note is-hidden" id="tech-other-note" style="margin-top:32px;">
-      The numeric indicator table and auto-written commentary above are computed from ASL's own gold data feed, so they only run for <b>XAU/USD</b>.
-      For this market, use the live <b>TradingView rating widgets</b> above (Signal Snapshot and Moving Averages + Oscillators) — they compute real Buy / Sell / Neutral ratings for this exact symbol on every timeframe.
-    </div>
+    <div class="section-note" style="margin-top:32px;">Technical commentary · generated automatically from the live indicators above</div>
+    <div id="tech-commentary"><p>Loading live commentary…</p></div>
   </section>
 
-  <div class="gold-only" id="gold-levels-section">
   <section>
     <div class="section-head">
       <span class="num">05</span>
@@ -752,7 +751,6 @@
     </div>
     <div class="level-price" id="level-price"></div>
   </section>
-  </div>
 
   <section>
     <div class="section-head">
@@ -785,14 +783,13 @@
     </div>
   </section>
 
-  <div class="gold-only" id="gold-confluence-section">
   <section>
     <div class="section-head">
       <span class="num">07</span>
       <h2>Confluence &amp; Strategy</h2>
       <span class="rule"></span>
     </div>
-    <div class="section-note">Confluence breakdown · how many independent factors agree · recalculated every minute · gold only</div>
+    <div class="section-note" id="conf-section-note">Confluence breakdown · how many independent factors agree · recalculated every minute</div>
     <div class="two-col conf-grid">
       <div class="cell">
         <h4>CONFLUENCE BREAKDOWN</h4>
@@ -802,14 +799,13 @@
       </div>
       <div class="cell">
         <h4>STRATEGY PERFORMANCE · 30D</h4>
-        <div class="perf-legend"><span><i></i>Strategy (follow the signal)</span><span><i class="bh"></i>Buy &amp; hold gold</span></div>
+        <div class="perf-legend"><span><i></i>Strategy (follow the signal)</span><span><i class="bh"></i><span id="perf-bh-label">Buy &amp; hold gold</span></span></div>
         <div id="perf-chart"><div class="perf-empty">Building the 30-day simulation…</div></div>
         <div class="perf-stats" id="perf-stats"></div>
-        <div class="corr-note">Hypothetical simulation of this page's confluence rules on daily gold closes: one position per signal, held close-to-close, with no spread, slippage or fees. Dots under the chart show each day's position (green long, red short, grey flat). These are simulated results, not a record of real trading, and past performance does not guarantee future results.</div>
+        <div class="corr-note" id="perf-note">Hypothetical simulation of this page's confluence rules on daily gold closes: one position per signal, held close-to-close, with no spread, slippage or fees. Dots under the chart show each day's position (green long, red short, grey flat). These are simulated results, not a record of real trading, and past performance does not guarantee future results.</div>
       </div>
     </div>
   </section>
-  </div>
 
   <section class="summary gold-only" id="gold-outlook-section">
     <div class="section-head">
@@ -973,28 +969,39 @@
     document.getElementById('chart-note').textContent = m.chartNote;
     document.getElementById('tech-section-title').textContent = 'Technical Analysis — ' + m.label;
 
+    // gold keeps its DXY/S&P/Silver/Oil correlation table and hand-written outlook;
+    // every other section (indicators, pivots, confluence, 3-timeframe signals) now
+    // runs for every market, just fed by ASL's own math instead of gold's feed.
     document.querySelectorAll('.gold-only').forEach(el => el.classList.toggle('is-hidden', !m.hasDeepData));
     document.querySelectorAll('.other-market-note').forEach(el => el.classList.toggle('is-hidden', m.hasDeepData));
+
+    // Signal Snapshot cards: gold uses the (working) TradingView rating widgets;
+    // every other market uses ASL's own computed rating instead, since TradingView's
+    // free embed widgets don't reliably render index/commodity CFD symbols.
+    document.querySelectorAll('#tv-tf-1h, #tv-tf-4h, #tv-tf-1d').forEach(el => { el.style.display = m.hasDeepData ? '' : 'none'; });
+    document.querySelectorAll('.tf-fallback').forEach(el => el.classList.toggle('show', !m.hasDeepData));
+    document.getElementById('tf-grid-note').textContent = m.hasDeepData
+      ? 'Live TradingView technical rating (moving averages + oscillators combined) for the selected market · updates on its own'
+      : 'ASL\u2019s own rating (moving averages + oscillators) computed from live Yahoo Finance data for ' + m.label + ' · recalculated every minute';
 
     if (m.hasDeepData) {
       document.getElementById('hero-title').textContent = 'Daily Analysis & Technical Outlook';
       document.getElementById('hero-dek').textContent = 'Fundamental drivers, moving averages, oscillators and key levels for gold — rebuilt from the economic calendar and live indicator data, refreshed automatically every minute.';
+      const conf = document.getElementById('conf-section-note');
+      if (conf) conf.textContent = 'Confluence breakdown · how many independent factors agree · recalculated every minute';
     } else {
       document.getElementById('hero-title').textContent = m.label + ' — Live Technical Outlook';
-      document.getElementById('hero-dek').textContent = 'Live chart, economic calendar, headlines and TradingView technical ratings across three timeframes for ' + m.label + ', refreshed automatically.';
-      const v = document.getElementById('verdict-value');
-      if (v) { v.textContent = 'See ratings below'; v.className = 'verdict-value neutral'; }
-      const sub = document.getElementById('verdict-sub');
-      if (sub) sub.innerHTML = 'ASL\u2019s confluence bias and trade plan run for <b>XAU/USD</b> only. For ' + m.label + ', read the Signal Snapshot and Moving Averages + Oscillators ratings below \u2014 both are computed live by TradingView for this exact symbol.';
-      const tp = document.getElementById('trade-plan');
-      if (tp) tp.style.display = 'none';
+      document.getElementById('hero-dek').textContent = 'Live chart, fundamentals and a full technical breakdown for ' + m.label + ' — moving averages, oscillators, pivots and confluence, computed live from Yahoo Finance data.';
+      const conf = document.getElementById('conf-section-note');
+      if (conf) conf.textContent = 'Confluence breakdown for ' + m.label + ' · how many independent factors agree · recalculated every minute';
     }
-    if (m.hasDeepData) { const tp = document.getElementById('trade-plan'); if (tp) tp.style.display = ''; }
+    const tp = document.getElementById('trade-plan');
+    if (tp) tp.style.display = '';
 
     retargetEmbeds();
     mountChart(currentTheme());
     mountEmbeds(currentTheme());
-    if (m.hasDeepData && S.hist) renderAll();
+    if (window.ASLEngine) window.ASLEngine.onMarketSwitch(key);
   }
 
   document.querySelectorAll('.asset-btn').forEach(btn =>
@@ -1501,7 +1508,7 @@ function renderCommentary(A) {
   const s50 = A.smaOf(50), s200 = A.smaOf(200), s20 = A.smaOf(20);
   const bias = A.maBuy >= 9 ? 'bullish' : A.maBuy <= 3 ? 'bearish' : 'mixed';
   const p = [];
-  p.push('Gold is trading at ' + fmt(A.price) +
+  p.push((A.marketLabel || 'Gold') + ' is trading at ' + fmt(A.price) +
     (s200 != null ? ', ' + (A.price > s200 ? 'above' : 'below') + ' its 200-day average (' + fmt(s200) + ')' : '') +
     (s50 != null ? ' and ' + (A.price > s50 ? 'above' : 'below') + ' its 50-day (' + fmt(s50) + ')' : '') +
     '. ' + A.maBuy + ' of the ' + A.maTotal + ' moving averages sit below price and ' + A.maSell + ' above it' +
@@ -1582,10 +1589,11 @@ function renderConfluence(conf) {
     '<span class="conf-detail">' + f.detail + '</span></div>').join('');
 }
 
-function renderPerformance() {
+function renderPerformance(bt, livePrice, label) {
   const box = $('perf-chart');
   if (!box) return;
-  const eq = equityCurves(S.bt, S.spot ? S.spot.price : null);
+  const eq = equityCurves(bt, livePrice);
+  setText('perf-bh-label', 'Buy & hold ' + (label || 'gold'));
   if (!eq || eq.pts.length < 3) {
     box.innerHTML = '<div class="perf-empty">Building the 30-day simulation…</div>';
     setText('perf-stats', ''); return;
@@ -1600,7 +1608,7 @@ function renderPerformance() {
   const ticks = [];
   const step = niceStep((hi - lo) / 4);
   for (let t = Math.ceil(lo / step) * step; t <= hi; t += step) ticks.push(t);
-  const d = iso => new Date(iso + 'T00:00:00Z').toLocaleDateString('en-GB', { day: 'numeric', month: 'short', timeZone: 'UTC' });
+  const d = iso => new Date(iso.includes('T') ? iso : iso + 'T00:00:00Z').toLocaleDateString('en-GB', { day: 'numeric', month: 'short', timeZone: 'UTC' });
   let svg = '<svg viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="Strategy vs buy and hold, 30 days">';
   ticks.forEach(t => {
     svg += '<line x1="' + L + '" x2="' + (W - R) + '" y1="' + y(t) + '" y2="' + y(t) + '" class="pc-grid' + (Math.abs(t) < 1e-9 ? ' zero' : '') + '"/>' +
@@ -1632,7 +1640,7 @@ function renderPerformance() {
   const ps = $('perf-stats');
   if (ps) ps.innerHTML =
     stat('STRATEGY RETURN', sgn(eq.ret) + '%', eq.ret >= 0 ? 'buy' : 'sell') +
-    stat('BUY & HOLD GOLD', sgn(eq.bh) + '%', eq.bh >= 0 ? 'buy' : 'sell') +
+    stat('BUY & HOLD', sgn(eq.bh) + '%', eq.bh >= 0 ? 'buy' : 'sell') +
     stat('WIN RATE (DAYS IN MARKET)', wr + (eq.active ? ' · ' + eq.wins + '/' + eq.active : '')) +
     stat('MAX DRAWDOWN', (eq.maxDD < -0.001 ? sgn(eq.maxDD) : '0.00') + '%', eq.maxDD < -0.001 ? 'sell' : '');
 }
@@ -1664,7 +1672,7 @@ function renderLevels(A) {
   }
   const el = $('level-price');
   if (el) el.innerHTML = 'Live price <b>' + fmt(A.price) + '</b> · ' + where;
-  const d = new Date(pv.prev.date + 'T00:00:00Z').toLocaleDateString('en-GB',
+  const d = new Date(pv.prev.date.includes('T') ? pv.prev.date : pv.prev.date + 'T00:00:00Z').toLocaleDateString('en-GB',
     { weekday: 'short', day: 'numeric', month: 'short', timeZone: 'UTC' });
   setText('levels-note', 'Classic pivot points from the ' + d + ' daily candle (H ' + fmt(pv.prev.h) + ' · L ' + fmt(pv.prev.l) +
     ' · C ' + fmt(pv.prev.c) + ') · price position updates every minute');
@@ -1736,16 +1744,141 @@ function renderAll() {
   renderCorrelations();
   if (S.hist) {
     const A = analyse(S.hist, S.spot ? S.spot.price : null);
+    A.marketLabel = 'Gold';
     const conf = confluenceOf(A, dxyChangeAt(S.others.dxy, new Date().toISOString().slice(0, 10)));
     S.dir = dirFromNet(conf.net, S.dir);
     renderTechnical(A);
     renderVerdict(A, conf, S.dir);
     renderConfluence(conf);
     renderLevels(A);
-    renderPerformance();
+    renderPerformance(S.bt, S.spot ? S.spot.price : null, 'gold');
+    renderTfFallback(null); // gold uses the TradingView tf-embeds, not the fallback
   }
   renderSessions();
 }
+
+/* ---------------- OTHER MARKETS (NASDAQ / WTI Oil / Dow Jones) via Yahoo Finance ---------------- */
+/* Yahoo's public chart endpoint is free, keyless and CORS-open, and gives real daily +
+   hourly OHLC bars, so the exact same indicator math above (sma/rsi/macd/adx/bollinger/
+   pivots/confluence/backtest) can run for these three markets too - just with a
+   different data source than gold's xaus.com feed. */
+const YAHOO_SYMBOL = { NASDAQ: '^NDX', USOIL: 'CL=F', DJI: '^DJI' };
+const OM = { other: {} }; // { NASDAQ: {daily, hourly, loadedAt, dir}, USOIL: {...}, DJI: {...} }
+
+async function fetchYahooBars(symbol, range, interval) {
+  const url = 'https://query1.finance.yahoo.com/v8/finance/chart/' + encodeURIComponent(symbol) +
+    '?range=' + range + '&interval=' + interval;
+  const j = await getJSON(url, 15000);
+  const r = j && j.chart && j.chart.result && j.chart.result[0];
+  if (!r || !r.timestamp) throw new Error('Yahoo: no data for ' + symbol);
+  const ts = r.timestamp;
+  const q = (r.indicators && r.indicators.quote && r.indicators.quote[0]) || {};
+  const bars = [];
+  for (let i = 0; i < ts.length; i++) {
+    const c = num(q.close && q.close[i]);
+    if (!isFinite(c)) continue;
+    let h = num(q.high && q.high[i]), l = num(q.low && q.low[i]);
+    if (!isFinite(h)) h = c;
+    if (!isFinite(l)) l = c;
+    bars.push({ date: new Date(ts[i] * 1000).toISOString(), c, h: Math.max(h, c), l: Math.min(l, c) });
+  }
+  return bars;
+}
+
+function resampleBars(bars, groupSize) {
+  const out = [];
+  for (let i = 0; i < bars.length; i += groupSize) {
+    const chunk = bars.slice(i, i + groupSize);
+    if (!chunk.length) continue;
+    out.push({
+      date: chunk[chunk.length - 1].date,
+      c: chunk[chunk.length - 1].c,
+      h: Math.max.apply(null, chunk.map(b => b.h)),
+      l: Math.min.apply(null, chunk.map(b => b.l))
+    });
+  }
+  return out;
+}
+
+function showOtherMarketLoading(key, msg) {
+  const body = $('ind-body');
+  if (body) body.innerHTML = '<tr><td colspan="3">' + msg + '</td></tr>';
+  const c = $('tech-commentary'); if (c) c.innerHTML = '<p>' + msg + '</p>';
+  ['tf-fb-1h', 'tf-fb-4h', 'tf-fb-1d'].forEach(id => {
+    const el = $(id); if (el) el.innerHTML = '<span class="fb-meta">' + msg + '</span>';
+  });
+}
+
+async function ensureOtherMarketLoaded(key) {
+  const cached = OM.other[key];
+  if (cached && cached.daily && cached.daily.length && Date.now() - cached.loadedAt < 5 * 60 * 1000) return cached;
+  const ysym = YAHOO_SYMBOL[key];
+  if (!ysym) return null;
+  showOtherMarketLoading(key, 'Loading live data for ' + MARKETS[key].label + ' from Yahoo Finance…');
+  try {
+    const [daily, hourly] = await Promise.all([
+      fetchYahooBars(ysym, '2y', '1d'),
+      fetchYahooBars(ysym, '60d', '60m')
+    ]);
+    OM.other[key] = { daily, hourly, loadedAt: Date.now(), dir: (cached && cached.dir) || 0 };
+    return OM.other[key];
+  } catch (e) {
+    console.warn('ASL dashboard: could not load ' + key + ' from Yahoo Finance', e);
+    showOtherMarketLoading(key,
+      'Could not load live data for ' + MARKETS[key].label + ' (Yahoo Finance request failed: ' + e.message +
+      '). This can happen if the page is opened as a local file instead of a hosted https:// page, or if the request was blocked. Try again from the live site.');
+    return null;
+  }
+}
+
+function renderTfFallback(d) {
+  document.querySelectorAll('.tf-fallback').forEach(el => { if (!d) el.classList.remove('show'); });
+  if (!d) return;
+  const mk = bars => { try { return bars && bars.length > 35 ? analyse(bars, null) : null; } catch (e) { return null; } };
+  const sets = { 'tf-fb-1h': mk(d.hourly), 'tf-fb-4h': mk(resampleBars(d.hourly || [], 4)), 'tf-fb-1d': mk(d.daily) };
+  for (const id in sets) {
+    const el = $(id);
+    if (!el) continue;
+    el.classList.add('show');
+    const A = sets[id];
+    if (!A) { el.innerHTML = '<span class="fb-meta">not enough data yet</span>'; continue; }
+    const cls = /Buy/.test(A.overall) ? 'buy' : /Sell/.test(A.overall) ? 'sell' : 'neutral';
+    el.innerHTML = '<span class="sig ' + cls + '">' + A.overall + '</span>' +
+      '<span class="fb-meta">RSI ' + fmt(A.rsi, 1) + ' · ' + A.maBuy + '/' + A.maTotal + ' MAs bullish</span>';
+  }
+}
+
+function renderOtherMarket(key) {
+  const d = OM.other[key];
+  const m = MARKETS[key];
+  if (!d || !d.daily || !d.daily.length) return;
+  const A = analyse(d.daily, null);
+  A.marketLabel = m.label;
+  const conf = confluenceOf(A, null);
+  d.dir = dirFromNet(conf.net, d.dir || 0);
+  renderTechnical(A);
+  renderVerdict(A, conf, d.dir);
+  renderConfluence(conf);
+  renderLevels(A);
+  try {
+    d.bt = backtest(d.daily, null, null);
+    if (d.bt) d.dir = d.bt.lastDir;
+  } catch (e) { console.warn('ASL dashboard: backtest failed for ' + key, e); d.bt = null; }
+  renderPerformance(d.bt, last(d.daily).c, m.label);
+  renderTfFallback(d);
+  renderSessions();
+}
+
+/* Public hook called by the theme/market-switcher script block, which lives outside
+   this IIFE and cannot see the functions above directly. */
+window.ASLEngine = {
+  onMarketSwitch: async function (key) {
+    if (key === 'XAUUSD') { renderAll(); return; }
+    const d = await ensureOtherMarketLoaded(key);
+    if (d && currentMarket === key) renderOtherMarket(key);
+  }
+};
+
 
 /* ---------------- refresh loop ---------------- */
 let secondsLeft = REFRESH_SECONDS, busy = false;
@@ -1760,7 +1893,15 @@ async function refresh() {
   try {
     if (!S.hist || Date.now() - S.lastSlow > SLOW_REFRESH_SECONDS * 1000) await loadSlow();
   } catch (e) { console.warn("ASL dashboard: candle refresh failed", e); }
-  renderAll();
+  if (currentMarket === 'XAUUSD') {
+    renderAll();
+  } else {
+    try {
+      const d = await ensureOtherMarketLoaded(currentMarket);
+      if (d && currentMarket !== 'XAUUSD') renderOtherMarket(currentMarket);
+    } catch (e) { console.warn('ASL dashboard: other-market refresh failed', e); }
+    renderHeader();
+  }
   busy = false;
 }
 
