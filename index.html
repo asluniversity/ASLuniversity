@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -421,191 +422,163 @@
         @media (max-width: 640px) {
             .growth-svg { height: 100px; }
         }
-/* ============ LIVE STATS ============ */
-.stats-section {
-    position: relative;
-    z-index: 1;
-    border-bottom: 1px solid var(--hairline);
-    padding: 46px 0;
-}
-.stats-inner {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 0 20px;
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 24px;
-}
-.stat-card {
-    position: relative;
-    overflow: hidden;
-    background: var(--card-bg);
-    border: 1px solid var(--hairline);
-    border-top: 3px solid var(--accent);
-    border-radius: 4px;
-    padding: 28px 24px 24px;
-    text-align: center;
-    box-shadow: 0 0 40px rgba(11,177,210,0.14);
-    transition: transform .3s ease, box-shadow .3s ease, border-color .3s ease;
-}
-.stat-card:hover {
-    transform: translateY(-6px);
-    border-color: var(--accent);
-    box-shadow: 0 0 55px rgba(11,177,210,0.35);
-}
-/* moving light sweep */
-.stat-card::after {
-    content: "";
-    position: absolute;
-    top: 0; left: -60%;
-    width: 40%; height: 100%;
-    background: linear-gradient(100deg, transparent, rgba(11,177,210,0.14), transparent);
-    transform: skewX(-20deg);
-    animation: stat-sweep 4.5s ease-in-out infinite;
-    pointer-events: none;
-}
-@keyframes stat-sweep {
-    0%   { left: -60%; }
-    60%, 100% { left: 140%; }
-}
-.stat-live {
-    display: inline-flex;
-    align-items: center;
-    gap: 7px;
-    font-family: var(--mono);
-    font-size: 10.5px;
-    letter-spacing: .16em;
-    text-transform: uppercase;
-    color: var(--accent);
-    margin-bottom: 14px;
-}
-.stat-live i {
-    width: 8px; height: 8px;
-    border-radius: 50%;
-    background: var(--accent);
-    box-shadow: 0 0 10px var(--accent);
-    animation: stat-blink 1.3s ease-in-out infinite;
-}
-@keyframes stat-blink {
-    0%, 100% { opacity: 1; transform: scale(1); }
-    50% { opacity: .3; transform: scale(.6); }
-}
-.stat-number {
-    font-family: var(--display);
-    font-weight: 700;
-    font-size: clamp(38px, 5vw, 58px);
-    line-height: 1.1;
-    color: var(--heading-color);
-    text-shadow: var(--glow-h);
-    font-variant-numeric: tabular-nums;
-    letter-spacing: -0.01em;
-}
-.stat-number .stat-suffix { color: var(--accent); }
-.stat-label {
-    font-family: var(--mono);
-    font-size: 12px;
-    letter-spacing: .1em;
-    text-transform: uppercase;
-    color: var(--muted-color);
-    margin-top: 10px;
-}
-/* progress bar (members) */
-.stat-bar {
-    height: 6px;
-    margin-top: 20px;
-    border-radius: 99px;
-    background: var(--toggle-bg);
-    overflow: hidden;
-}
-.stat-bar span {
-    display: block;
-    height: 100%;
-    width: 0;
-    border-radius: 99px;
-    background: linear-gradient(90deg, #0687A2, #0BB1D2, #7fe6f7);
-    box-shadow: 0 0 12px rgba(11,177,210,.7);
-}
-/* ticks (days) */
-.stat-ticks {
-    display: grid;
-    grid-template-columns: repeat(30, 1fr);
-    gap: 3px;
-    margin-top: 20px;
-}
-.stat-ticks b {
-    height: 6px;
-    border-radius: 2px;
-    background: var(--toggle-bg);
-    transition: background .2s ease, box-shadow .2s ease;
-}
-.stat-ticks b.on {
-    background: var(--accent);
-    box-shadow: 0 0 8px rgba(11,177,210,.8);
-}
-/* profit chart bars */
-.stat-spark {
-    display: flex;
-    align-items: flex-end;
-    justify-content: center;
-    gap: 4px;
-    height: 22px;
-    margin-top: 16px;
-}
-.stat-spark b {
-    width: 6px;
-    height: 100%;
-    border-radius: 2px;
-    background: linear-gradient(to top, #0687A2, #0BB1D2);
-    transform-origin: bottom;
-    transform: scaleY(.2);
-    animation: stat-bars 1.6s ease-in-out infinite;
-}
-.stat-spark b:nth-child(2) { animation-delay: .12s; }
-.stat-spark b:nth-child(3) { animation-delay: .24s; }
-.stat-spark b:nth-child(4) { animation-delay: .36s; }
-.stat-spark b:nth-child(5) { animation-delay: .48s; }
-.stat-spark b:nth-child(6) { animation-delay: .60s; }
-.stat-spark b:nth-child(7) { animation-delay: .72s; }
-@keyframes stat-bars {
-    0%, 100% { transform: scaleY(.25); }
-    50% { transform: scaleY(1); }
-}
-@media (max-width: 860px) {
-    .stats-inner { grid-template-columns: 1fr; gap: 18px; }
-}
-@media (prefers-reduced-motion: reduce) {
-    .stat-card::after, .stat-live i, .stat-spark b { animation: none; }
-}
-        <!-- Live Stats -->
-<section class="stats-section" id="stats">
-    <div class="stats-inner">
 
-        <!-- Members -->
-        <div class="stat-card">
-            <div class="stat-live"><i></i> Live</div>
-            <div class="stat-number"><span data-count="100" data-duration="2600">0</span></div>
-            <div class="stat-label">Members allowed per month</div>
-            <div class="stat-bar"><span id="members-bar"></span></div>
-        </div>
+        /* ============ LIVE STATS ============ */
+        .stats-section {
+            position: relative;
+            z-index: 1;
+            border-bottom: 1px solid var(--hairline);
+            padding: 46px 0;
+        }
+        .stats-inner {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 24px;
+        }
+        .stat-card {
+            position: relative;
+            overflow: hidden;
+            background: var(--card-bg);
+            border: 1px solid var(--hairline);
+            border-top: 3px solid var(--accent);
+            border-radius: 4px;
+            padding: 28px 24px 24px;
+            text-align: center;
+            box-shadow: 0 0 40px rgba(11,177,210,0.14);
+            transition: transform .3s ease, box-shadow .3s ease, border-color .3s ease;
+        }
+        .stat-card:hover {
+            transform: translateY(-6px);
+            border-color: var(--accent);
+            box-shadow: 0 0 55px rgba(11,177,210,0.35);
+        }
+        /* moving light sweep */
+        .stat-card::after {
+            content: "";
+            position: absolute;
+            top: 0; left: -60%;
+            width: 40%; height: 100%;
+            background: linear-gradient(100deg, transparent, rgba(11,177,210,0.14), transparent);
+            transform: skewX(-20deg);
+            animation: stat-sweep 4.5s ease-in-out infinite;
+            pointer-events: none;
+        }
+        @keyframes stat-sweep {
+            0%   { left: -60%; }
+            60%, 100% { left: 140%; }
+        }
+        .stat-live {
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            font-family: var(--mono);
+            font-size: 10.5px;
+            letter-spacing: .16em;
+            text-transform: uppercase;
+            color: var(--accent);
+            margin-bottom: 14px;
+        }
+        .stat-live i {
+            width: 8px; height: 8px;
+            border-radius: 50%;
+            background: var(--accent);
+            box-shadow: 0 0 10px var(--accent);
+            animation: stat-blink 1.3s ease-in-out infinite;
+        }
+        @keyframes stat-blink {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: .3; transform: scale(.6); }
+        }
+        .stat-number {
+            font-family: var(--display);
+            font-weight: 700;
+            font-size: clamp(38px, 5vw, 58px);
+            line-height: 1.1;
+            color: var(--heading-color);
+            text-shadow: var(--glow-h);
+            font-variant-numeric: tabular-nums;
+            letter-spacing: -0.01em;
+        }
+        .stat-number .stat-suffix { color: var(--accent); }
+        .stat-label {
+            font-family: var(--mono);
+            font-size: 12px;
+            letter-spacing: .1em;
+            text-transform: uppercase;
+            color: var(--muted-color);
+            margin-top: 10px;
+        }
+        /* progress bar (members) */
+        .stat-bar {
+            height: 6px;
+            margin-top: 20px;
+            border-radius: 99px;
+            background: var(--toggle-bg);
+            overflow: hidden;
+        }
+        .stat-bar span {
+            display: block;
+            height: 100%;
+            width: 0;
+            border-radius: 99px;
+            background: linear-gradient(90deg, #0687A2, #0BB1D2, #7fe6f7);
+            box-shadow: 0 0 12px rgba(11,177,210,.7);
+        }
+        /* ticks (days) */
+        .stat-ticks {
+            display: grid;
+            grid-template-columns: repeat(30, 1fr);
+            gap: 3px;
+            margin-top: 20px;
+        }
+        .stat-ticks b {
+            height: 6px;
+            border-radius: 2px;
+            background: var(--toggle-bg);
+            transition: background .2s ease, box-shadow .2s ease;
+        }
+        .stat-ticks b.on {
+            background: var(--accent);
+            box-shadow: 0 0 8px rgba(11,177,210,.8);
+        }
+        /* profit chart bars */
+        .stat-spark {
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+            gap: 4px;
+            height: 22px;
+            margin-top: 16px;
+        }
+        .stat-spark b {
+            width: 6px;
+            height: 100%;
+            border-radius: 2px;
+            background: linear-gradient(to top, #0687A2, #0BB1D2);
+            transform-origin: bottom;
+            transform: scaleY(.2);
+            animation: stat-bars 1.6s ease-in-out infinite;
+        }
+        .stat-spark b:nth-child(2) { animation-delay: .12s; }
+        .stat-spark b:nth-child(3) { animation-delay: .24s; }
+        .stat-spark b:nth-child(4) { animation-delay: .36s; }
+        .stat-spark b:nth-child(5) { animation-delay: .48s; }
+        .stat-spark b:nth-child(6) { animation-delay: .60s; }
+        .stat-spark b:nth-child(7) { animation-delay: .72s; }
+        @keyframes stat-bars {
+            0%, 100% { transform: scaleY(.25); }
+            50% { transform: scaleY(1); }
+        }
+        @media (max-width: 860px) {
+            .stats-inner { grid-template-columns: 1fr; gap: 18px; }
+        }
+        @media (prefers-reduced-motion: reduce) {
+            .stat-card::after, .stat-live i, .stat-spark b { animation: none; }
+        }
 
-        <!-- Profit -->
-        <div class="stat-card">
-            <div class="stat-live"><i></i> Live</div>
-            <div class="stat-number">$<span data-count="10000" data-duration="3200" data-format="comma">0</span><span class="stat-suffix">+</span></div>
-            <div class="stat-label">Profit earned by our students</div>
-            <div class="stat-spark"><b></b><b></b><b></b><b></b><b></b><b></b><b></b></div>
-        </div>
-
-        <!-- Days -->
-        <div class="stat-card">
-            <div class="stat-live"><i></i> Live</div>
-            <div class="stat-number"><span data-count="30" data-duration="2200">0</span> <span class="stat-suffix" style="font-size:.45em;">DAYS</span></div>
-            <div class="stat-label">Membership access period</div>
-            <div class="stat-ticks" id="days-ticks"></div>
-        </div>
-
-    </div>
-</section>
         /* ============ HERO SECTION 1 ============ */
         .hero-section {
             max-width: 1200px;
@@ -1343,6 +1316,37 @@
         </div>
     </div>
 
+    <!-- Live Stats -->
+    <section class="stats-section" id="stats">
+        <div class="stats-inner">
+
+            <!-- Members -->
+            <div class="stat-card">
+                <div class="stat-live"><i></i> Live</div>
+                <div class="stat-number"><span data-count="100" data-duration="2600">0</span></div>
+                <div class="stat-label">Members allowed per month</div>
+                <div class="stat-bar"><span id="members-bar"></span></div>
+            </div>
+
+            <!-- Profit -->
+            <div class="stat-card">
+                <div class="stat-live"><i></i> Live</div>
+                <div class="stat-number">$<span data-count="10000" data-duration="3200" data-format="comma">0</span><span class="stat-suffix">+</span></div>
+                <div class="stat-label">Profit earned by our students</div>
+                <div class="stat-spark"><b></b><b></b><b></b><b></b><b></b><b></b><b></b></div>
+            </div>
+
+            <!-- Days -->
+            <div class="stat-card">
+                <div class="stat-live"><i></i> Live</div>
+                <div class="stat-number"><span data-count="30" data-duration="2200">0</span> <span class="stat-suffix" style="font-size:.45em;">DAYS</span></div>
+                <div class="stat-label">Membership access period</div>
+                <div class="stat-ticks" id="days-ticks"></div>
+            </div>
+
+        </div>
+    </section>
+
     <!-- Hero Section 1 -->
     <section class="hero-section">
         <div class="hero-image">
@@ -1607,56 +1611,57 @@
                 if (e.key === 'Escape') setOpen(false);
             });
         })();
+
         // ============ LIVE STATS COUNTERS ============
-(function () {
-    var section = document.getElementById('stats');
-    if (!section) return;
+        (function () {
+            var section = document.getElementById('stats');
+            if (!section) return;
 
-    var ticksWrap = document.getElementById('days-ticks');
-    for (var i = 0; i < 30; i++) ticksWrap.appendChild(document.createElement('b'));
-    var ticks = ticksWrap.children;
-    var membersBar = document.getElementById('members-bar');
+            var ticksWrap = document.getElementById('days-ticks');
+            for (var i = 0; i < 30; i++) ticksWrap.appendChild(document.createElement('b'));
+            var ticks = ticksWrap.children;
+            var membersBar = document.getElementById('members-bar');
 
-    function easeOutExpo(t) { return t === 1 ? 1 : 1 - Math.pow(2, -10 * t); }
+            function easeOutExpo(t) { return t === 1 ? 1 : 1 - Math.pow(2, -10 * t); }
 
-    function run(el) {
-        var target = +el.dataset.count;
-        var duration = +el.dataset.duration || 2500;
-        var comma = el.dataset.format === 'comma';
-        var start = null;
+            function run(el) {
+                var target = +el.dataset.count;
+                var duration = +el.dataset.duration || 2500;
+                var comma = el.dataset.format === 'comma';
+                var start = null;
 
-        function step(ts) {
-            if (!start) start = ts;
-            var p = Math.min((ts - start) / duration, 1);
-            var val = Math.round(easeOutExpo(p) * target);
-            el.textContent = comma ? val.toLocaleString('en-US') : val;
+                function step(ts) {
+                    if (!start) start = ts;
+                    var p = Math.min((ts - start) / duration, 1);
+                    var val = Math.round(easeOutExpo(p) * target);
+                    el.textContent = comma ? val.toLocaleString('en-US') : val;
 
-            if (target === 100) membersBar.style.width = val + '%';
-            if (target === 30) {
-                for (var i = 0; i < ticks.length; i++) {
-                    ticks[i].classList.toggle('on', i < val);
+                    if (target === 100) membersBar.style.width = val + '%';
+                    if (target === 30) {
+                        for (var i = 0; i < ticks.length; i++) {
+                            ticks[i].classList.toggle('on', i < val);
+                        }
+                    }
+                    if (p < 1) requestAnimationFrame(step);
                 }
+                requestAnimationFrame(step);
             }
-            if (p < 1) requestAnimationFrame(step);
-        }
-        requestAnimationFrame(step);
-    }
 
-    var started = false;
-    function start() {
-        if (started) return;
-        started = true;
-        section.querySelectorAll('[data-count]').forEach(run);
-    }
+            var started = false;
+            function startAll() {
+                if (started) return;
+                started = true;
+                section.querySelectorAll('[data-count]').forEach(run);
+            }
 
-    if ('IntersectionObserver' in window) {
-        new IntersectionObserver(function (entries, obs) {
-            if (entries[0].isIntersecting) { start(); obs.disconnect(); }
-        }, { threshold: 0.35 }).observe(section);
-    } else {
-        start();
-    }
-})();
+            if ('IntersectionObserver' in window) {
+                new IntersectionObserver(function (entries, obs) {
+                    if (entries[0].isIntersecting) { startAll(); obs.disconnect(); }
+                }, { threshold: 0.35 }).observe(section);
+            } else {
+                startAll();
+            }
+        })();
     </script>
 </body>
 </html>
