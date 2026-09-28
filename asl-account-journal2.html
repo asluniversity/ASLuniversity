@@ -11,6 +11,9 @@
 .row{display:flex;justify-content:space-between;gap:20px;padding:14px 19px;border-bottom:1px solid rgba(255,255,255,.055)}.row:last-child{border:0}.label{font-size:12px;color:var(--muted)}.value{font:600 12px var(--mono);color:#e8f5f8;text-align:right}.profit{color:var(--green)!important}.gold{color:var(--gold)!important}.status{display:inline-flex;gap:7px;align-items:center;padding:5px 9px;border:1px solid rgba(49,214,154,.28);background:rgba(49,214,154,.08);border-radius:999px;color:var(--green);font:600 10px var(--mono)}.dot{width:6px;height:6px;border-radius:50%;background:var(--green);box-shadow:0 0 9px rgba(49,214,154,.7)}
 .performance{padding:20px}.perf{display:flex;justify-content:space-between;margin-bottom:16px}.perf h3{font:600 14px var(--display);color:var(--head)}.perf small{color:var(--muted)}.roi{font:700 24px var(--display);color:var(--green)}
 .chart{height:245px;position:relative;border-radius:11px;overflow:hidden;border:1px solid rgba(11,177,210,.13);background:linear-gradient(180deg,rgba(11,177,210,.055),rgba(5,14,18,.2))}.chart:before{content:"";position:absolute;inset:18px;background-image:linear-gradient(rgba(11,177,210,.075) 1px,transparent 1px),linear-gradient(90deg,rgba(11,177,210,.075) 1px,transparent 1px);background-size:25% 25%}.chart svg{position:absolute;inset:18px 15px 25px;width:calc(100% - 30px);height:calc(100% - 43px)}.labels{position:absolute;left:15px;right:15px;bottom:6px;display:flex;justify-content:space-between;color:#6f929e;font:8px var(--mono)}
+.chart .ill{position:absolute;top:8px;right:12px;font:8px var(--mono);letter-spacing:.12em;color:#6f929e;z-index:2}
+#pulse{transform-box:fill-box;transform-origin:center;animation:pl 1.6s ease-out infinite}
+@keyframes pl{0%{transform:scale(.6);opacity:.9}100%{transform:scale(2.2);opacity:0}}
 .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:14px}.mini{padding:11px 12px;border:1px solid rgba(11,177,210,.13);border-radius:9px;background:rgba(255,255,255,.018)}.mini span{display:block;color:var(--muted);font-size:9px;text-transform:uppercase}.mini b{font:600 12px var(--mono);color:var(--head)}
 .info{margin-top:24px}.info-grid{display:grid;grid-template-columns:repeat(2,1fr)}.item{padding:15px 19px;border-bottom:1px solid rgba(255,255,255,.055)}.item:nth-child(odd){border-right:1px solid rgba(255,255,255,.055)}.item span{display:block;color:var(--muted);font-size:10px;margin-bottom:4px}.item b{font:600 12px var(--mono);color:#e8f5f8}
 .note{margin-top:22px;padding:13px 15px;border-left:2px solid var(--accent);background:rgba(11,177,210,.045);color:#8eabb4;font-size:10px}.footer{padding:20px 30px;border-top:1px solid var(--line);display:flex;justify-content:space-between;gap:20px;background:rgba(5,15,19,.42)}.footer b{font:700 13px var(--display);color:#fff}.footer b span{color:var(--accent)}.footer small{color:#718d97;font-size:10px}
@@ -20,7 +23,73 @@
 <section class="content"><div class="title"><div class="eyebrow">Verified Member Performance</div><h1>Account Statement Summary</h1><p class="sub">Professional trading account performance overview • ASL University</p></div>
 <div class="grid"><section class="card"><div class="head"><h3>Account Performance</h3><span class="tag">MT5 / Statement</span></div>
 <div class="row"><span class="label">Account Holder</span><span class="value">Sarah Khani-Rezaei</span></div><div class="row"><span class="label">Account Type</span><span class="value">Crypto Trading Account (USD)</span></div><div class="row"><span class="label">Starting Balance</span><span class="value">$1,000.00</span></div><div class="row"><span class="label">Current Balance</span><span class="value">$1,710.00</span></div><div class="row"><span class="label">Total Net Profit</span><span class="value profit">+$710.00</span></div><div class="row"><span class="label">Percentage Return (ROI)</span><span class="value profit">+71.0%</span></div><div class="row"><span class="label">Status</span><span class="value"><span class="status"><i class="dot"></i>Active / High Performance</span></span></div><div class="row"><span class="label">Trading Strategy</span><span class="value gold">RWA &amp; Momentum Trading</span></div></section>
-<section class="card performance"><div class="perf"><div><h3>Balance Performance</h3><small>Account growth overview</small></div><div class="roi">+71.0%</div></div><div class="chart"><svg viewBox="0 0 600 220" preserveAspectRatio="none"><defs><linearGradient id="a" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#0BB1D2" stop-opacity=".30"/><stop offset="100%" stop-color="#0BB1D2" stop-opacity="0"/></linearGradient></defs><polygon points="8,200 8.0,190.0 49.7,183.7 91.4,178.4 133.1,169.9 174.9,164.6 216.6,155.1 258.3,145.6 300.0,135.1 341.7,121.3 383.4,107.6 425.1,93.9 466.9,82.3 508.6,67.5 550.3,54.8 592.0,40.0 592,200" fill="url(#a)"/><polyline points="8.0,190.0 49.7,183.7 91.4,178.4 133.1,169.9 174.9,164.6 216.6,155.1 258.3,145.6 300.0,135.1 341.7,121.3 383.4,107.6 425.1,93.9 466.9,82.3 508.6,67.5 550.3,54.8 592.0,40.0" fill="none" stroke="#0BB1D2" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><circle cx="592.0" cy="40.0" r="5" fill="#0BB1D2"/><circle cx="592.0" cy="40.0" r="9" fill="none" stroke="#0BB1D2" stroke-opacity=".28"/></svg><div class="labels"><span>START</span><span>GROWTH</span><span>CURRENT</span></div></div><div class="stats"><div class="mini"><span>Start</span><b>$1,000.00</b></div><div class="mini"><span>Net Profit</span><b>+$710.00</b></div><div class="mini"><span>Current</span><b>$1,710.00</b></div></div></section></div>
+<section class="card performance"><div class="perf"><div><h3>Balance Performance</h3><small>Account growth overview</small></div><div class="roi">+71.0%</div></div>
+<div class="chart">
+  <span class="ill" id="ill" style="display:none">ILLUSTRATIVE</span>
+  <svg viewBox="0 0 600 220" preserveAspectRatio="none">
+    <defs><linearGradient id="a" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#0BB1D2" stop-opacity=".30"/><stop offset="100%" stop-color="#0BB1D2" stop-opacity="0"/></linearGradient></defs>
+    <polygon id="area" fill="url(#a)"/>
+    <polyline id="line" fill="none" stroke="#0BB1D2" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+    <circle id="pulse" r="9" fill="none" stroke="#0BB1D2" stroke-opacity=".5"/>
+    <circle id="dot" r="5" fill="#0BB1D2"/>
+  </svg>
+  <div class="labels"><span>START</span><span>GROWTH</span><span>CURRENT</span></div>
+</div>
+<div class="stats"><div class="mini"><span>Start</span><b>$1,000.00</b></div><div class="mini"><span>Net Profit</span><b>+$710.00</b></div><div class="mini"><span>Current</span><b>$1,710.00</b></div></div></section></div>
 <section class="card info"><div class="head"><h3>Account Information</h3><span class="tag">Member Record</span></div><div class="info-grid"><div class="item"><span>Account Holder</span><b>Sarah Khani-Rezaei</b></div><div class="item"><span>Trading Server</span><b>Crypto / Member Account</b></div><div class="item"><span>Leverage</span><b>1:1</b></div><div class="item"><span>Total Trades</span><b>—</b></div><div class="item"><span>Starting Balance</span><b>$1,000.00</b></div><div class="item"><span>Current Balance</span><b>$1,710.00</b></div></div></section>
 <div class="note"><strong>Statement note:</strong> Account figures displayed here are the supplied member performance figures. Historical performance does not guarantee future results.</div></section>
-<footer class="footer"><b>ASL <span>University</span></b><small>Account Analysis • Financial Markets Education</small><small>24 SEP 2026</small></footer></main></div></body></html>
+<footer class="footer"><b>ASL <span>University</span></b><small>Account Analysis • Financial Markets Education</small><small>24 SEP 2026</small></footer></main></div>
+
+<script>
+(function(){
+  const START=1000, END=1710, N=40;
+  // Put the real balance after each trade/snapshot here, e.g. [1000,1012.5,998,...,1710]
+  const REAL=[];
+
+  let data;
+  if(REAL.length>1){ data=REAL; }
+  else{
+    document.getElementById('ill').style.display='block';
+    let s=13; const rnd=()=>(s=(s*16807)%2147483647)/2147483647;
+    data=[START];
+    for(let i=1;i<=N;i++) data.push(data[i-1]+(rnd()-0.42)*75);
+    const drift=END-data[N];
+    data=data.map((v,i)=>v+drift*i/N);
+  }
+
+  const n=data.length, min=Math.min(...data), max=Math.max(...data);
+  const X=i=>8+i*(584/(n-1));
+  const Y=v=>200-((v-min)/(max-min))*160;
+
+  const line=document.getElementById('line'), area=document.getElementById('area'),
+        dot=document.getElementById('dot'), pulse=document.getElementById('pulse');
+
+  const t0=performance.now(), DRAW=2600;
+  const ease=p=>1-Math.pow(1-p,3);
+
+  function frame(now){
+    const t=(now-t0)/1000;
+    const p=ease(Math.min((now-t0)/DRAW,1));
+    const reach=p*(n-1);
+    const pts=[];
+    for(let i=0;i<=Math.floor(reach);i++){
+      const wob=(i===0||i===n-1)?0:Math.sin(t*1.4+i*0.9)*2.2;
+      pts.push([X(i),Y(data[i])+wob]);
+    }
+    const f=reach-Math.floor(reach);
+    if(reach<n-1){
+      const i=Math.floor(reach);
+      pts.push([X(i)+(X(i+1)-X(i))*f, Y(data[i])+(Y(data[i+1])-Y(data[i]))*f]);
+    }
+    const str=pts.map(q=>q[0].toFixed(1)+','+q[1].toFixed(1)).join(' ');
+    line.setAttribute('points',str);
+    const last=pts[pts.length-1];
+    area.setAttribute('points','8,200 '+str+' '+last[0].toFixed(1)+',200');
+    dot.setAttribute('cx',last[0]); dot.setAttribute('cy',last[1]);
+    pulse.setAttribute('cx',last[0]); pulse.setAttribute('cy',last[1]);
+    requestAnimationFrame(frame);
+  }
+  requestAnimationFrame(frame);
+})();
+</script>
+</body></html>
