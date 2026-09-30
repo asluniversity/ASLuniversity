@@ -847,9 +847,98 @@
     </div>
   </section>
 
-  <section class="summary">
+  <section>
     <div class="section-head">
       <span class="num">08</span>
+      <h2>Multi-Timeframe Confluence</h2>
+      <span class="rule"></span>
+    </div>
+    <div class="section-note">Combines ASL's own 1H, 4H and Daily ratings into one master score · recalculated every minute</div>
+    <div class="mtf-box">
+      <div class="mtf-gauge">
+        <div class="mtf-arc-wrap"><svg id="mtf-arc" viewBox="0 0 200 110"></svg><div class="mtf-arc-label" id="mtf-arc-label">—</div></div>
+        <div class="mtf-verdict" id="mtf-verdict">Waiting for all three timeframes…</div>
+      </div>
+      <div class="mtf-rows" id="mtf-rows"></div>
+    </div>
+  </section>
+
+  <section>
+    <div class="section-head">
+      <span class="num">09</span>
+      <h2>Volatility &amp; Seasonality</h2>
+      <span class="rule"></span>
+    </div>
+    <div class="two-col">
+      <div class="cell">
+        <h4>VOLATILITY REGIME</h4>
+        <div class="vol-meter"><div class="vol-fill" id="vol-fill"></div><div class="vol-needle" id="vol-needle"></div></div>
+        <div class="vol-scale"><span>Quiet</span><span>Normal</span><span>Elevated</span><span>Extreme</span></div>
+        <div class="conf-score" id="vol-score" style="margin-top:14px;">Calculating…</div>
+        <div class="corr-note" id="vol-note">ATR(14) compared with its own distribution over the available daily history · a high percentile means gold is moving more than usual right now, which argues for wider stops and smaller size</div>
+      </div>
+      <div class="cell">
+        <h4>SEASONALITY · AVG MONTHLY RETURN</h4>
+        <div id="seasonality-chart"><div class="perf-empty">Building seasonality from daily history…</div></div>
+        <div class="corr-note" id="seasonality-note">Average of all historical daily-close-to-close returns compounded within each calendar month, across every year in the available history · past seasonal patterns are not a forecast</div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="section-head">
+      <span class="num">10</span>
+      <h2>COT Positioning · CFTC</h2>
+      <span class="rule"></span>
+    </div>
+    <div class="section-note" id="cot-note">Weekly Commitment of Traders report for COMEX gold futures · US CFTC public data · loading…</div>
+    <div class="two-col">
+      <div class="cell">
+        <h4>MANAGED MONEY NET POSITION</h4>
+        <div class="cot-meter"><div class="cot-fill" id="cot-fill"></div><div class="cot-zero"></div></div>
+        <div class="cot-scale"><span>Max short (2y)</span><span>Flat</span><span>Max long (2y)</span></div>
+        <div class="conf-score" id="cot-score" style="margin-top:14px;">Loading…</div>
+      </div>
+      <div class="cell">
+        <h4>POSITIONING HISTORY · NET CONTRACTS</h4>
+        <div id="cot-chart"><div class="perf-empty">Loading CFTC data…</div></div>
+        <div class="corr-note">Non-commercial (large speculator) long contracts minus short contracts, each Tuesday, as reported by the CFTC · a stretched net-long often precedes a pullback and vice versa, but positioning can stay extreme for a long time</div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="section-head">
+      <span class="num">11</span>
+      <h2>Position Size Calculator</h2>
+      <span class="rule"></span>
+    </div>
+    <div class="section-note">Uses the live trade plan's stop-loss distance above · figures update automatically as the plan changes</div>
+    <div class="calc-box">
+      <div class="calc-row">
+        <label for="calc-balance">Account balance (USD)</label>
+        <input type="number" id="calc-balance" value="10000" min="0" step="100">
+      </div>
+      <div class="calc-row">
+        <label for="calc-risk">Risk per trade (%)</label>
+        <input type="number" id="calc-risk" value="1" min="0.1" max="10" step="0.1">
+      </div>
+      <div class="calc-row">
+        <label for="calc-sl-pts">Stop distance (price points)</label>
+        <input type="number" id="calc-sl-pts" value="0" min="0" step="0.1">
+      </div>
+      <div class="calc-results" id="calc-results">
+        <div class="calc-stat"><div class="ps-label">RISK AMOUNT</div><div class="ps-val" id="calc-risk-usd">$—</div></div>
+        <div class="calc-stat"><div class="ps-label">POSITION SIZE (OZ)</div><div class="ps-val" id="calc-oz">—</div></div>
+        <div class="calc-stat"><div class="ps-label">≈ MICRO LOTS (0.01)</div><div class="ps-val" id="calc-lots">—</div></div>
+      </div>
+      <div class="corr-note">Educational calculator only, not a broker-specific quote: 1 standard gold lot = 100 oz, 1 micro lot = 0.01 lot = 1 oz. Confirm your broker's actual contract size before sizing a real position.</div>
+    </div>
+  </section>
+
+  <section class="summary">
+    <div class="section-head">
+      <span class="num">12</span>
       <h2>Daily Outlook</h2>
       <span class="rule"></span>
     </div>
