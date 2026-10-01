@@ -1699,7 +1699,9 @@
                 }
             }
             async function checkSession(){
-                try { const r=await fetch('/api/me',{credentials:'include'}); const d=await r.json(); if(d.authenticated) setLoggedIn(d.user); else setLoggedIn(null); }
+                try { const r=await fetch(`${window.ASL_API_BASE}/api/me`, {
+    credentials: 'include'
+}); const d=await r.json(); if(d.authenticated) setLoggedIn(d.user); else setLoggedIn(null); }
                 catch(e){ setLoggedIn(null); }
             }
             openBtn.addEventListener('click', function(){ openModal('login'); });
