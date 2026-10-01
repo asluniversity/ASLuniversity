@@ -1739,7 +1739,17 @@
                 if(password!==password2){ showMessage('Passwords do not match.','error'); return; }
                 const button=e.submitter; button.disabled=true;
                 try {
-                    const r=await fetch('/api/register',{method:'POST',headers:{'Content-Type':'application/json'},credentials:'include',body:JSON.stringify({name,password})});
+                    const r = await fetch(`${window.ASL_API_BASE}/api/register`, {
+    method: 'POST',
+    headers: {
+        'Content-Type': 'application/json'
+    },
+    credentials: 'include',
+    body: JSON.stringify({
+        name,
+        password
+    })
+});
                     const d=await r.json();
                     if(!r.ok) throw new Error(d.error || 'Registration failed.');
                     setLoggedIn(d.user); closeModal(); window.location.href='/member.html';
