@@ -1721,6 +1721,7 @@
                 e.preventDefault(); clearMessage();
                 const button=e.submitter; button.disabled=true;
                 try {
+                    console.log("ASL API:", window.ASL_API_BASE);
                     const r = await fetch(`${window.ASL_API_BASE}/api/login`, {
     method: 'POST',
     headers: {
