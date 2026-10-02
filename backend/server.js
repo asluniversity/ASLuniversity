@@ -1,4 +1,5 @@
 const path = require('path');
+const cors = require('cors');
 const express = require('express');
 const session = require('express-session');
 const PgStore = require('connect-pg-simple')(session);
@@ -41,19 +42,14 @@ app.set('trust proxy', 1);
 app.use(express.json({ limit: '20kb' }));
 app.use(express.urlencoded({ extended: false }));
 
-// CORS for the GitHub Pages frontend.
-app.use((req, res, next) => {
-  const origin = req.headers.origin;
-  if (origin === FRONTEND_ORIGIN) {
-    res.setHeader('Access-Control-Allow-Origin', origin);
-    res.setHeader('Vary', 'Origin');
-    res.setHeader('Access-Control-Allow-Credentials', 'true');
-    res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
-    res.setHeader('Access-Control-Allow-Methods', 'GET,POST,OPTIONS');
-  }
-  if (req.method === 'OPTIONS') return res.sendStatus(204);
-  next();
-});
+const cors = require('cors');
+
+app.use(cors({
+    origin: 'https://asluniversity.github.io',
+    credentials: true,
+    methods: ['GET', 'POST', 'OPTIONS'],
+    allowedHeaders: ['Content-Type']
+}));
 
 app.use(session({
   store: new PgStore({ pool, tableName: 'user_sessions', createTableIfMissing: true }),
