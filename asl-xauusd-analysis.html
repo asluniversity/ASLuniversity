@@ -626,9 +626,10 @@
   .szn-val{font-family:var(--mono); font-size:9px; color:var(--muted); margin-bottom:4px;}
 
   /* ===== COT meter ===== */
-  .cot-meter{height:14px; border-radius:7px; position:relative; margin-top:6px; background:var(--hairline); overflow:visible;}
-  .cot-fill{position:absolute; top:0; bottom:0; border-radius:7px;}
-  .cot-zero{position:absolute; top:-5px; bottom:-5px; left:50%; width:2px; background:var(--muted); transform:translateX(-50%);}
+  .cot-meter{height:14px; border-radius:7px; position:relative; margin-top:6px; overflow:visible;
+    background:linear-gradient(90deg, var(--sell) 0%, var(--hairline) 50%, var(--buy) 100%);}
+  .cot-fill{position:absolute; top:-6px; width:3px; height:26px; background:var(--white); box-shadow:0 0 6px rgba(0,0,0,0.4); transform:translateX(-1.5px); transition:left .4s ease;}
+  .cot-zero{position:absolute; top:-5px; bottom:-5px; left:50%; width:2px; background:rgba(255,255,255,0.4); transform:translateX(-50%);}
   .cot-scale{display:flex; justify-content:space-between; font-family:var(--mono); font-size:10px; color:var(--muted); margin-top:8px;}
   #cot-chart svg{width:100%; height:auto; display:block;}
 
@@ -1529,7 +1530,7 @@ function equityCurves(bt, live, now = new Date()) {
 }
 
 /* ---------------- state ---------------- */
-const S = { spot: null, hist: null, hourly: null, hourlyLoadedAt: 0, others: {}, corr: {}, lastSlow: 0, lastOk: null, feedOk: false, dir: 0, bt: null };
+const S = { spot: null, hist: null, hourly: null, hourlyLoadedAt: 0, others: {}, corr: {}, lastSlow: 0, lastOk: null, feedOk: false, dir: 0, bt: null, cot: null, cotLoadedAt: 0 };
 
 async function loadSpot() {
   const j = await getJSON(API_BASE + '/spot?compact=1');
@@ -1683,6 +1684,10 @@ function renderVerdict(A, conf, dir) {
   setText('tp-note', (closed ? 'Market is closed — levels use Friday\u2019s close and are re-checked at the open. ' : '') +
     'Swing plan from the daily chart (stop = ' + (plan.risk / plan.atr).toFixed(1) + '× ATR of ' + fmt(plan.atr, 1) +
     ', placed beyond the nearest pivot level when one is close). Educational example, not advice — risk no more than 1–2% of your account per trade.');
+  if (!calcSlUserEdited) {
+    const slInput = $('calc-sl-pts');
+    if (slInput) { slInput.value = plan.risk.toFixed(2); updateCalc(); }
+  }
 }
 
 function renderConfluence(conf) {
@@ -1894,13 +1899,219 @@ async function loadHourly() {
   if (bars.length) { S.hourly = bars; S.hourlyLoadedAt = Date.now(); }
 }
 
+/* ---------------- 08 - Multi-timeframe confluence gauge ---------------- */
+function tfScore(A) {
+  if (!A) return null;
+  if (A.overall === 'Strong Buy') return 2;
+  if (A.overall === 'Buy') return 1;
+  if (A.overall === 'Sell') return -1;
+  if (A.overall === 'Strong Sell') return -2;
+  return 0;
+}
+
+function renderMTFArc(angleDeg) {
+  const svg = $('mtf-arc');
+  if (!svg) return;
+  const cx = 100, cy = 100, r = 85;
+  const toXY = deg => { const rad = (deg - 90) * Math.PI / 180; return [cx + r * Math.cos(rad), cy + r * Math.sin(rad)]; };
+  const bands = [
+    { from: -90, to: -54, color: 'var(--sell)' },
+    { from: -54, to: -18, color: '#E68A3C' },
+    { from: -18, to: 18, color: 'var(--muted)' },
+    { from: 18, to: 54, color: '#5FCB8E' },
+    { from: 54, to: 90, color: 'var(--buy)' }
+  ];
+  let svgHtml = bands.map(b => {
+    const [x1, y1] = toXY(b.from), [x2, y2] = toXY(b.to);
+    return '<path d="M ' + x1.toFixed(1) + ' ' + y1.toFixed(1) + ' A ' + r + ' ' + r + ' 0 0 1 ' + x2.toFixed(1) + ' ' + y2.toFixed(1) +
+      '" stroke="' + b.color + '" stroke-width="14" fill="none"/>';
+  }).join('');
+  const needleDeg = Math.max(-90, Math.min(90, angleDeg));
+  const [nx, ny] = toXY(needleDeg);
+  svgHtml += '<line x1="' + cx + '" y1="' + cy + '" x2="' + nx.toFixed(1) + '" y2="' + ny.toFixed(1) +
+    '" stroke="var(--white)" stroke-width="3" stroke-linecap="round"/><circle cx="' + cx + '" cy="' + cy + '" r="5" fill="var(--white)"/>';
+  svg.innerHTML = svgHtml;
+}
+
+function renderMTF(h1, h4, d1) {
+  const rows = [['1H', h1, 1], ['4H', h4, 1.5], ['DAILY', d1, 2]];
+  const rowsEl = $('mtf-rows');
+  if (rowsEl) {
+    rowsEl.innerHTML = rows.map(([label, A]) => {
+      const s = tfScore(A);
+      const cls = s == null ? 'neutral' : s > 0 ? 'buy' : s < 0 ? 'sell' : 'neutral';
+      const widthPct = s == null ? 0 : Math.abs(s) / 2 * 50;
+      const leftPct = s == null || s >= 0 ? 50 : 50 - widthPct;
+      return '<div class="mtf-row"><span class="mtf-tf">' + label + '</span>' +
+        '<div class="mtf-bar"><i class="' + cls + '" style="left:' + leftPct + '%;width:' + widthPct + '%"></i></div>' +
+        '<span class="mtf-rate" style="color:' + (cls === 'neutral' ? 'var(--muted)' : 'var(--' + cls + ')') + '">' + (A ? A.overall : '—') + '</span></div>';
+    }).join('');
+  }
+  const weighted = rows.map(([, A, w]) => { const s = tfScore(A); return s == null ? null : { s, w }; }).filter(Boolean);
+  const available = weighted.length;
+  const lbl = $('mtf-arc-label'), verdict = $('mtf-verdict');
+  if (!available) {
+    renderMTFArc(0);
+    if (lbl) { lbl.textContent = '—'; lbl.style.color = 'var(--muted)'; }
+    if (verdict) verdict.textContent = 'Waiting for 1H, 4H and Daily data…';
+    return;
+  }
+  const wsum = weighted.reduce((a, x) => a + x.s * x.w, 0);
+  const wtot = weighted.reduce((a, x) => a + x.w, 0);
+  const combined = wsum / wtot;
+  renderMTFArc((combined / 2) * 90);
+  const label = combined >= 1.5 ? 'Strong Buy' : combined >= 0.4 ? 'Buy' : combined > -0.4 ? 'Neutral' : combined > -1.5 ? 'Sell' : 'Strong Sell';
+  const cls = combined > 0.3 ? 'buy' : combined < -0.3 ? 'sell' : 'neutral';
+  if (lbl) { lbl.textContent = label; lbl.style.color = cls === 'neutral' ? 'var(--muted)' : 'var(--' + cls + ')'; }
+  const agreeCount = weighted.filter(x => Math.sign(x.s) === Math.sign(combined) || x.s === 0).length;
+  if (verdict) verdict.textContent = available + ' of 3 timeframes available, ' + agreeCount + ' agreeing · weighted score ' +
+    combined.toFixed(2) + ' of ±2 (1H ×1, 4H ×1.5, Daily ×2)';
+}
+
+/* ---------------- 09 - Volatility regime (ATR percentile vs its own history) ---------------- */
+function renderVolatility(bars) {
+  const scoreEl = $('vol-score');
+  if (!bars || bars.length < 60) { if (scoreEl) scoreEl.textContent = 'Not enough daily history yet…'; return; }
+  const H = bars.map(b => b.h), L = bars.map(b => b.l), C = bars.map(b => b.c);
+  const n = 14;
+  const tr = [];
+  for (let i = 1; i < C.length; i++) tr.push(Math.max(H[i] - L[i], Math.abs(H[i] - C[i - 1]), Math.abs(L[i] - C[i - 1])));
+  const series = [];
+  let a = avg(tr.slice(0, n));
+  series.push(a);
+  for (let i = n; i < tr.length; i++) { a = (a * (n - 1) + tr[i]) / n; series.push(a); }
+  const current = last(series);
+  const sorted = series.slice().sort((x, y) => x - y);
+  let rank = sorted.findIndex(v => v >= current);
+  if (rank < 0) rank = sorted.length - 1;
+  const pct = sorted.length > 1 ? Math.round(rank / (sorted.length - 1) * 100) : 50;
+  const regime = pct > 85 ? 'Extreme' : pct > 60 ? 'Elevated' : pct > 30 ? 'Normal' : 'Quiet';
+  const meter = document.querySelector('.vol-meter');
+  if (meter) meter.style.setProperty('--vol-pct', pct + '%');
+  if (scoreEl) scoreEl.textContent = regime + ' volatility · ATR(14) ' + fmt(current, 2) +
+    ' · ' + pct + 'th percentile of ' + sorted.length + ' days of its own history';
+}
+
+/* ---------------- 09 - Seasonality (average monthly return across available history) ---------------- */
+function renderSeasonality(bars) {
+  const box = $('seasonality-chart');
+  if (!box) return;
+  if (!bars || bars.length < 400) { box.innerHTML = '<div class="perf-empty">Not enough daily history yet for seasonality</div>'; return; }
+  const monthReturns = Array.from({ length: 12 }, () => []);
+  const dateOf = b => new Date(b.date.includes('T') ? b.date : b.date + 'T00:00:00Z');
+  let i = 1;
+  while (i < bars.length) {
+    const d0 = dateOf(bars[i]);
+    const y = d0.getUTCFullYear(), m = d0.getUTCMonth();
+    let j = i;
+    while (j < bars.length) {
+      const dj = dateOf(bars[j]);
+      if (dj.getUTCFullYear() !== y || dj.getUTCMonth() !== m) break;
+      j++;
+    }
+    monthReturns[m].push(bars[j - 1].c / bars[i - 1].c - 1);
+    i = j;
+  }
+  const avgReturns = monthReturns.map(arr => arr.length ? avg(arr) * 100 : null);
+  const names = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+  const maxAbs = Math.max(0.5, ...avgReturns.map(v => v == null ? 0 : Math.abs(v)));
+  box.innerHTML = names.map((nm, idx) => {
+    const v = avgReturns[idx];
+    if (v == null) return '<div class="szn-bar-wrap"><div class="szn-val">—</div><div class="szn-bar" style="height:2px;background:var(--hairline)"></div><div class="szn-lbl">' + nm + '</div></div>';
+    const h = Math.max(2, Math.abs(v) / maxAbs * 70);
+    const cls = v >= 0 ? 'buy' : 'sell';
+    return '<div class="szn-bar-wrap"><div class="szn-val">' + (v >= 0 ? '+' : '') + v.toFixed(2) + '%</div>' +
+      '<div class="szn-bar ' + cls + '" style="height:' + h + 'px;background:var(--' + cls + ')"></div>' +
+      '<div class="szn-lbl">' + nm + '</div></div>';
+  }).join('');
+}
+
+/* ---------------- 10 - CFTC Commitment of Traders (public, free, no key) ---------------- */
+const COT_REFRESH_SECONDS = 6 * 3600; // weekly data, no need to poll often
+const COT_URL = 'https://publicreporting.cftc.gov/resource/6dca-aqww.json' +
+  '?$where=' + encodeURIComponent("market_and_exchange_names='GOLD - COMMODITY EXCHANGE INC.'") +
+  '&$order=' + encodeURIComponent('report_date_as_yyyy_mm_dd DESC') +
+  '&$limit=160' +
+  '&$select=' + encodeURIComponent('report_date_as_yyyy_mm_dd,noncomm_positions_long_all,noncomm_positions_short_all,open_interest_all');
+
+async function loadCOT() {
+  const rows = await getJSON(COT_URL, 15000);
+  if (!Array.isArray(rows) || !rows.length) throw new Error('no rows returned');
+  const parsed = rows.map(r => ({
+    date: String(r.report_date_as_yyyy_mm_dd).slice(0, 10),
+    net: (+r.noncomm_positions_long_all || 0) - (+r.noncomm_positions_short_all || 0),
+    oi: +r.open_interest_all || 0
+  })).sort((a, b) => a.date < b.date ? -1 : a.date > b.date ? 1 : 0);
+  S.cot = parsed;
+  S.cotLoadedAt = Date.now();
+}
+
+function renderCOT() {
+  const rows = S.cot;
+  const note = $('cot-note');
+  if (!rows || !rows.length) return;
+  const latestRow = rows[rows.length - 1];
+  const nets = rows.map(r => r.net);
+  const lo = Math.min(...nets), hi = Math.max(...nets);
+  const pct = hi > lo ? (latestRow.net - lo) / (hi - lo) * 100 : 50;
+  const fill = $('cot-fill');
+  if (fill) fill.style.left = pct + '%';
+  setText('cot-score', 'Net non-commercial: ' + (latestRow.net >= 0 ? '+' : '') + latestRow.net.toLocaleString('en-US') +
+    ' contracts (week of ' + latestRow.date + ') · ' + Math.round(pct) + 'th percentile of the last ' + rows.length + ' weekly reports');
+  if (note) note.textContent = 'Weekly Commitment of Traders report for COMEX gold futures (Legacy report, "non-commercial" = large speculators) · US CFTC public data · latest report ' + latestRow.date;
+  renderCOTChart(rows);
+}
+
+function renderCOTChart(rows) {
+  const box = $('cot-chart');
+  if (!box) return;
+  const W = 720, H = 220, L = 60, R = 20, T = 14, B = 28;
+  const nets = rows.map(r => r.net);
+  let lo = Math.min(...nets), hi = Math.max(...nets);
+  const pad = (hi - lo) * 0.1 || 1; lo -= pad; hi += pad;
+  const x = i => L + (W - L - R) * (i / (rows.length - 1));
+  const y = v => T + (H - T - B) * (1 - (v - lo) / (hi - lo));
+  const line = rows.map((r, i) => (i ? 'L' : 'M') + x(i).toFixed(1) + ' ' + y(r.net).toFixed(1)).join(' ');
+  const zeroY = y(0);
+  let svg = '<svg viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="COT net non-commercial position, weekly">';
+  svg += '<line x1="' + L + '" x2="' + (W - R) + '" y1="' + zeroY.toFixed(1) + '" y2="' + zeroY.toFixed(1) + '" stroke="var(--hairline)" stroke-dasharray="3 4"/>';
+  svg += '<text x="' + (L - 8) + '" y="' + (zeroY + 4).toFixed(1) + '" text-anchor="end" class="pc-axis">0</text>';
+  svg += '<path d="' + line + ' L' + x(rows.length - 1).toFixed(1) + ' ' + zeroY.toFixed(1) + ' L' + x(0).toFixed(1) + ' ' + zeroY.toFixed(1) + ' Z" fill="var(--blue)" fill-opacity="0.12"/>';
+  svg += '<path d="' + line + '" fill="none" stroke="var(--blue)" stroke-width="2"/>';
+  const lx = x(rows.length - 1), ly = y(last(nets));
+  svg += '<circle cx="' + lx.toFixed(1) + '" cy="' + ly.toFixed(1) + '" r="4" fill="var(--blue)" stroke="var(--panel)" stroke-width="2"/>';
+  svg += '<text x="' + L + '" y="' + (H - 6) + '" class="pc-axis">' + rows[0].date + '</text>';
+  svg += '<text x="' + (W - R) + '" y="' + (H - 6) + '" text-anchor="end" class="pc-axis">' + rows[rows.length - 1].date + '</text>';
+  svg += '</svg>';
+  box.innerHTML = svg;
+}
+
+/* ---------------- 11 - Position size calculator ---------------- */
+let calcSlUserEdited = false;
+
+function updateCalc() {
+  const balanceEl = $('calc-balance'), riskEl = $('calc-risk'), slEl = $('calc-sl-pts');
+  if (!balanceEl || !riskEl || !slEl) return;
+  const balance = parseFloat(balanceEl.value) || 0;
+  const riskPct = parseFloat(riskEl.value) || 0;
+  const slPts = parseFloat(slEl.value) || 0;
+  const riskUsd = balance * (riskPct / 100);
+  setText('calc-risk-usd', '$' + fmt(riskUsd, 2));
+  if (slPts > 0) {
+    const oz = riskUsd / slPts;
+    setText('calc-oz', fmt(oz, 2));
+    setText('calc-lots', fmt(oz, 2));
+  } else {
+    setText('calc-oz', '—');
+    setText('calc-lots', '—');
+  }
+}
+
 function renderTfSignals(dailyA) {
   const mk = bars => { try { return bars && bars.length > 35 ? analyse(bars, null) : null; } catch (e) { return null; } };
-  const sets = {
-    'tf-fb-1h': mk(S.hourly),
-    'tf-fb-4h': mk(resampleBars(S.hourly || [], 4)),
-    'tf-fb-1d': dailyA || null
-  };
+  const h1 = mk(S.hourly);
+  const h4 = mk(resampleBars(S.hourly || [], 4));
+  const sets = { 'tf-fb-1h': h1, 'tf-fb-4h': h4, 'tf-fb-1d': dailyA || null };
   for (const id in sets) {
     const el = $(id);
     if (!el) continue;
@@ -1910,6 +2121,7 @@ function renderTfSignals(dailyA) {
     el.innerHTML = '<span class="sig ' + cls + '">' + A.overall + '</span>' +
       '<span class="fb-meta">RSI ' + fmt(A.rsi, 1) + ' · ' + A.maBuy + '/' + A.maTotal + ' MAs bullish</span>';
   }
+  renderMTF(h1, h4, dailyA);
 }
 
 function renderAll() {
@@ -1926,6 +2138,8 @@ function renderAll() {
     renderConfluence(conf);
     renderLevels(dailyA);
     renderPerformance(S.bt, S.spot ? S.spot.price : null, 'gold');
+    renderVolatility(S.hist);
+    renderSeasonality(S.hist);
   }
   renderTfSignals(dailyA);
   renderSessions();
@@ -1947,9 +2161,22 @@ async function refresh() {
   try {
     if (!S.hourly || Date.now() - S.hourlyLoadedAt > HOURLY_REFRESH_SECONDS * 1000) await loadHourly();
   } catch (e) { console.warn("ASL dashboard: hourly refresh failed", e); }
+  try {
+    if (!S.cot || Date.now() - S.cotLoadedAt > COT_REFRESH_SECONDS * 1000) { await loadCOT(); renderCOT(); }
+  } catch (e) {
+    console.warn("ASL dashboard: COT refresh failed", e);
+    const note = $('cot-note');
+    if (note && !S.cot) note.textContent = 'Could not load CFTC COT data (' + e.message + '). The public CFTC API may be temporarily unavailable — this panel will retry automatically.';
+  }
   renderAll();
   busy = false;
 }
+
+/* wire up the position-size calculator once, at startup */
+['calc-balance', 'calc-risk'].forEach(id => { const el = $(id); if (el) el.addEventListener('input', updateCalc); });
+const calcSlEl = $('calc-sl-pts');
+if (calcSlEl) calcSlEl.addEventListener('input', () => { calcSlUserEdited = true; updateCalc(); });
+updateCalc();
 
 function tick() {
   secondsLeft -= 1;
