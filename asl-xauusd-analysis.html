@@ -673,8 +673,7 @@
       </button>
     </div>
     <div class="logo-wrap">
-      <img src="asl-logo-transparent.png
-" alt="ASL University logo" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+      <img src="photo_2026-09-24_17-47-46.jpg" alt="ASL University logo" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
       <span class="logo-fallback">ASL</span>
     </div>
     <div class="brand-title"><span class="mark"></span>ASL UNIVERSITY</div>
@@ -997,17 +996,15 @@
       <h2>Daily Outlook</h2>
       <span class="rule"></span>
     </div>
-    <div class="section-note">Based on Friday, 18 September 2026 close · gold market closed for the weekend · written by the desk, gold only</div>
-    <div class="outlook-panel">
-    <p>Gold heads into the weekend near $4,380, having recovered from a one-and-a-half-month low below $4,250 earlier in the week and set to close out a three-week losing streak. The bounce came as Treasury yields pulled back from multi-year highs — the 10-year slipped to roughly 4.9% after briefly topping 5% — while falling oil prices eased inflation worries and helped offset the hawkish message of the Fed's first rate hike in three years.</p>
-    <p>The technical picture, however, is a recovery rather than a reversal. Price is still trading below the 200-day moving average, daily RSI sits just above neutral, and MACD remains in negative territory, which suggests upside attempts are fragile. The $4,450 area is the ceiling to watch, having capped rallies on September 8, 9 and 10, while the recent low below $4,250 marks the floor buyers need to defend.</p>
-    <p>Next week the main drivers are Treasury yields, the dollar's reaction to the Fed's tightening cycle, and oil-driven inflation expectations, with ADP employment on Tuesday, preliminary PMIs on Wednesday, jobless claims on Thursday and University of Michigan inflation expectations on Friday. Bias: neutral to cautiously constructive. A daily close above $4,450 would be the first real sign the correction is over, while a break back below $4,250 would reopen the downside and put the recent low back in play.</p>
+    <div class="section-note" id="outlook-note">Generated automatically from live indicators · recalculated every minute · gold only</div>
+    <div class="outlook-panel" id="outlook-panel">
+    <p>Building the live outlook from today's indicators…</p>
     </div>
   </section>
 
   <footer>
     <div class="disclaimer">
-      Market data on this page (spot price, pivot levels, indicators, correlations, session status) is calculated automatically from third-party feeds and is indicative only — it may be delayed, incomplete or differ from your broker's prices. The trade plan (entry, stop-loss, take-profit), the confluence score and the 30-day strategy chart are generated automatically by fixed rules for educational illustration; the strategy chart is a hypothetical simulation, not actual trading results. The 1H/4H/Daily Signal Snapshot shows two independent ratings: TradingView's own technical-analysis engine, and ASL's own RSI/MACD/moving-average rating computed from xaus.com's candles — the two can disagree, since they use different data and methods. The written Daily Outlook is the desk's own commentary on gold and is updated by the research team. This page is for educational purposes only and does not constitute investment advice or a recommendation to buy or sell any financial instrument; trading gold and other leveraged instruments carries a high level of risk, and you should consult an independent financial advisor before making trading decisions.
+      Market data on this page (spot price, pivot levels, indicators, correlations, session status) is calculated automatically from third-party feeds and is indicative only — it may be delayed, incomplete or differ from your broker's prices. The trade plan (entry, stop-loss, take-profit), the confluence score and the 30-day strategy chart are generated automatically by fixed rules for educational illustration; the strategy chart is a hypothetical simulation, not actual trading results. The 1H/4H/Daily Signal Snapshot shows two independent ratings: TradingView's own technical-analysis engine, and ASL's own RSI/MACD/moving-average rating computed from xaus.com's candles — the two can disagree, since they use different data and methods. The Daily Outlook is generated automatically from the same live indicators shown above, not written by a person, and regenerates every minute. This page is for educational purposes only and does not constitute investment advice or a recommendation to buy or sell any financial instrument; trading gold and other leveraged instruments carries a high level of risk, and you should consult an independent financial advisor before making trading decisions.
     </div>
     <div class="foot-brand"><b>ASL UNIVERSITY</b> — Market Research Desk · Market data refreshes every 60 seconds · Spot &amp; candles via XAUS.com · Chart, news &amp; calendar via TradingView</div>
   </footer>
@@ -2125,6 +2122,57 @@ function renderTfSignals(dailyA) {
   renderMTF(h1, h4, dailyA);
 }
 
+/* ---------------- 12 - Daily Outlook, written automatically from live indicators ---------------- */
+function renderDailyOutlook(A, conf) {
+  const panel = $('outlook-panel');
+  if (!panel) return;
+  if (!A || !conf) { panel.innerHTML = '<p>Building the live outlook from today\u2019s indicators…</p>'; return; }
+
+  const now = new Date();
+  const dateStr = now.toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' });
+  const note = $('outlook-note');
+  if (note) note.textContent = 'Generated automatically from live indicators · last written ' + utcClock(now) + ', ' + dateStr + ' · gold only';
+
+  const open = marketOpen(now);
+  const s50 = A.smaOf(50), s200 = A.smaOf(200);
+  const trendWord = A.maBuy >= 9 ? 'firmly bullish' : A.maBuy <= 3 ? 'firmly bearish'
+    : A.maBuy > A.maSell ? 'tilted bullish' : A.maBuy < A.maSell ? 'tilted bearish' : 'balanced';
+
+  const dxyChg = dxyChangeAt(S.others.dxy, now.toISOString().slice(0, 10));
+  const dxyPhrase = (dxyChg != null && isFinite(dxyChg))
+    ? (' The dollar index is ' + (dxyChg >= 0 ? 'up' : 'down') + ' ' + Math.abs(dxyChg * 100).toFixed(2) + '% over the last five sessions, ' +
+      (dxyChg < -0.003 ? 'a tailwind for gold' : dxyChg > 0.003 ? 'a headwind for gold' : 'broadly flat for now') + '.')
+    : '';
+
+  const p1 = (dateStr + ': gold is trading at ' + fmt(A.price) + (open ? ', with the market open' : ', with the market closed') +
+    '. Price sits ' + (s200 != null ? (A.price > s200 ? 'above' : 'below') + ' its 200-day average (' + fmt(s200) + ')' : 'without enough history yet for a 200-day read') +
+    (s50 != null ? ' and ' + (A.price > s50 ? 'above' : 'below') + ' its 50-day (' + fmt(s50) + ')' : '') +
+    ', putting the medium-term structure in a ' + trendWord + ' posture (' + A.maBuy + ' of ' + A.maTotal + ' moving averages bullish).' + dxyPhrase);
+
+  const momBits = [];
+  if (A.macd) momBits.push('MACD is ' + (A.macd.macd > A.macd.signal ? 'above' : 'below') + ' its signal line (histogram ' + sgn(A.macd.hist) + ')');
+  if (A.rsi != null) momBits.push('RSI sits at ' + fmt(A.rsi, 1) +
+    (A.rsi > 70 ? ', overbought' : A.rsi < 30 ? ', oversold' : A.rsi >= 55 ? ', constructive' : A.rsi <= 45 ? ', soft' : ', neutral'));
+  if (A.adx) momBits.push('ADX at ' + fmt(A.adx.adx, 1) + ' points to a ' + (A.adx.adx > 25 ? 'strong' : A.adx.adx > 20 ? 'developing' : 'weak') + ' trend' +
+    (A.adx.adx > 20 ? (A.adx.plusDI > A.adx.minusDI ? ', with buyers in control' : ', with sellers in control') : ''));
+  let p2 = momBits.length ? ('On momentum, ' + momBits.join('; ') + '.') : '';
+  if (A.pivots) {
+    const lv = [A.pivots.S2, A.pivots.S1, A.pivots.P, A.pivots.R1, A.pivots.R2].sort((x, y) => x - y);
+    const sup = lv.filter(x => x < A.price).pop(), res = lv.find(x => x > A.price);
+    p2 += (p2 ? ' ' : '') + 'The ' + fmt(res != null ? res : A.pivots.R2) + ' area is the ceiling to watch on the daily pivot map, while ' +
+      fmt(sup != null ? sup : A.pivots.S2) + ' marks the floor buyers need to defend.';
+  }
+
+  const biasWord = conf.net >= 3 ? 'constructive' : conf.net <= -3 ? 'cautious' : 'neutral to mixed';
+  let p3 = 'Confluence across the factors tracked on this page is ' + biasWord + ' (' + conf.bull + ' bullish vs ' + conf.bear +
+    ' bearish of ' + conf.n + ').';
+  if (A.pivots) p3 += ' A daily close above ' + fmt(A.pivots.R1) + ' would be the first sign of renewed upside pressure, while a break back below ' +
+    fmt(A.pivots.S1) + ' would reopen the downside.';
+  p3 += ' This outlook regenerates automatically every minute from the live indicators above and is not personal investment advice.';
+
+  panel.innerHTML = [p1, p2, p3].filter(Boolean).map(t => '<p>' + t.trim() + '</p>').join('');
+}
+
 function renderAll() {
   renderHeader();
   renderCorrelations();
@@ -2141,6 +2189,7 @@ function renderAll() {
     renderPerformance(S.bt, S.spot ? S.spot.price : null, 'gold');
     renderVolatility(S.hist);
     renderSeasonality(S.hist);
+    renderDailyOutlook(dailyA, conf);
   }
   renderTfSignals(dailyA);
   renderSessions();
