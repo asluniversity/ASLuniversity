@@ -2,21 +2,18 @@
   "name": "asl-university-multiuser",
   "version": "2.0.0",
   "private": true,
-  "description": "ASL University Multi-User backend and member portal for GitHub Pages + Render",
-  "main": "server.js",
   "scripts": {
-    "start": "node server.js",
-    "dev": "node server.js"
+    "start": "node server.js"
   },
   "engines": {
     "node": ">=20"
   },
   "dependencies": {
-    "bcryptjs": "...",
-    "connect-pg-simple": "...",
+    "bcryptjs": "^3.0.2",
+    "connect-pg-simple": "^10.0.0",
     "cors": "^2.8.5",
-    "express": "...",
-    "express-session": "...",
-    "pg": "..."
-}
+    "express": "^5.1.0",
+    "express-session": "^1.18.2",
+    "pg": "^8.16.3"
+  }
 }
