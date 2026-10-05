@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ASL University - Growth Program</title>
+<meta name="color-scheme" content="dark light">
+<script>
+  try { document.documentElement.setAttribute('data-theme', localStorage.getItem('asl-theme') === 'light' ? 'light' : 'dark'); }
+  catch (e) { document.documentElement.setAttribute('data-theme', 'dark'); }
+</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+:root {
+  color-scheme: dark;
+  --page-bg: linear-gradient(135deg, #0A0A0B 0%, #0B1416 100%);
+  --text-color: #E4EBEE; --heading-color: #F5F7F8; --muted-color: #8FA0A8;
+  --surface-bg: #111214; --panel-bg: linear-gradient(165deg, #14181A 0%, #111214 100%);
+  --hairline: rgba(11,177,210,0.26); --row-line: rgba(255,255,255,0.07);
+  --accent: #0BB1D2; --buy: #2FBE7A; --sell: #E15B4D; --warn: #E8C547;
+  --nav-bg: linear-gradient(135deg, #0d1f26 0%, #0A0A0B 100%); --nav-text: #FFFFFF; --nav-hover: #ffd700;
+  --footer-bg: #08222c; --footer-text: rgba(255,255,255,0.8); --footer-muted: rgba(255,255,255,0.6); --footer-line: rgba(255,255,255,0.2);
+  --toggle-bg: rgba(255,255,255,0.08); --toggle-border: rgba(255,255,255,0.28); --toggle-text: rgba(255,255,255,0.72);
+  --shadow: 0 0 40px rgba(11,177,210,0.07);
+  --sans: 'IBM Plex Sans', sans-serif; --display: 'Space Grotesk', sans-serif; --mono: 'JetBrains Mono', monospace;
+}
+:root[data-theme="light"] {
+  color-scheme: light;
+  --page-bg: linear-gradient(135deg, #e8f4f8 0%, #f0f9fc 100%);
+  --text-color: #1a4d5c; --heading-color: #0a5f7a; --muted-color: #4a7c8a;
+  --surface-bg: #ffffff; --panel-bg: linear-gradient(135deg, rgba(23,162,184,0.06) 0%, #ffffff 60%);
+  --hairline: rgba(23,162,184,0.3); --row-line: rgba(10,95,122,0.1);
+  --accent: #0a7f97; --buy: #188a54; --sell: #c23c2e; --warn: #A86F00;
+  --nav-bg: linear-gradient(135deg, #FFFFFF 0%, #EAF4F7 100%); --nav-text: #0a3d4d; --nav-hover: #A86F00;
+  --footer-bg: #dcebf0; --footer-text: #24525f; --footer-muted: #4a7c8a; --footer-line: rgba(10,95,122,0.2);
+  --toggle-bg: rgba(10,95,122,0.06); --toggle-border: rgba(10,95,122,0.2); --toggle-text: #4a7c8a;
+  --shadow: 0 6px 24px rgba(10,95,122,0.08);
+}
+html { scroll-behavior: smooth; }
+body { font-family: var(--sans); background: var(--page-bg); background-attachment: fixed; color: var(--text-color); line-height: 1.6; font-size: 15px; min-height: 100vh; position: relative; transition: background-color .25s, color .25s; }
+:root[data-theme="dark"] body::before { content: ""; position: fixed; inset: 0; pointer-events: none; z-index: 0;
+  background: radial-gradient(ellipse 1100px 600px at 10% -10%, rgba(11,177,210,0.14), transparent 60%), radial-gradient(ellipse 800px 500px at 105% 12%, rgba(11,177,210,0.09), transparent 60%), radial-gradient(ellipse 900px 550px at 100% 100%, rgba(11,177,210,0.10), transparent 60%); }
+:root[data-theme="dark"] body::after { content: ""; position: fixed; inset: 0; pointer-events: none; z-index: 0;
+  background-image: linear-gradient(rgba(11,177,210,0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(11,177,210,0.05) 1px, transparent 1px); background-size: 56px 56px; }
+nav, main, footer { position: relative; z-index: 1; }
+[hidden] { display: none !important; }
+.wrap { max-width: 1100px; margin: 0 auto; padding: 0 22px; }
+.pos { color: var(--buy); } .neg { color: var(--sell); } .muted { color: var(--muted-color); }
+.fine { font-size: 12.5px; color: var(--muted-color); line-height: 1.65; margin-top: 10px; }
+
+nav { background: var(--nav-bg); border-bottom: 1px solid var(--hairline); box-shadow: 0 4px 25px rgba(11,177,210,0.12); position: sticky; top: 0; z-index: 50; }
+.nav-container { max-width: 1100px; margin: 0 auto; padding: 12px 22px; display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+.brand { display: flex; flex-direction: column; line-height: 1.1; }
+.logo { font-family: var(--display); font-weight: 700; font-size: 21px; letter-spacing: 2px; color: var(--nav-text); }
+:root[data-theme="dark"] .logo { text-shadow: 0 0 20px rgba(11,177,210,0.5); }
+.logo-sub { font-family: var(--mono); font-size: 9.5px; letter-spacing: 0.28em; color: var(--accent); margin-top: 3px; }
+.nav-right { display: flex; align-items: center; gap: 12px; margin-left: auto; }
+.nav-link { font-family: var(--mono); font-size: 11.5px; letter-spacing: 0.05em; text-transform: uppercase; color: var(--nav-text); opacity: .75; text-decoration: none; }
+.nav-link:hover { opacity: 1; color: var(--nav-hover); }
+.theme-toggle { display: inline-flex; padding: 3px; gap: 2px; border: 1px solid var(--toggle-border); border-radius: 999px; background: var(--toggle-bg); }
+.theme-toggle button { display: inline-flex; align-items: center; gap: 6px; font-family: var(--mono); font-size: 11px; letter-spacing: 0.06em; color: var(--toggle-text); background: transparent; border: 0; border-radius: 999px; padding: 7px 12px; cursor: pointer; }
+.theme-toggle button[aria-pressed="true"] { color: var(--accent); background: rgba(11,177,210,0.16); box-shadow: inset 0 0 0 1px var(--accent); }
+.theme-toggle svg { width: 14px; height: 14px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+
+.btn { font-family: var(--display); font-weight: 600; font-size: 14px; padding: 12px 22px; border-radius: 6px; border: 0; cursor: pointer; transition: all .2s; }
+.btn-primary { background: linear-gradient(135deg, #0BB1D2, #1eb3cc); color: #06222a; box-shadow: 0 4px 18px rgba(11,177,210,0.3); }
+.btn-primary:hover { transform: translateY(-1px); box-shadow: 0 6px 24px rgba(11,177,210,0.45); }
+.btn-primary:disabled { opacity: .45; cursor: not-allowed; transform: none; box-shadow: none; }
+.btn-secondary { background: transparent; color: var(--accent); border: 1.5px solid var(--accent); }
+.btn-secondary:hover { background: rgba(11,177,210,0.08); }
+.btn-mini { font-family: var(--mono); font-size: 11px; color: var(--accent); background: transparent; border: 1px solid var(--hairline); border-radius: 5px; padding: 7px 12px; cursor: pointer; }
+.btn-mini:hover { border-color: var(--accent); background: rgba(11,177,210,0.08); }
+.lbl { font-family: var(--mono); font-size: 10.5px; letter-spacing: 0.1em; color: var(--muted-color); text-transform: uppercase; }
+textarea.inp { width: 100%; font-family: var(--sans); font-size: 14px; color: var(--text-color); background: var(--surface-bg); border: 1px solid var(--hairline); border-radius: 6px; padding: 12px; resize: vertical; }
+textarea.inp:focus { outline: 2px solid var(--accent); outline-offset: 1px; }
+
+/* landing + wizard */
+.hero { text-align: center; max-width: 820px; margin: 0 auto; padding: 64px 0 36px; }
+.hero h1 { font-family: var(--display); font-size: clamp(34px, 5.5vw, 56px); line-height: 1.08; color: var(--heading-color); letter-spacing: -0.02em; }
+.hero h1 em { font-style: normal; color: var(--accent); }
+.hero p { font-size: 17px; color: var(--muted-color); margin: 18px auto 26px; max-width: 640px; }
+.hero-btns { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+.feat { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin: 30px 0 10px; }
+.feat div { background: var(--panel-bg); border: 1px solid var(--hairline); border-radius: 4px; padding: 20px; box-shadow: var(--shadow); }
+
+.feat b { display: block; font-family: var(--display); color: var(--heading-color); font-size: 16px; margin-bottom: 6px; }
+.feat span { font-size: 13.5px; color: var(--muted-color); }
+.card { max-width: 760px; margin: 38px auto 40px; background: var(--panel-bg); border: 1px solid var(--hairline); border-radius: 6px; padding: 28px; box-shadow: var(--shadow); }
+.progress { height: 6px; border-radius: 3px; background: var(--row-line); overflow: hidden; margin: 10px 0 24px; }
+.progress i { display: block; height: 100%; background: var(--accent); border-radius: 3px; transition: width .25s; }
+.card h2 { font-family: var(--display); font-size: 23px; line-height: 1.3; color: var(--heading-color); margin-bottom: 18px; }
+.opts { display: grid; gap: 10px; }
+.opt { text-align: left; font: inherit; color: inherit; cursor: pointer; background: transparent; border: 1.5px solid var(--hairline); border-radius: 8px; padding: 14px 16px; transition: all .15s; }
+.opt:hover { border-color: var(--accent); }
+.opt[aria-pressed="true"] { border-color: var(--accent); background: rgba(11,177,210,0.10); box-shadow: inset 0 0 0 1px var(--accent); }
+.nav-row { display: flex; justify-content: space-between; align-items: center; gap: 10px; margin-top: 22px; }
+
+/* results */
+.rhead { text-align: center; padding: 46px 0 18px; }
+.rhead .tag { font-family: var(--mono); font-size: 11.5px; letter-spacing: 0.18em; color: var(--accent); }
+.rhead h1 { font-family: var(--display); font-size: clamp(30px, 5vw, 48px); color: var(--heading-color); margin: 8px 0 10px; line-height: 1.1; }
+.rhead p { max-width: 700px; margin: 0 auto; color: var(--muted-color); }
+.panel { background: var(--panel-bg); border: 1px solid var(--hairline); border-radius: 4px; padding: 22px; box-shadow: var(--shadow); margin-bottom: 18px; min-width: 0; }
+.panel h3 { font-family: var(--mono); font-size: 11.5px; letter-spacing: 0.1em; font-weight: 500; color: var(--accent); margin-bottom: 14px; text-transform: uppercase; }
+.panel h3.bad { color: var(--sell); } .panel h3.good { color: var(--buy); }
+.g2 { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; } .g3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
+.g2 > *, .g3 > * { min-width: 0; }
+.bar { display: grid; grid-template-columns: 138px 1fr 38px; gap: 10px; align-items: center; font-size: 13px; margin: 10px 0; color: var(--text-color); }
+.bar-t { height: 8px; border-radius: 4px; background: var(--row-line); overflow: hidden; }
+.bar-t i { display: block; height: 100%; border-radius: 4px; background: var(--accent); }
+.bar-t i.top { background: var(--buy); } .bar-t i.low { background: var(--muted-color); }
+.bar b { font-family: var(--mono); text-align: right; color: var(--heading-color); }
+.bar.best { font-weight: 600; }
+.ring-wrap { display: flex; align-items: center; gap: 20px; flex-wrap: wrap; }
+.ring .rt { fill: none; stroke: var(--row-line); stroke-width: 10; } .ring .rv { fill: none; stroke: var(--accent); stroke-width: 10; stroke-linecap: round; }
+.ring .rn { fill: var(--heading-color); font-family: var(--display); font-weight: 700; font-size: 34px; } .ring .rl { fill: var(--muted-color); font-family: var(--mono); font-size: 10.5px; }
+.pill { display: inline-block; font-family: var(--mono); font-size: 11px; padding: 3px 10px; border: 1px solid var(--hairline); border-radius: 999px; color: var(--muted-color); margin: 3px 5px 3px 0; }
+.pill.bad { color: var(--sell); border-color: var(--sell); } .pill.warn { color: var(--warn); border-color: var(--warn); } .pill.good { color: var(--buy); border-color: var(--buy); }
+.ul { list-style: none; } .ul li { position: relative; padding: 7px 0 7px 20px; border-bottom: 1px solid var(--row-line); font-size: 14px; } .ul li:last-child { border-bottom: 0; }
+.ul li::before { content: "▸"; position: absolute; left: 0; color: var(--accent); }
+
+.ul.warn li::before { content: "!"; color: var(--warn); font-weight: 700; }
+.kv { width: 100%; border-collapse: collapse; font-size: 14px; } .kv td { padding: 9px 10px; border-bottom: 1px solid var(--row-line); vertical-align: top; } .kv td:first-child { color: var(--muted-color); width: 46%; } .kv td:last-child { text-align: right; font-family: var(--mono); color: var(--heading-color); }
+.kv tr:last-child td { border-bottom: 0; }
+.fix { border: 1px solid var(--hairline); border-left: 3px solid var(--sell); border-radius: 4px; padding: 13px 15px; margin-bottom: 12px; background: rgba(127,127,127,0.04); }
+.fix b { display: block; font-family: var(--display); color: var(--heading-color); font-size: 15px; margin-bottom: 3px; } .fix .k { font-size: 12.5px; color: var(--muted-color); margin-top: 6px; }
+.phase { display: grid; grid-template-columns: 110px 1fr; gap: 16px; padding: 14px 0; border-bottom: 1px solid var(--row-line); } .phase:last-child { border-bottom: 0; }
+.phase .w { font-family: var(--mono); font-size: 12px; color: var(--accent); } .phase b { font-family: var(--display); color: var(--heading-color); } .phase p { font-size: 13.5px; margin-top: 3px; } .phase .k { font-size: 12.5px; color: var(--muted-color); margin-top: 5px; }
+.actions { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; margin: 26px 0 8px; }
+.picked { margin-top: 12px; }
+footer { background: var(--footer-bg); padding: 34px 22px; text-align: center; margin-top: 30px; border-top: 1px solid var(--hairline); }
+footer .disclaimer { font-size: 11.5px; color: var(--footer-text); max-width: 820px; margin: 0 auto; line-height: 1.7; } footer .footer-info { font-family: var(--mono); font-size: 11px; color: var(--footer-muted); margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--footer-line); }
+@media (max-width: 860px) { .g2, .g3, .feat { grid-template-columns: 1fr; } .phase { grid-template-columns: 1fr; gap: 4px; } .bar { grid-template-columns: 118px 1fr 34px; } }
+@media (max-width: 560px) { .theme-toggle button span { display: none; } .nav-link { display: none; } .card { padding: 20px 16px; } }
+@media print {
+  :root { --page-bg: #fff; --text-color: #111; --heading-color: #000; --muted-color: #444; --surface-bg: #fff; --panel-bg: #fff; --hairline: #bbb; --row-line: #ddd; --accent: #0a6f84; --shadow: none; }
+  nav, .actions, footer, body::before, body::after { display: none !important; }
+  body { background: #fff; } .panel { break-inside: avoid; }
+}
+</style>
+</head>
+<body>
+<nav>
+  <div class="nav-container">
+    <div class="brand"><div class="logo">ASL UNIVERSITY</div><span class="logo-sub">GROWTH PROGRAM</span></div>
+    <div class="nav-right">
+      <a class="nav-link" href="asl-account-journal.html">Account Journal</a>
+      <div class="theme-toggle" role="group" aria-label="Color theme">
+        <button type="button" data-theme-btn="dark" aria-pressed="true" title="Dark mode"><svg viewBox="0 0 24 24"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg><span>DARK</span></button>
+        <button type="button" data-theme-btn="light" aria-pressed="false" title="Light mode"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg><span>LIGHT</span></button>
+      </div>
+    </div>
+  </div>
+</nav>
+<main><div class="wrap" id="app"></div></main>
+<footer>
+  <div class="disclaimer">The Growth Program is an educational self-assessment. It turns your own answers into a suggested trading style and plan; it is not a psychological diagnosis, a guarantee of results, or investment advice. Results are only as honest as your answers. Trading leveraged products such as gold, forex and CFDs carries a high risk of loss, and you can lose more than you expect. Your answers are processed in your own browser and saved only on this device — nothing is sent to a server.</div>
+  <div class="footer-info">© 2026 ASL University. All rights reserved. | Support: @mrasltl on Telegram</div>
+</footer>
+
+<script>
+(function () {
+'use strict';
+/* =========================================================
+   PURE LOGIC — questions, scoring, style fit, plan builder
+   ========================================================= */
+const clamp = (x, a, b) => Math.min(b, Math.max(a, x));
+const TR = { P: 'Patience', T: 'Decision speed', C: 'Emotional control', D: 'Discipline', R: 'Risk appetite' };
+const FL = { revenge: 'Revenge trading', fomo: 'FOMO / chasing price', overtrade: 'Overtrading', movesStop: 'Moves the stop-loss', cutsWinners: 'Cuts winners early', holdsLosers: 'Holds / averages losers', newsChaser: 'Gambles on news', overconfident: 'Overconfidence after wins', noPlan: 'No fixed plan' };
+
+/* each option: [text, trait deltas, behaviour flag points] */
+const Q = [
+  { k: 'exp', s: 'About you', t: 'How long have you been trading?', o: [['I have not started yet'], ['Under 6 months'], ['6 to 24 months'], ['More than 2 years']] },
+  { k: 'hours', s: 'About you', t: 'How much time can you realistically watch the charts on a normal day?', o: [['Less than 1 hour'], ['1 to 3 hours'], ['3 to 6 hours'], ['Most of the day']] },
+  { k: 'goal', s: 'About you', t: 'What is your main goal right now?', o: [['Pass a prop firm challenge'], ['A steady side income'], ['Grow my own account'], ['Make trading my full-time career']] },
+  { s: 'Your reactions', t: 'Your trade hits the stop-loss for a full loss. What do you do next?', o: [
+    ['Step away from the screen for a while', { C: 2, D: 1 }], ['Review the trade calmly and wait for the next valid setup', { C: 2, D: 2 }],
+    ['Open another trade right away to win it back', { C: -2, D: -2, T: 1 }, { revenge: 2 }], ['Carry on but stay angry or shaky for the rest of the day', { C: -1 }, { revenge: 1 }]] },
+  { s: 'Your reactions', t: 'Price is moving fast and you missed your entry. What do you do?', o: [
+    ['Let it go and wait for a pullback', { P: 2, D: 2 }], ['Chase it with a smaller size', { D: -1, T: 1 }, { fomo: 1 }],
+    ['Chase it at full size', { D: -2, R: 1 }, { fomo: 2 }], ['Look at other markets for a new chance', { T: 1 }, { overtrade: 1 }]] },
+  { s: 'Your reactions', t: 'Your trade is up 1R and starts to pull back. What do you do?', o: [
+    ['Close at once to lock the profit', { P: -2, C: -1 }, { cutsWinners: 2 }], ['Move the stop to breakeven and let it run', { P: 1, D: 2 }],
+    ['Hold to the target whatever happens', { P: 1, D: 1, R: 1 }], ['Add to the position', { R: 2, D: -1 }, { overconfident: 1 }]] },
+  { s: 'Your reactions', t: 'Your trade goes against you and nears the stop-loss. What do you do?', o: [
+    ['Nothing — the stop will do its job', { D: 2, C: 1 }], ['Move the stop further away to give it room', { D: -2 }, { movesStop: 2, holdsLosers: 1 }],
+    ['Close early before the stop is hit', { C: -1, T: 1 }], ['Add to the position to average down', { R: 2, D: -2 }, { holdsLosers: 2 }]] },
+  { s: 'Your reactions', t: 'You win three trades in a row. What happens next?', o: [
+    ['Same size, same routine', { D: 2, C: 1 }], ['I increase my size because I am on a roll', { R: 2, D: -1 }, { overconfident: 2 }],
+    ['I take more trades than usual', { T: 1, D: -1 }, { overtrade: 2 }], ['I get nervous it will end and close trades early', { C: -1 }, { cutsWinners: 1 }]] },
+  { s: 'Your reactions', t: 'Major news (NFP, CPI, FOMC) is due in 10 minutes. What do you do?', o: [
+    ['Stay out and wait for the dust to settle', { D: 2, C: 1, P: 1 }], ['Trade the spike as fast as I can', { R: 2, T: 2 }, { newsChaser: 2 }],
+    ['Keep my open trade through it', { R: 1, D: -1 }], ['Place pending orders on both sides', { R: 1, T: 1 }, { newsChaser: 1 }]] },
+  { s: 'Your reactions', t: 'The market is slow and nothing has happened for hours.', o: [
+    ['I wait — doing nothing is also a position', { P: 2, D: 2 }], ['I drop to a lower timeframe to find action', { P: -2, T: 1 }, { overtrade: 2 }],
+
+['I take a setup that is "close enough"', { D: -2 }, { overtrade: 1 }], ['I leave and check back later', { P: 1, C: 1 }]] },
+  { s: 'Your reactions', t: 'How do you feel about holding a trade overnight or over the weekend?', o: [
+    ['Comfortable — I plan for it', { P: 2, C: 1 }], ['Fine as long as the stop is set', { P: 1, C: 1 }],
+    ['Anxious — I keep checking my phone', { P: -1, C: -2 }], ['I always close before the end of the session', { P: -2, T: 1 }]] },
+  { s: 'Your style', t: 'How do you usually make a trading decision?', o: [
+    ['Fast, on instinct and momentum', { T: 2, D: -1 }], ['Quick checklist, then execute', { T: 1, D: 2 }],
+    ['Deep analysis on several timeframes, taking my time', { P: 2, T: -2, D: 1 }], ['I rely on signals or opinions from others', { D: -2 }, { noPlan: 2 }]] },
+  { s: 'Your style', t: 'How often do you break your own rules?', o: [
+    ['Almost never', { D: 2 }], ['Sometimes, when I feel confident', {}, { overconfident: 1 }],
+    ['Often, when emotions rise', { D: -2, C: -1 }], ['I do not have fixed rules yet', { D: -1 }, { noPlan: 2 }]] },
+  { s: 'Your style', t: 'Your losses for the day reach your daily limit (or the limit you should have).', o: [
+    ['I stop trading for the day', { D: 2, C: 2 }], ['I take one more trade to get back to zero', { D: -2 }, { revenge: 2 }],
+    ['I keep going — I can still recover', { R: 1, D: -2 }, { revenge: 1 }], ['I do not have a daily limit', { D: -1, R: 1 }, { noPlan: 1 }]] },
+  { s: 'Your style', t: 'How many trades per day feel normal to you?', o: [
+    ['1 to 2 high-quality trades', { P: 2, T: -1 }], ['3 to 6 trades', { T: 1 }],
+    ['7 to 15 trades', { T: 2 }, { overtrade: 1 }], ['As many as I can find', { T: 2, P: -2 }, { overtrade: 2 }]] },
+  { s: 'Your style', t: 'You have several losing trades in one week. How do you react?', o: [
+    ['Calm — it is part of the math', { C: 2 }], ['Discouraged, but I keep following my rules', { C: 1, D: 1 }],
+    ['I keep changing my strategy', { D: -2, C: -1 }, { noPlan: 1 }], ['I raise my risk to catch up', { R: 2, D: -2 }, { revenge: 2 }]] },
+  { s: 'Your style', t: 'A 5-minute setup appears that goes against the daily trend.', o: [
+    ['Skip it — the bigger trend comes first', { P: 1, D: 2 }], ['Take a quick scalp with a tight stop', { T: 2, R: 1 }],
+    ['Take it at full size', { R: 2, D: -1 }], ['Watch and wait', { P: 2 }]] },
+  { s: 'Your style', t: 'How much do you risk per trade without losing sleep?', o: [
+    ['0.5% of the account or less', { R: -2, C: 1 }], ['About 1%', { R: 0 }],
+    ['2% to 3%', { R: 1 }], ['5% or more, or "whatever feels right"', { R: 2, D: -1 }]] },
+  { s: 'Your style', t: 'How does watching your live profit and loss tick up and down affect you?', o: [
+    ['It does not affect me', { C: 2 }], ['A little tension, but I stay on plan', { C: 1 }],
+    ['It tempts me to act', { C: -1, T: 1 }], ['It causes anxiety and I cannot focus', { C: -2 }]] }
+];
+
+/* free-text keyword patterns (English + Persian) — flag points and trait nudges */
+const PAT = [
+  [/revenge|win (it|them|money) back|get (it|my money|money) back|make (it )?back|انتقام|جبران/i, 'revenge', 'Re-entering to win losses back'],
+  [/fomo|miss(ed|ing)? (out|the (move|trade|entry))|chas(e|ed|ing)|afraid.{0,20}miss|فومو|از دست دادن فرصت|دنبال قیمت/i, 'fomo', 'Chasing price / fear of missing out'],
+  [/overtrad|too many trades|can'?t stop trading|addict|اوور ?ترید|زیاد معامله/i, 'overtrade', 'Trading too much'],
+  [/mov(e|ed|ing) (my )?(stop|sl)|widen(ed)? (my )?stop|remov(e|ed) (my )?stop|حد ضرر.{0,15}(جابه|عوض|برداشت|دور)/i, 'movesStop', 'Moving the stop-loss'],
+  [/clos(e|ed|ing) (too )?(early|soon)|cut (my )?(profit|winner)s?|take profit too (soon|early)|زود.{0,12}(سود|می.?بندم)/i, 'cutsWinners', 'Closing winners too early'],
+
+[/hold(ing)? (my )?(loss|loser)|hope (it|price)|average (down|in)|مارتینگل|میانگین/i, 'holdsLosers', 'Holding or averaging losers'],
+  [/(trade|trading|gambl\w*) (the )?news|news (spike|trade)|معامله.{0,10}اخبار/i, 'newsChaser', 'Trading news spikes'],
+  [/overconfiden|too confident|doubl(e|ed) (my )?(size|lot)|increas(e|ed) (my )?(size|lot)/i, 'overconfident', 'Increasing size after wins'],
+  [/no (trading )?plan|without (a )?plan|random(ly)?|gut feeling|بدون پلن|بی.?برنامه/i, 'noPlan', 'Trading without a plan'],
+  [/impatient|restless|bored|بی.?حوصله|صبر ندارم/i, null, 'Impatience', { P: -10 }],
+  [/anxious|anxiety|panic|scared|nervous|stress|ترس|استرس|اضطراب/i, null, 'Stress under pressure', { C: -8 }],
+  [/emotional|tilt|angry|frustrat|عصبی|عصبانی/i, null, 'Emotional reactions', { C: -8 }]
+];
+
+const STY = {
+  scalp: { name: 'Scalping', noun: 'Scalper', ideal: { P: 25, T: 90, C: 80, D: 85, R: 55 }, w: { P: 1, T: 2, C: 2.5, D: 2.5, R: 0.5 }, base: 0.5,
+    tf: 'M1–M5 for entries, M15 for the trend', hold: 'Seconds to about 30 minutes', freq: (o) => 'Up to ' + (o ? 6 : 10) + ' trades a day, then stop',
+    when: 'London/NY overlap 13:00–17:00 GMT, plus the first hour after the London open',
+    setups: ['Liquidity sweep of a session high/low, then a reclaim', 'Momentum pullback to the EMA 20 / VWAP in the trend direction', 'Opening-range breakout with a retest'],
+    entry: ['Trade only in the direction of the M15 trend', 'Enter after the candle closes — never in the middle of a candle', 'Skip when the spread is wide (news, rollover, thin liquidity)'],
+    exit: ['Stop beyond the sweep or last swing: roughly 0.5–1× the M5 ATR', 'Take half at 1R, move the stop to breakeven, aim for 1.5–2R on the rest', 'If price has not moved within about 10 candles, exit at breakeven'],
+    req: [['T', 'hi', 'Your fast decision speed ({v}) suits quick execution'], ['C', 'hi', 'Your emotional control ({v}) helps you survive rapid wins and losses'], ['D', 'hi', 'Your discipline ({v}) keeps a high trade frequency inside the rules'], ['P', 'lo', 'You prefer short holding times (patience {v})']],
+    watch: 'Scalping punishes emotional mistakes and costs add up quickly. Prove the plan on a demo or micro size first.',
+    routine: ['Before the session: mark the previous-day high/low, the daily pivot and the session range', 'Pick the one or two setups you will take today and write them down', 'During: take only A-grade setups, log every trade right after it closes', 'Stop at your daily trade cap or daily loss limit — whichever comes first', 'After: 10 minutes in the journal — grade each trade for plan adherence'] },
+  day: { name: 'Day trading', noun: 'Day Trader', ideal: { P: 45, T: 70, C: 65, D: 75, R: 50 }, w: { P: 1, T: 1.5, C: 2, D: 2.5, R: 0.5 }, base: 0.5,
+    tf: 'H1 for the bias, M15 for entries', hold: 'Minutes to a few hours — flat before the session ends', freq: (o) => 'Up to ' + (o ? 2 : 4) + ' trades a day',
+    when: 'London open 08:00–11:00 GMT and the New York open 13:00–16:00 GMT',
+    setups: ['Reaction to the previous-day high/low or the daily pivot', 'Trend pullback to the EMA 20/50 on M15', 'Range breakout with a retest'],
+    entry: ['Define the H1 bias first: only trade with it', 'Wait for a confirmation candle at your level', 'No new trades after the main session window closes'],
+    exit: ['Stop beyond the structure: about 1–1.5× the M15 ATR', 'Target the next level for 1.5–3R; trail behind M15 structure', 'Close everything before the end of your session'],
+    req: [['D', 'hi', 'Your discipline ({v}) fits a rule-based daily routine'], ['T', 'hi', 'Your decision speed ({v}) matches intraday pace'], ['C', 'hi', 'Your emotional control ({v}) supports intraday swings'], ['P', 'mid', 'A balanced patience level ({v}) works for waiting on a few good setups']],
+
+watch: 'The risk is drifting into overtrading. Keep the trade cap and the session window fixed.',
+    routine: ['Evening before: mark levels on H1 and write the bias for tomorrow', 'Check the economic calendar for high-impact news', 'During the window: wait for your setup — no setup, no trade', 'Close or protect everything before the session ends', 'After: log trades and a one-line note on how you felt'] },
+  swing: { name: 'Swing trading', noun: 'Swing Trader', ideal: { P: 75, T: 40, C: 55, D: 65, R: 50 }, w: { P: 2.5, T: 1.5, C: 1.5, D: 2, R: 0.5 }, base: 0.75,
+    tf: 'D1 for the bias, H4 for entries', hold: '2 to 10 days', freq: () => '2–3 new trades a week at most',
+    when: 'No need to watch screens all day — analyse once a day after the daily close (around 22:00 GMT)',
+    setups: ['Trend pullback to the EMA 20/50 at a support or resistance zone', 'Rejection of a daily or weekly level', 'Breakout of a daily range with a retest'],
+    entry: ['Confirm the D1 trend, then wait for an H4 reversal candle at your level', 'Place the order and the stop together, then leave it alone', 'Skip trades right before major news unless the stop is safe'],
+    exit: ['Stop beyond the swing point: about 1.5–2× the D1 ATR', 'Target 2–3R; trail the stop behind H4/D1 structure', 'Reassess once a day, after the close — not every hour'],
+    req: [['P', 'hi', 'Your patience ({v}) lets trades develop over days'], ['T', 'lo', 'You do not need fast decisions (speed {v}), which suits slower charts'], ['C', 'mid', 'Your emotional control ({v}) is enough for holding through noise'], ['D', 'hi', 'Your discipline ({v}) helps you leave a trade alone']],
+    watch: 'Overnight and weekend gaps are the risk. Size small enough that a gap through your stop is survivable.',
+    routine: ['Once a day after the daily close: scan D1 and H4, update your levels', 'Place orders with stops, then close the charts', 'Check open trades once a day only', 'Sunday: a 30-minute weekly review of trades and the journal', 'Never move a stop against the trade'] },
+  pos: { name: 'Position trading', noun: 'Position Trader', ideal: { P: 92, T: 20, C: 60, D: 70, R: 40 }, w: { P: 3, T: 1.5, C: 1.5, D: 2, R: 0.5 }, base: 1,
+    tf: 'W1 for the bias, D1 for entries', hold: 'Weeks to months', freq: () => '1–3 new trades a month',
+    when: 'A weekly review is enough — about 1–2 hours at the weekend',
+    setups: ['Weekly trend continuation after a pullback', 'Breakout from a multi-month range', 'A macro theme (rates, dollar trend) confirmed by price'],
+    entry: ['Trade only when the weekly and daily trend agree', 'Scale in over days rather than all at once', 'Do not react to daily noise'],
+    exit: ['Stop beyond the weekly swing point — wide, so size is small', 'Trail behind the weekly structure; aim for 3R or more', 'Review the thesis every weekend and exit if it has broken'],
+    req: [['P', 'hi', 'Your patience ({v}) fits holding for weeks'], ['T', 'lo', 'You prefer slow decisions (speed {v})'], ['C', 'mid', 'Your emotional control ({v}) copes with long drawdowns on open trades'], ['D', 'hi', 'Your discipline ({v}) keeps you from fiddling with the trade']],
+    watch: 'Capital is tied up for a long time and results come slowly. This style needs a larger account to be meaningful.',
+    routine: ['Weekend: review W1 and D1 charts and the macro picture', 'Update the thesis for each open position in one sentence', 'Midweek: a quick look at open trades only', 'Add or trim only on your plan, never on emotion', 'Monthly: review the journal for plan adherence'] }
+};
+
+const FIX = {
+  revenge: ['Stop revenge trades', 'After any loss, no new order for 30 minutes (15 for scalping). After 2 losses in a row, you are done for the session.', 'Measure: zero re-entries within 15 minutes of a loss.'],
+
+fomo: ['Stop chasing price', 'If price has already moved more than half an ATR from your level, skip it or wait for the pullback. Write it as "missed trade" in the journal — not as a loss.', 'Measure: zero entries without a pre-defined level.'],
+  overtrade: ['Cap your trades', 'Set a hard daily trade cap and pre-write the setups you may take. Anything outside the list is a no.', 'Measure: never exceed the daily cap.'],
+  movesStop: ['Never widen a stop', 'The stop goes in with the order. It may only move in your favour (breakeven or trailing).', 'Measure: zero stop widenings in the journal.'],
+  cutsWinners: ['Let planned winners work', 'Decide before entry: take half at 1R, move the stop to breakeven, let the rest reach your target.', 'Measure: average winner at least 1.5× the average loser.'],
+  holdsLosers: ['Exit on invalidation', 'Hard stop on every trade, plus a time-stop: if the setup has not worked within the planned candles, exit.', 'Measure: no averaging down, ever.'],
+  newsChaser: ['Stay flat around news', 'No new trades 15 minutes before and after high-impact news. Protect or close open trades before it.', 'Measure: zero trades inside the news window.'],
+  overconfident: ['Keep size fixed', 'Risk the same percent after a win streak. After 3 wins in a row, re-read your rules before the next trade.', 'Measure: risk per trade never changes within a week.'],
+  noPlan: ['Write a one-page plan first', 'Setups, entry, stop, target, risk and daily limits on one page. No plan, no live trade.', 'Measure: every trade tagged with a setup name.']
+};
+
+function compute(ans, text) {
+  const sum = {}, mn = {}, mx = {}, f = {}, fmx = {}, meta = {};
+  Q.forEach((q, i) => {
+    if (q.k) { meta[q.k] = ans[i]; return; }
+    const tk = new Set(), fk = new Set();
+    q.o.forEach(o => { Object.keys(o[1]  {}).forEach(k => tk.add(k)); Object.keys(o[2]  {}).forEach(k => fk.add(k)); });
+    tk.forEach(k => { const v = q.o.map(o => (o[1]  {})[k]  0); mn[k] = (mn[k]  0) + Math.min(...v); mx[k] = (mx[k]  0) + Math.max(...v); sum[k] = (sum[k]  0) + ((q.o[ans[i]][1]  {})[k] || 0); });
+    fk.forEach(k => { fmx[k] = (fmx[k]  0) + Math.max(...q.o.map(o => (o[2]  {})[k]  0)); f[k] = (f[k]  0) + ((q.o[ans[i]][2]  {})[k]  0); });
+  });
+  const t = {};
+  Object.keys(TR).forEach(k => { t[k] = mx[k] > mn[k] ? Math.round(((sum[k] || 0) - mn[k]) / (mx[k] - mn[k]) * 100) : 50; });
+  const picked = [];
+  (text || '').split(/\n/).join(' ');
+  PAT.forEach(p => {
+    if (!p[0].test(text || '')) return;
+    picked.push(p[2]);
+    if (p[1]) f[p[1]] = (f[p[1]] || 0) + 2;
+    if (p[3]) Object.keys(p[3]).forEach(k => { t[k] = clamp(t[k] + p[3][k], 0, 100); });
+  });
+  const sev = {};
+  Object.keys(f).forEach(k => { sev[k] = clamp(f[k] / (fmx[k] || 2), 0, 1); });
+  /* style fit */
+  const fit = {};
+  Object.keys(STY).forEach(key => {
+    const s = STY[key]; let d = 0, w = 0;
+    Object.keys(s.ideal).forEach(k => { d += s.w[k] * Math.abs(t[k] - s.ideal[k]); w += s.w[k]; });
+    let v = 100 - (d / w) * 1.15;
+    const h = meta.hours, e = meta.exp, g = k => sev[k] || 0;
+    if (key === 'scalp') { if (h < 2) v -= 30; else if (h === 2) v -= 8; if (e === 0) v -= 15; else if (e === 1) v -= 8; v -= 12 * g('revenge') + 10 * g('overtrade') + 6 * g('fomo') + 14 * g('noPlan'); }
+    if (key === 'day') { if (h === 0) v -= 20; if (e === 0) v -= 6; v -= 8 * g('revenge') + 6 * g('overtrade') + 8 * g('noPlan'); }
+    if (key === 'swing') { v -= 6 * g('movesStop') + 5 * g('holdsLosers'); }
+    if (key === 'pos') { v -= 6 * g('movesStop') + 5 * g('holdsLosers'); if (e === 0) v -= 4; }
+    fit[key] = Math.round(clamp(v, 5, 97));
+  });
+  const order = Object.keys(fit).sort((a, b) => fit[b] - fit[a]);
+  const flags = Object.keys(sev).filter(k => sev[k] >= 0.4).sort((a, b) => sev[b] - sev[a]);
+  const hi = Object.keys(sev).filter(k => sev[k] >= 0.6).length;
+  const ready = Math.round(clamp((t.C + t.D) / 2 - 12 * hi, 0, 100));
+  return { t, sev, flags, hi, fit, order, top: order[0], second: order[1], meta, picked, ready };
+}
+
+function build(res) {
+  const s = STY[res.top], T = res.t, F = res.sev, M = res.meta, S = (k) => F[k] || 0;
+  const score = (T.C + T.D) / 2;
+  let risk = (score < 40  res.hi >= 2) ? 0.25 : (score < 60  res.hi >= 1) ? Math.min(s.base, 0.5) : s.base;
+  const notes = [];
+  if (M.goal === 0) { if (risk > 0.5) risk = 0.5; notes.push('Prop challenge: most firms have a daily and a total drawdown limit, so risk stays at 0.5% or less.'); }
+  if (M.exp === 0) { risk = Math.min(risk, 0.25); notes.push('You have not started yet: trade demo first, then micro size.'); }
+  const daily = +Math.min(risk * 3, 2).toFixed(2), weekly = +Math.min(risk * 6, 5).toFixed(2);
+  const streak = (S('revenge') >= 0.5 || T.C < 45) ? 2 : 3;
+  const over = S('overtrade') >= 0.5;
+  const reasons = [];
+  s.req.forEach(r => {
+    const v = T[r[0]], ok = r[1] === 'hi' ? v >= 60 : r[1] === 'lo' ? v <= 45 : (v >= 40 && v <= 70);
+    if (ok) reasons.push(r[2].replace('{v}', v));
+  });
+  if (res.top === 'scalp' && M.hours >= 2) reasons.push('You have the screen time that scalping demands');
+  if ((res.top === 'swing' || res.top === 'pos') && M.hours <= 1) reasons.push('Your limited screen time is not a problem for this style');
+  if (!reasons.length) reasons.push('It is the closest match to your answers overall');
+  const watch = [s.watch];
+  if (T.C < 45) watch.push('Your emotional control score is low (' + T.C + '): hide the floating P/L, use orders and alerts instead of staring at the screen.');
+  if (T.D < 45) watch.push('Your discipline score is low (' + T.D + '): trade only from a written checklist.');
+  if (res.fit[res.top] < 60) watch.push('No style fits you strongly yet — that is normal at an early stage. Use the first weeks to build the habits below.');
+  const sec = STY[res.second];
+  const close = res.fit[res.top] - res.fit[res.second] <= 6;
+  const fixes = res.flags.map(k => FIX[k]);
+  const exp = M.exp, newb = exp <= 1;
+  const roadmap = [
+    ['Weeks 1–2', 'Foundation', 'Write your one-page plan (setups, risk, limits). Learn to recognise your ' + s.name.toLowerCase() + ' setups on past charts. Start the trade journal on day one.', 'KPI: plan written; 30 past setups marked.'],
+    ['Weeks 3–6', newb ? 'Demo execution' : 'Rule execution', (newb ? 'Trade on a demo account' : 'Trade at the smallest live size') + ' following the plan exactly. Goal: process, not profit.', 'KPI: 40 trades logged; plan adherence 90% or better.'],
+    ['Weeks 7–10', 'Small live risk', 'Trade live at ' + Math.min(risk, 0.25) + '% risk per trade. Review the journal every week for the behaviours below.', 'KPI: adherence 85%+; max drawdown under ' + (daily * 2).toFixed(1) + '%; zero broken stops.'],
+    ['Weeks 11–12', 'Review and scale', 'Raise risk to ' + risk + '% only if you have 50+ trades, a positive expectancy and adherence of 85% or better. Otherwise repeat the previous phase.', 'KPI: scale-up decision written down, with the numbers.']
+  ];
+  const archAdj = Object.keys(T).sort((a, b) => T[b] - T[a])[0], adjs = { P: 'Patient', T: 'Fast-moving', C: 'Cool-headed', D: 'Disciplined', R: 'Bold' };
+  const arche = 'The ' + (T[archAdj] >= 55 ? adjs[archAdj] : 'Developing') + ' ' + s.noun;
+  const rules = [
+    ['Risk per trade', risk + '% of the account'], ['Daily loss limit', daily + '% — stop for the day'], ['Weekly loss limit', weekly + '% — stop for the week'],
+    ['Stop after losses in a row', streak + ' losses — end the session'], ['Trade frequency', s.freq(over)]
+  ];
+  return { s, risk, daily, weekly, streak, reasons, watch, sec, close, fixes, roadmap, arche, rules, notes };
+}
+
+function toText(res, p) {
+  const L = [];
+  L.push('ASL UNIVERSITY — GROWTH PROGRAM', p.arche, 'Recommended style: ' + p.s.name + ' (' + res.fit[res.top] + '% fit)' + (p.close ? ' — close second: ' + p.sec.name : ''), '');
+
+L.push('PROFILE'); Object.keys(TR).forEach(k => L.push('- ' + TR[k] + ': ' + res.t[k] + '/100'));
+  L.push('', 'BEHAVIOURS TO WORK ON'); L.push(...(res.flags.length ? res.flags.map(k => '- ' + FL[k]) : ['- none flagged']));
+  L.push('', 'WHY THIS STYLE'); p.reasons.forEach(r => L.push('- ' + r));
+  L.push('', 'BLUEPRINT', 'Timeframes: ' + p.s.tf, 'Holding time: ' + p.s.hold, 'Best window: ' + p.s.when, 'Setups:'); p.s.setups.forEach(x => L.push('- ' + x));
+  L.push('Entry rules:'); p.s.entry.forEach(x => L.push('- ' + x)); L.push('Exit and management:'); p.s.exit.forEach(x => L.push('- ' + x));
+  L.push('', 'RISK RULES'); p.rules.forEach(r => L.push('- ' + r[0] + ': ' + r[1]));
+  L.push('', 'BEHAVIOUR FIXES'); p.fixes.forEach(f => L.push('- ' + f[0] + ': ' + f[1]));
+  L.push('', '12-WEEK ROADMAP'); p.roadmap.forEach(r => L.push('- ' + r[0] + ' ' + r[1] + ': ' + r[2] + ' ' + r[3]));
+  L.push('', 'DAILY ROUTINE'); p.s.routine.forEach(x => L.push('- ' + x));
+  L.push('', 'Educational self-assessment, not investment advice.');
+  return L.join('\n');
+}
+
+/*DOM*/
+const $ = (s, r) => (r || document).querySelector(s);
+const $$ = (s, r) => [...(r || document).querySelectorAll(s)];
+const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const KEY = 'asl-growth-v1', N = Q.length;
+let ST = { ans: [], text: '', step: -1, done: false };
+try { const o = JSON.parse(localStorage.getItem(KEY)); if (o && Array.isArray(o.ans)) ST = Object.assign(ST, o); } catch (e) { /* first visit */ }
+const save = () => { try { localStorage.setItem(KEY, JSON.stringify(ST)); } catch (e) { /* blocked */ } };
+
+function ringSVG(v, label) {
+  const size = 132, r = size / 2 - 10, c = 2 * Math.PI * r;
+  return '<svg class="ring" viewBox="0 0 ' + size + ' ' + size + '" width="' + size + '" height="' + size + '" role="img" aria-label="' + esc(label) + ' ' + v + ' of 100"><circle class="rt" cx="66" cy="66" r="' + r + '"/><circle class="rv" cx="66" cy="66" r="' + r + '" stroke-dasharray="' + (c * v / 100).toFixed(1) + ' ' + c.toFixed(1) + '" transform="rotate(-90 66 66)"/><text class="rn" x="50%" y="50%" text-anchor="middle" dy="0.1em">' + v + '</text><text class="rl" x="50%" y="50%" text-anchor="middle" dy="2.4em">' + esc(label) + '</text></svg>';
+}
+const bar = (l, v, c, best) => '<div class="bar' + (best ? ' best' : '') + '"><span>' + esc(l) + '</span><div class="bar-t"><i class="' + (c || '') + '" style="width:' + v + '%"></i></div><b>' + v + '</b></div>';
+const panel = (t, b, c) => '<section class="panel"><h3 class="' + (c || '') + '">' + t + '</h3>' + b + '</section>';
+const ul = (a, c) => '<ul class="ul ' + (c || '') + '">' + a.map(x => '<li>' + esc(x) + '</li>').join('') + '</ul>';
+
+function landing() {
+  const has = ST.ans.length > 0 && !ST.done;
+  return '<section class="hero"><div class="lbl" style="color:var(--accent);letter-spacing:.2em">ASL UNIVERSITY · GROWTH PROGRAM</div><h1 style="margin-top:12px">Find the way of trading<br><em>that fits who you are.</em></h1>' +
+    '<p>Answer ' + N + ' honest questions about how you react in the market. You get your trader profile, the style that suits your temperament — scalping, day trading, swing or position — and a written plan with rules, behaviour fixes and a 12-week roadmap.</p>' +
+    '<div class="hero-btns">' + (has ? '<button class="btn btn-primary" data-go="resume">Continue where I stopped</button><button class="btn btn-secondary" data-go="start">Start over</button>' : '<button class="btn btn-primary" data-go="start">Start the test</button>') + (ST.done ? '<button class="btn btn-secondary" data-go="result">See my last result</button>' : '') + '</div>' +
+    '<p class="fine">About 5 minutes · answers stay in your browser · no sign-up</p></section>' +
+
+'<div class="feat"><div><b>Your trader profile</b><span>Patience, decision speed, emotional control, discipline and risk appetite — plus the habits that cost you money.</span></div><div><b>A style that fits you</b><span>A fit score for scalping, day trading, swing and position trading, with the reasons behind it.</span></div><div><b>A plan, not a theory</b><span>Timeframes, setups, risk limits, behaviour fixes and a 12-week roadmap you can follow and track in the journal.</span></div></div>';
+}
+function step() {
+  const i = ST.step;
+  if (i === N) {
+    return '<div class="card"><div class="lbl">Last step · optional</div><div class="progress"><i style="width:96%"></i></div><h2>In your own words: how do you behave in the market?</h2>' +
+      '<p class="muted" style="margin-bottom:12px;font-size:14px">For example: what you do after a loss, what mistakes you repeat, how you feel when a trade is open. English or Persian. Simple keyword matching reads this to refine your result, so be specific and honest.</p>' +
+      '<textarea class="inp" id="free" rows="6" placeholder="e.g. After a loss I jump back in to win it back. I often move my stop-loss when price gets close…">' + esc(ST.text) + '</textarea>' +
+      '<div class="nav-row"><button class="btn-mini" data-go="back">← Back</button><button class="btn btn-primary" data-go="finish">See my program</button></div></div>';
+  }
+  const q = Q[i], pc = Math.round(i / (N + 1) * 100);
+  return '<div class="card"><div class="lbl">' + esc(q.s) + ' · question ' + (i + 1) + ' of ' + N + '</div><div class="progress"><i style="width:' + pc + '%"></i></div><h2>' + esc(q.t) + '</h2><div class="opts">' +
+    q.o.map((o, k) => '<button class="opt" data-pick="' + k + '" aria-pressed="' + (ST.ans[i] === k) + '">' + esc(o[0]) + '</button>').join('') + '</div>' +
+    '<div class="nav-row"><button class="btn-mini" data-go="back">← Back</button><button class="btn-mini" data-go="next"' + (ST.ans[i] == null ? ' hidden' : '') + '>Next →</button></div></div>';
+}
+function result() {
+  const res = compute(ST.ans, ST.text), p = build(res), s = p.s;
+  const fitBars = res.order.map((k, i) => bar(STY[k].name, res.fit[k], i === 0 ? 'top' : 'low', i === 0)).join('');
+  const trBars = Object.keys(TR).map(k => bar(TR[k], res.t[k])).join('');
+  const readyLbl = res.ready >= 70 ? 'Ready' : res.ready >= 50 ? 'Building' : 'Foundation';
+  const flagHtml = res.flags.length ? res.flags.map(k => '<span class="pill ' + (res.sev[k] >= 0.7 ? 'bad' : 'warn') + '">' + esc(FL[k]) + '</span>').join('') : '<span class="pill good">No major behaviour flags</span>';
+  const picked = res.picked.length ? '<p class="fine picked">Picked up from your own words: ' + res.picked.map(esc).join(', ') + '. (Keyword matching can misread negations — ignore anything that is wrong.)</p>' : '';
+  const kv = rows => '<table class="kv"><tbody>' + rows.map(r => '<tr><td>' + esc(r[0]) + '</td><td>' + esc(r[1]) + '</td></tr>').join('') + '</tbody></table>';
+  return '<div class="rhead"><div class="tag">YOUR GROWTH PROGRAM</div><h1>' + esc(p.arche) + '</h1><p>Your best-fitting style is <b style="color:var(--heading-color)">' + esc(s.name) + '</b> (' + res.fit[res.top] + '% fit)' +
+    (p.close ? ' — <b style="color:var(--heading-color)">' + esc(p.sec.name) + '</b> is a very close second, so a hybrid is possible.' : '. Second option: ' + esc(p.sec.name) + ' (' + res.fit[res.second] + '%).') + '</p></div>' +
+    '<div class="g2">' + panel('Your trader profile', trBars + '<div style="margin-top:14px">' + flagHtml + '</div>' + picked) +
+    panel('Style fit', fitBars + '<div class="ring-wrap" style="margin-top:18px">' + ringSVG(res.ready, readyLbl) + '<p class="fine" style="margin:0;flex:1;min-width:180px"><b>Trading readiness</b> combines emotional control and discipline, minus your behaviour flags. It is a self-assessment, not a measure of talent.</p></div>') + '</div>' +
+
+'<div class="g2">' + panel('Why this style fits you', ul(p.reasons)) + panel('What to watch out for', ul(p.watch, 'warn') + (p.notes.length ? ul(p.notes, 'warn') : ''), 'bad') + '</div>' +
+    panel('Your strategy blueprint · ' + esc(s.name), '<div class="g2"><div>' + kv([['Timeframes', s.tf], ['Holding time', s.hold], ['Best window', s.when]]) + '<h3 style="margin-top:20px">Risk rules</h3>' + kv(p.rules) + '</div>' +
+      '<div><h3>Setups to trade</h3>' + ul(s.setups) + '<h3 style="margin-top:18px">Entry rules</h3>' + ul(s.entry) + '<h3 style="margin-top:18px">Exit and management</h3>' + ul(s.exit) + '</div></div>' +
+      '<p class="fine">Gold (XAU/USD) is the main market of ASL University, but the same plan can be applied to other liquid markets. Risk numbers are educational starting points — confirm them against your own situation and your prop firm\'s rules.</p>') +
+    panel('Behaviours to fix', p.fixes.length ? p.fixes.map(f => '<div class="fix"><b>' + esc(f[0]) + '</b>' + esc(f[1]) + '<div class="k">' + esc(f[2]) + '</div></div>').join('') : '<p class="muted">None of the answers pointed to a major behaviour problem. Keep tracking your trades — the journal will show real patterns.</p>', 'bad') +
+    '<div class="g2">' + panel('12-week roadmap', p.roadmap.map(r => '<div class="phase"><div class="w">' + esc(r[0]) + '</div><div><b>' + esc(r[1]) + '</b><p>' + esc(r[2]) + '</p><div class="k">' + esc(r[3]) + '</div></div></div>').join('')) +
+      panel('Your daily routine', ul(s.routine) + '<p class="fine">Track every trade in the <a href="asl-account-journal.html" style="color:var(--accent)">ASL Account Journal</a>. After 30 trades, compare its real numbers with this profile — the journal shows what you actually do, not what you think you do.</p>', 'good') + '</div>' +
+    '<div class="actions"><button class="btn btn-primary" data-go="print">Print / save as PDF</button><button class="btn btn-secondary" data-go="copy">Copy plan as text</button><button class="btn btn-secondary" data-go="retake">Retake the test</button></div><p class="fine" id="msg" style="text-align:center"></p>';
+}
+function draw() {
+  const a = $('#app');
+  a.innerHTML = ST.done ? result() : ST.step < 0 ? landing() : step();
+  if (ST.step >= 0 && !ST.done) window.scrollTo({ top: 0 });
+}
+function advance() { ST.step = Math.min(N, ST.step + 1); save(); draw(); }
+document.addEventListener('click', e => {
+  const t = e.target.closest('[data-pick],[data-go],[data-theme-btn]'); if (!t) return;
+  const d = t.dataset;
+  if (d.themeBtn) { document.documentElement.setAttribute('data-theme', d.themeBtn); $$('[data-theme-btn]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.themeBtn === d.themeBtn))); try { localStorage.setItem('asl-theme', d.themeBtn); } catch (x) { /* blocked */ } return; }
+  if (d.pick != null) { ST.ans[ST.step] = +d.pick; save(); $$('.opt').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.pick === d.pick))); setTimeout(advance, 220); return; }
+  const g = d.go;
+  if (g === 'start') { ST = { ans: [], text: '', step: 0, done: false }; save(); draw(); }
+  else if (g === 'resume') { ST.step = Math.min(ST.ans.length, N); draw(); }
+  else if (g === 'back') { if (ST.step <= 0) { ST.step = -1; } else ST.step--; save(); draw(); }
+  else if (g === 'next') advance();
+  else if (g === 'finish') { ST.text = ($('#free')  {}).value  ''; ST.done = true; save(); draw(); window.scrollTo({ top: 0 }); }
+  else if (g === 'result') { ST.done = true; draw(); }
+  else if (g === 'retake') { ST = { ans: [], text: '', step: 0, done: false }; save(); draw(); }
+  else if (g === 'print') window.print();
+  else if (g === 'copy') {
+    const res = compute(ST.ans, ST.text), txt = toText(res, build(res)), m = $('#msg');
+    const ok = () => { if (m) m.textContent = 'Plan copied to the clipboard.'; };
+
+if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(txt).then(ok, () => { if (m) m.textContent = 'Copy is blocked in this browser — use Print / save as PDF instead.'; });
+    else { const x = document.createElement('textarea'); x.value = txt; document.body.appendChild(x); x.select(); try { document.execCommand('copy'); ok(); } catch (er) { if (m) m.textContent = 'Copy is blocked in this browser — use Print instead.'; } x.remove(); }
+  }
+});
+document.addEventListener('input', e => { if (e.target.id === 'free') { ST.text = e.target.value; save(); } });
+(function () { const th = document.documentElement.getAttribute('data-theme'); $$('[data-theme-btn]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.themeBtn === th))); })();
+if (ST.done && ST.ans.length < N) ST.done = false;
+if (ST.step >= 0 && ST.ans.length === 0 && !ST.done) ST.step = -1;
+draw();
+})();
+</script>
+</body>
+</html>
