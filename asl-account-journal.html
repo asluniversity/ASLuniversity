@@ -216,6 +216,20 @@ footer .disclaimer { font-size: 11.5px; color: var(--footer-text); max-width: 82
 .pp-p p { margin-bottom: 10px; max-width: 82ch; }
 @media (max-width: 1050px) { .pp-g { grid-template-columns: 1fr 1fr; } }
 @media (max-width: 760px) { .pp-g { grid-template-columns: 1fr; } }
+.atype { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 8px 0 4px; }
+.acard { text-align: left; font: inherit; color: inherit; cursor: pointer; background: transparent; border: 1.5px solid var(--hairline); border-radius: 8px; padding: 16px; transition: all .15s; }
+.acard b { display: block; font-family: var(--display); font-size: 16px; color: var(--heading-color); margin-bottom: 4px; }
+.acard span { font-size: 12.5px; color: var(--muted-color); }
+.acard:hover { border-color: var(--accent); }
+.acard[aria-pressed="true"] { border-color: var(--accent); background: rgba(11,177,210,0.10); box-shadow: inset 0 0 0 1px var(--accent); }
+.btn:disabled { opacity: .45; cursor: not-allowed; transform: none; box-shadow: none; }
+@media (max-width: 760px) { .atype { grid-template-columns: 1fr; } }
+.gz-track { position: relative; height: 14px; border-radius: 7px; margin: 34px 4px 10px; background: linear-gradient(90deg, var(--sell) 0%, rgba(127,127,127,0.28) 50%, var(--buy) 100%); }
+.gz-track.daily { background: linear-gradient(90deg, var(--buy) 0%, var(--warn) 70%, var(--sell) 100%); }
+.gz-mark { position: absolute; top: -6px; width: 4px; height: 26px; border-radius: 2px; background: var(--heading-color); transform: translateX(-2px); box-shadow: 0 0 6px rgba(0,0,0,0.45); }
+.gz-mark b { position: absolute; bottom: 31px; left: 50%; transform: translateX(-50%); white-space: nowrap; font: 600 11px var(--mono); color: var(--heading-color); }
+.gz-tick { position: absolute; top: -3px; width: 2px; height: 20px; background: var(--muted-color); opacity: .8; transform: translateX(-1px); }
+.gz-ends { display: flex; justify-content: space-between; gap: 10px; font-family: var(--mono); font-size: 11px; color: var(--muted-color); }
 </style>
 </head>
 <body>
@@ -1328,8 +1342,8 @@ function viewJournal(a, ctx) {
   return panel('JOURNAL ANALYTICS · WHAT REALLY MAKES OR LOSES MONEY', stats) + panel('TRADE LOG · ' + jr.count + ' TRADES', tools + '<div id="jtable">' + jr.html + '</div>');
 }
 
-/* ---------------- PROP FIRM CHALLENGE · rules check (balance, daily & total drawdown) ---------------- */
-const PROP_DEF = { target: 8, days: 0, daily: 5, total: 10, dbase: 'initial', type: 'static' };
+/* ---------------- PROP FIRM CHALLENGE · professional rules analysis ---------------- */
+const PROP_DEF = { target: 8, days: 0, daily: 5, total: 10, cons: 0, dbase: 'initial', type: 'static' };
 function propRules(a) {
   const p = Object.assign({}, PROP_DEF, a.prop || {});
   p.bal = (a.prop && +a.prop.bal) || a.startBalance || 100000;
@@ -1338,7 +1352,7 @@ function propRules(a) {
 function analyseProp(trades, c) {
   const T = trades.slice().sort((x, y) => x.close - y.close || x.open - y.open);
   const trail = c.type === 'trail', targetBal = c.bal * (1 + c.target / 100);
-  let bal = c.bal, peak = bal, minBal = bal, breach = null, maxDD = 0, reached = null, wins = 0, losses = 0, gw = 0, gl = 0;
+  let bal = c.bal, peak = bal, minBal = bal, breach = null, maxDD = 0, reached = null, wins = 0, losses = 0, gw = 0, gl = 0, worstTrade = 0;
   const floorOf = () => trail ? peak - c.bal * c.total / 100 : c.bal * (1 - c.total / 100);
   const curve = [{ b: bal, f: floorOf() }], days = new Map();
   for (const t of T) {
@@ -1347,6 +1361,7 @@ function analyseProp(trades, c) {
     const fl = floorOf(), p = t.net;
     bal += p; d.pl += p; d.n++; d.low = Math.min(d.low, d.pl);
     if (p > 0) { wins++; gw += p; } else if (p < 0) { losses++; gl -= p; }
+    worstTrade = Math.min(worstTrade, p);
     if (!breach && c.total > 0 && bal < fl) breach = { type: 'total', key: k };
     d.base = c.dbase === 'start' ? d.start : c.bal;
     d.limit = d.base * c.daily / 100;
@@ -1354,87 +1369,199 @@ function analyseProp(trades, c) {
     peak = Math.max(peak, bal); minBal = Math.min(minBal, bal);
     maxDD = Math.min(maxDD, (bal - peak) / c.bal * 100);
     if (!reached && bal >= targetBal) reached = k;
-    curve.push({ b: bal, f: floorOf() });
+    curve.push({ b: bal, f: floorOf(), df: d.start - d.limit, t: t.close, net: p, run: d.pl });
   }
+  if (curve.length > 1) { curve[0].df = curve[1].df; curve[0].t = T[0].open; }
   const list = [...days.values()];
   list.forEach(d => { d.used = d.limit > 0 ? Math.max(0, -d.low) / d.limit * 100 : 0; d.ddPct = d.base > 0 ? Math.max(0, -d.low) / d.base * 100 : 0; });
   const net = bal - c.bal, n = T.length;
   const best = list.reduce((s, d) => d.pl > s.pl ? d : s, { pl: 0, key: '' });
   const worst = list.reduce((s, d) => d.pl < s.pl ? d : s, { pl: 0, key: '' });
   const worstDD = list.reduce((s, d) => d.ddPct > s.ddPct ? d : s, { ddPct: 0, key: '' });
-  const fl = curve[curve.length - 1].f;
   return {
-    n, bal, net, netPct: net / c.bal * 100, targetBal, progress: c.target > 0 ? net / (c.bal * c.target / 100) * 100 : 0,
+    n, bal, peak, net, netPct: net / c.bal * 100, targetBal, progress: c.target > 0 ? net / (c.bal * c.target / 100) * 100 : 0,
     remaining: Math.max(0, targetBal - bal), curve, list, breach, reached, maxDD, curDD: (bal - peak) / c.bal * 100,
-    totDD: trail ? -maxDD : Math.max(0, (c.bal - minBal) / c.bal * 100), minBal,
+    totDD: trail ? -maxDD : Math.max(0, (c.bal - minBal) / c.bal * 100), minBal, worstTrade,
     wins, losses, wr: n ? wins / n * 100 : 0, pf: gl ? gw / gl : (gw ? Infinity : 0),
-    avgW: wins ? gw / wins : 0, avgL: losses ? gl / losses : 0, best, worst, worstDD, floor: fl, buffer: bal - fl,
+    avgW: wins ? gw / wins : 0, avgL: losses ? gl / losses : 0, best, worst, worstDD, floor: curve[curve.length - 1].f, buffer: bal - curve[curve.length - 1].f,
     daysTraded: list.length, bestShare: net > 0 && best.pl > 0 ? best.pl / net * 100 : null,
-    daysNear: list.filter(d => d.used >= 80 && d.used < 100).length, lastDay: list[list.length - 1]
+    daysNear: list.filter(d => d.used >= 80 && d.used < 100).length, lastDay: list[list.length - 1], T
   };
 }
+/* Monte-Carlo: re-sample your own trades (and trades-per-day) to estimate how a challenge continued from today would end */
+function propSim(R, c) {
+  const done = R.net >= c.bal * c.target / 100 && R.daysTraded >= c.days;
+  if (R.n < 20 || R.breach || done) return null;
+  const pool = R.T.map(t => t.net), tpd = R.list.map(d => d.n), rnd = mulberry32(7 + R.n);
+  const trail = c.type === 'trail', target = c.bal * (1 + c.target / 100), runs = 1000, maxD = 60, passDays = [];
+  let pass = 0, fail = 0;
+  for (let r = 0; r < runs; r++) {
+    let bal = R.bal, peak = R.peak, res = 0;
+    for (let d = 1; d <= maxD && !res; d++) {
+      const lim = (c.dbase === 'start' ? bal : c.bal) * c.daily / 100, k = tpd[Math.floor(rnd() * tpd.length)];
+      let run = 0;
+      for (let i = 0; i < k; i++) {
+        const p = pool[Math.floor(rnd() * pool.length)], fl = trail ? peak - c.bal * c.total / 100 : c.bal * (1 - c.total / 100);
+        bal += p; run += p; if (bal > peak) peak = bal;
+        if ((c.daily > 0 && -run > lim) || (c.total > 0 && bal < fl)) { res = -1; break; }
+      }
+      if (!res && bal >= target && R.daysTraded + d >= c.days) { res = 1; passDays.push(d); }
+    }
+    if (res === 1) pass++; else if (res === -1) fail++;
+  }
+  passDays.sort((x, y) => x - y);
+  return { pass: pass / runs, fail: fail / runs, open: 1 - (pass + fail) / runs, med: passDays.length ? passDays[passDays.length >> 1] : null, runs, maxD };
+}
+function propHealth(R, c) {
+  const lim = c.bal * c.daily / 100;
+  const ratio = Math.max(c.daily > 0 ? R.worstDD.ddPct / c.daily : 0, c.total > 0 ? R.totDD / c.total : 0);
+  const safety = R.breach ? 0 : clamp(100 * (1 - ratio), 0, 100);
+  const disc = lim > 0 ? clamp(100 * (1 - (-R.worstTrade) / (0.6 * lim)), 0, 100) : 70;
+  const cons = R.bestShare != null ? clamp(100 * (1 - (R.bestShare - 25) / 50), 0, 100) : 45;
+  const edge = clamp(((R.pf === Infinity ? 3 : R.pf) - 0.8) / 1.2 * 100, 0, 100);
+  const total = Math.round(0.4 * safety + 0.2 * disc + 0.2 * cons + 0.2 * edge);
+  return { total, safety: Math.round(safety), disc: Math.round(disc), cons: Math.round(cons), edge: Math.round(edge), label: R.breach ? 'Failed' : total >= 75 ? 'Strong' : total >= 55 ? 'On track' : total >= 35 ? 'Caution' : 'Danger' };
+}
 function propChart(R, c) {
-  const W = 760, H = 250, L = 58, Rr = 14, T = 12, B = 26, P = R.curve;
-  const all = P.map(p => p.b).concat(P.map(p => p.f), [R.targetBal, c.bal]);
-  let lo = Math.min(...all), hi = Math.max(...all); const pad = (hi - lo) * 0.06 || 1; lo -= pad; hi += pad;
+  const W = 760, H = 290, L = 58, Rr = 112, T = 14, B = 26, P = R.curve, hasD = c.daily > 0;
+  const vals = P.map(q => q.b).concat(P.map(q => q.f), [R.targetBal, c.bal]);
+  if (hasD) vals.push(...P.map(q => q.df));
+  let lo = Math.min(...vals), hi = Math.max(...vals); const pad = (hi - lo) * 0.06 || 1; lo -= pad; hi += pad;
   const x = i => L + (W - L - Rr) * (P.length > 1 ? i / (P.length - 1) : 0), y = v => T + (H - T - B) * (1 - (v - lo) / (hi - lo));
-  const path = k => P.map((p, i) => (i ? 'L' : 'M') + x(i).toFixed(1) + ' ' + y(p[k]).toFixed(1)).join(' ');
-  const hl = (v, col) => '<line x1="' + L + '" x2="' + (W - Rr) + '" y1="' + y(v).toFixed(1) + '" y2="' + y(v).toFixed(1) + '" stroke="' + col + '" stroke-dasharray="5 4" stroke-width="1.4"/><text class="ax" x="' + (L - 8) + '" y="' + (y(v) + 4).toFixed(1) + '" text-anchor="end">' + kf(v) + '</text>';
-  return '<svg viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="Balance curve against target and loss floor">' + hl(R.targetBal, 'var(--buy)') + hl(c.bal, 'var(--muted-color)') +
-    '<path d="' + path('f') + '" fill="none" stroke="var(--sell)" stroke-dasharray="5 4" stroke-width="1.6"/>' +
-    '<text class="ax" x="' + (L - 8) + '" y="' + (y(R.floor) + 4).toFixed(1) + '" text-anchor="end" style="fill:var(--sell)">' + kf(R.floor) + '</text>' +
-    '<path class="ln" d="' + path('b') + '"/><circle cx="' + x(P.length - 1).toFixed(1) + '" cy="' + y(R.bal).toFixed(1) + '" r="4.5" fill="var(--accent)" stroke="var(--surface-bg)" stroke-width="2"/>' +
-    '<text class="ax" x="' + L + '" y="' + (H - 6) + '" text-anchor="start">trade 1</text><text class="ax" x="' + (W - Rr) + '" y="' + (H - 6) + '" text-anchor="end">trade ' + R.n + '</text></svg>';
+  const path = k => P.map((q, i) => (i ? 'L' : 'M') + x(i).toFixed(1) + ' ' + y(q[k]).toFixed(1)).join(' ');
+  const last = P[P.length - 1], xe = x(P.length - 1);
+  let s = '<svg viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="Live balance curve with profit target, total drawdown floor and daily loss floor">';
+  for (const tk of niceTicks(lo, hi, 5)) s += '<line class="gl" x1="' + L + '" x2="' + (W - Rr) + '" y1="' + y(tk).toFixed(1) + '" y2="' + y(tk).toFixed(1) + '"/><text class="ax" x="' + (L - 8) + '" y="' + (y(tk) + 4).toFixed(1) + '" text-anchor="end">' + kf(tk) + '</text>';
+  const hl = (v, col, dash) => '<line x1="' + L + '" x2="' + xe.toFixed(1) + '" y1="' + y(v).toFixed(1) + '" y2="' + y(v).toFixed(1) + '" stroke="' + col + '" stroke-dasharray="' + dash + '" stroke-width="1.4"/>';
+  s += hl(R.targetBal, 'var(--buy)', '6 4') + hl(c.bal, 'var(--muted-color)', '2 4');
+  s += '<path d="' + path('f') + '" fill="none" stroke="var(--sell)" stroke-dasharray="6 4" stroke-width="1.7"/>';
+  if (hasD) s += '<path d="' + path('df') + '" fill="none" stroke="var(--warn)" stroke-dasharray="2 3" stroke-width="1.6"/>';
+  s += '<path class="ln" d="' + path('b') + '"/><circle cx="' + xe.toFixed(1) + '" cy="' + y(last.b).toFixed(1) + '" r="5" fill="var(--accent)" stroke="var(--surface-bg)" stroke-width="2"/>';
+  const lab = [{ y: y(R.targetBal), t: 'TARGET ' + kf(R.targetBal), col: 'var(--buy)' }, { y: y(last.f), t: 'LOSS FLOOR ' + kf(last.f), col: 'var(--sell)' }, { y: y(last.b), t: 'NOW ' + kf(last.b), col: 'var(--accent)' }];
+  if (hasD) lab.push({ y: y(last.df), t: 'DAILY FLOOR ' + kf(last.df), col: 'var(--warn)' });
+  lab.sort((m, n) => m.y - n.y);
+  for (let i = 1; i < lab.length; i++) if (lab[i].y - lab[i - 1].y < 13) lab[i].y = lab[i - 1].y + 13;
+  lab.forEach(l => { s += '<text class="ax" x="' + (xe + 10).toFixed(1) + '" y="' + (l.y + 4).toFixed(1) + '" style="fill:' + l.col + ';font-weight:600">' + l.t + '</text>'; });
+  s += '<text class="ax" x="' + L + '" y="' + (H - 6) + '">trade 1</text><text class="ax" x="' + xe.toFixed(1) + '" y="' + (H - 6) + '" text-anchor="end">trade ' + R.n + '</text>';
+  s += '<line class="hv" x1="0" x2="0" y1="' + T + '" y2="' + (H - B) + '"/><circle class="hd" r="4.5" cx="0" cy="0"/></svg><div class="tip"></div>';
+  HOVERS.push({ id: 'pp-live', W, pts: P.map((q, i) => ({ x: x(i), y: y(q.b), tip: '<b>' + money(q.b) + '</b><br>' + (i ? fmtDate(q.t) + ' ' + hhmm(q.t) + '<br>trade #' + i + ': ' + money(q.net, true) : 'start') +
+    '<br>to target ' + money(Math.max(0, R.targetBal - q.b)) + '<br>above loss floor ' + money(q.b - q.f) + (hasD && i ? '<br>day P/L ' + money(q.run, true) + ' · daily floor ' + money(q.df) : '') })) });
+  return '<div class="chart" id="pp-live">' + s + '</div>';
+}
+function propDayBars(R, c) {
+  const D = R.list.slice(-40);
+  if (!D.length) return noData();
+  const W = 760, H = 250, L = 58, Rr = 14, T = 12, B = 28, lim = c.bal * c.daily / 100;
+  let lo = Math.min(0, -lim, ...D.map(d => d.pl)), hi = Math.max(0, ...D.map(d => d.pl)); if (hi === lo) hi = lo + 1;
+  const pad = (hi - lo) * 0.08; lo -= pad; hi += pad;
+  const y = v => T + (H - T - B) * (1 - (v - lo) / (hi - lo)), bw = (W - L - Rr) / D.length;
+  let s = '<svg viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="Daily result against the daily loss limit">';
+  for (const tk of niceTicks(lo, hi, 4)) s += '<line class="gl' + (tk === 0 ? ' zero' : '') + '" x1="' + L + '" x2="' + (W - Rr) + '" y1="' + y(tk).toFixed(1) + '" y2="' + y(tk).toFixed(1) + '"/><text class="ax" x="' + (L - 8) + '" y="' + (y(tk) + 4).toFixed(1) + '" text-anchor="end">' + kf(tk) + '</text>';
+  D.forEach((d, i) => {
+    const bx = L + i * bw + bw * 0.14, w = Math.max(2, bw * 0.72), top = Math.min(y(0), y(d.pl)), h = Math.max(1.5, Math.abs(y(d.pl) - y(0)));
+    s += '<rect class="' + (d.pl >= 0 ? 'bp' : 'bn') + '" x="' + bx.toFixed(1) + '" y="' + top.toFixed(1) + '" width="' + w.toFixed(1) + '" height="' + h.toFixed(1) + '" rx="1.5"><title>' + fmtDay(d.key) + ': ' + money(d.pl, true) + ' · ' + d.n + ' trades · ' + num(d.used, 0) + '% of daily limit</title></rect>';
+  });
+  s += '<line x1="' + L + '" x2="' + (W - Rr) + '" y1="' + y(-lim).toFixed(1) + '" y2="' + y(-lim).toFixed(1) + '" stroke="var(--sell)" stroke-dasharray="5 4" stroke-width="1.5"/><text class="ax" x="' + (W - Rr) + '" y="' + (y(-lim) - 5).toFixed(1) + '" text-anchor="end" style="fill:var(--sell)">daily loss limit ' + kf(-lim) + '</text>';
+  s += '<text class="ax" x="' + L + '" y="' + (H - 8) + '">' + D[0].key.slice(5) + '</text><text class="ax" x="' + (W - Rr) + '" y="' + (H - 8) + '" text-anchor="end">' + D[D.length - 1].key.slice(5) + '</text></svg>';
+  return s;
 }
 function propResultsHTML(a) {
+  HOVERS.length = 0;
   const c = propRules(a);
   if (!a.trades.length) return panel('PROP CHALLENGE ANALYSIS', '<p class="muted">No closed trades in this account yet.</p>');
-  const R = analyseProp(a.trades, c);
-  const k = (l, v, s, cl, small) => '<div class="kpi"><div class="k-label">' + l + '</div><div class="k-val ' + (small ? 'small ' : '') + (cl || '') + '">' + v + '</div><div class="k-sub">' + (s || '') + '</div></div>';
+  const R = analyseProp(a.trades, c), H = propHealth(R, c), ld = R.lastDay, wd = R.worstDD, lim = c.bal * c.daily / 100;
+  const targetAmt = c.bal * c.target / 100, reachedT = R.net >= targetAmt, daysOk = R.daysTraded >= c.days;
   let state, sc, sub;
   if (R.breach) { state = 'FAILED'; sc = 'neg'; sub = (R.breach.type === 'daily' ? 'Daily drawdown limit' : 'Max total drawdown') + ' breached on ' + fmtDay(R.breach.key); }
-  else if (R.net >= c.bal * c.target / 100 && R.daysTraded >= c.days) { state = 'TARGET REACHED'; sc = 'pos'; sub = 'Profit target hit' + (R.reached ? ' on ' + fmtDay(R.reached) : '') + ', no rule breached'; }
-  else if (R.net >= c.bal * c.target / 100) { state = 'MIN DAYS PENDING'; sc = ''; sub = 'Target reached · ' + (c.days - R.daysTraded) + ' more trading day(s) needed'; }
+  else if (reachedT && daysOk) { state = 'TARGET REACHED'; sc = 'pos'; sub = 'Profit target hit' + (R.reached ? ' on ' + fmtDay(R.reached) : '') + ', no rule breached'; }
+  else if (reachedT) { state = 'MIN DAYS PENDING'; sc = ''; sub = 'Target reached · ' + (c.days - R.daysTraded) + ' more trading day(s) needed'; }
   else { state = 'IN PROGRESS'; sc = ''; sub = 'No rule breached · ' + money(R.remaining) + ' still needed'; }
-  const ld = R.lastDay, wd = R.worstDD;
-  const k1 = '<div class="kpis">' +
-    k('CHALLENGE STATUS', state, sub, sc, true) +
-    k('TARGET PROGRESS', num(R.progress, 1) + '%', money(R.net, true) + ' of ' + money(c.bal * c.target / 100) + ' target', R.progress >= 100 ? 'pos' : '') +
-    k('WORST DAILY DRAWDOWN', num(wd.ddPct, 2) + '%', 'Limit ' + c.daily + '%' + (wd.key ? ' · ' + fmtDay(wd.key) : ''), wd.ddPct >= c.daily ? 'neg' : (wd.ddPct >= 0.7 * c.daily ? 'warn' : '')) +
-    k('TOTAL DRAWDOWN', num(R.totDD, 2) + '%', 'Limit ' + c.total + '% · ' + (c.type === 'trail' ? 'from peak balance' : 'from initial · lowest balance ' + money(R.minBal)), R.totDD >= c.total ? 'neg' : (R.totDD >= 0.7 * c.total ? 'warn' : '')) + '</div>';
-  const k2 = '<div class="kpis">' +
-    k('BALANCE', money(R.bal), 'Initial ' + money(c.bal), cls(R.net)) +
-    k('NET P/L', money(R.net, true), num(R.netPct, 2) + '% of initial size', cls(R.net)) +
-    k('BUFFER TO LOSS FLOOR', money(R.buffer), 'Floor at ' + money(R.floor) + (c.type === 'trail' ? ' (trailing)' : ' (static)'), R.buffer <= 0 ? 'neg' : '') +
+  const pl = (t, k) => '<span class="pill ' + k + '">' + t + '</span>';
+  const lvl = (v, limit) => !(limit > 0) ? ['OFF', ''] : v > limit ? ['FAIL', 'bad'] : v >= 0.7 * limit ? ['AT RISK', 'warn'] : ['SAFE', 'good'];
+  const rule = (name, limit, cur, buf, st) => '<tr><td>' + name + '</td><td class="r">' + limit + '</td><td class="r">' + cur + '</td><td class="r muted">' + buf + '</td><td class="r">' + pl(st[0], st[1]) + '</td></tr>';
+  const dS = lvl(wd.ddPct, c.daily), tS = lvl(R.totDD, c.total);
+  const rows = rule('Profit target', c.target + '% · ' + money(targetAmt), money(R.net, true), reachedT ? 'reached' : money(R.remaining) + ' to go', reachedT ? ['MET', 'good'] : ['OPEN', ''])
+    + rule('Daily drawdown', c.daily + '% · ' + money(lim), num(wd.ddPct, 2) + '%' + (wd.key ? ' · ' + fmtDay(wd.key) : ''), num(Math.max(0, c.daily - wd.ddPct), 2) + '% left', dS)
+    + rule('Total drawdown', c.total + '% · ' + (c.type === 'trail' ? 'trailing' : 'static'), num(R.totDD, 2) + '%', num(Math.max(0, c.total - R.totDD), 2) + '% left', tS)
+    + (c.days ? rule('Minimum trading days', String(c.days), String(R.daysTraded), daysOk ? 'done' : (c.days - R.daysTraded) + ' to go', daysOk ? ['MET', 'good'] : ['OPEN', '']) : '')
+    + (c.cons > 0 ? rule('Consistency (best day)', '≤ ' + c.cons + '% of profit', R.bestShare != null ? num(R.bestShare, 0) + '%' : '—', R.bestShare != null ? num(c.cons - R.bestShare, 0) + ' pts' : '', R.bestShare == null ? ['N/A', ''] : R.bestShare > c.cons ? ['FAIL', 'bad'] : ['MET', 'good']) : '');
+  const status = '<section class="panel"><h3>CHALLENGE STATUS</h3><div class="today-n ' + sc + '" style="font-size:30px">' + state + '</div><div class="fine" style="margin:4px 0 12px">' + esc(sub) + '</div>' +
+    '<div class="pp-prog"><i style="width:' + Math.max(0, Math.min(100, R.progress)) + '%"></i></div><div class="fine" style="margin:-8px 0 14px">' + num(Math.max(0, R.progress), 1) + '% of the profit target</div>' +
+    '<div class="tbl-wrap"><table class="tbl"><thead><tr><th>Rule</th><th class="r">Limit</th><th class="r">Current</th><th class="r">Buffer</th><th class="r">Status</th></tr></thead><tbody>' + rows + '</tbody></table></div></section>';
+  const health = '<section class="panel"><h3>CHALLENGE HEALTH SCORE</h3><div class="score"><div>' + ringSVG(H.total, H.label) + '</div><div class="score-bars">' + scoreBar('Rule safety', H.safety) + scoreBar('Risk discipline', H.disc) + scoreBar('Consistency', H.cons) + scoreBar('Edge', H.edge) + '</div></div>' +
+    '<p class="fine">Rule safety (40%): distance to the daily and total limits. Risk discipline (20%): largest single loss vs the daily limit. Consistency (20%): how much one day carries the profit. Edge (20%): profit factor. A guide for self-review, not a prediction.</p></section>';
+  const k = (l, v, s, cl) => '<div class="kpi"><div class="k-label">' + l + '</div><div class="k-val ' + (cl || '') + '">' + v + '</div><div class="k-sub">' + (s || '') + '</div></div>';
+  const kp = '<div class="kpis">' + k('BALANCE', money(R.bal), 'Initial ' + money(c.bal), cls(R.net)) + k('NET P/L', money(R.net, true), num(R.netPct, 2) + '% of initial size', cls(R.net)) +
+    k('BUFFER TO LOSS FLOOR', money(R.buffer), 'Floor ' + money(R.floor) + (c.type === 'trail' ? ' (trailing)' : ' (static)'), R.buffer <= 0 ? 'neg' : '') +
     k('LATEST DAY · LIMIT USED', ld ? num(ld.used, 0) + '%' : '—', ld ? fmtDay(ld.key) + ' · ' + money(ld.pl, true) : '', ld && ld.used >= 80 ? 'neg' : '') + '</div>';
-  const rows = R.list.slice(-40).reverse().map(d => {
+  const gz = (frac, tick, label, cl) => '<div class="gz-track ' + (cl || '') + '">' + (tick != null ? '<i class="gz-tick" style="left:' + clamp(tick, 0, 1) * 100 + '%"></i>' : '') + '<div class="gz-mark" style="left:' + clamp(frac, 0, 1) * 100 + '%"><b>' + label + '</b></div></div>';
+  const span = R.targetBal - R.floor;
+  const totG = '<section class="panel"><h3>WHERE YOU ARE · LOSS FLOOR → TARGET</h3>' + gz((R.bal - R.floor) / span, (c.bal - R.floor) / span, 'NOW ' + money(R.bal)) +
+    '<div class="gz-ends"><span>LOSS FLOOR ' + money(R.floor) + '</span><span>TARGET ' + money(R.targetBal) + '</span></div><p class="fine"><b>' + money(R.buffer) + '</b> above the loss floor · <b>' + money(R.remaining) + '</b> to the target · grey tick = initial balance.</p></section>';
+  let dayG;
+  if (!ld || !(c.daily > 0)) dayG = '<section class="panel"><h3>TODAY\'S DAILY DRAWDOWN</h3><p class="muted">' + (c.daily > 0 ? 'No trades yet.' : 'No daily drawdown limit set.') + '</p></section>';
+  else {
+    const cur = ld.limit > 0 ? Math.max(0, -ld.pl) / ld.limit : 0;
+    dayG = '<section class="panel"><h3>DAILY DRAWDOWN · ' + fmtDay(ld.key).toUpperCase() + '</h3>' + gz(cur, ld.used / 100, num(cur * 100, 0) + '% USED', 'daily') +
+      '<div class="gz-ends"><span>0%</span><span>DAILY FLOOR ' + money(ld.start - ld.limit) + ' (100%)</span></div><p class="fine">Day started at <b>' + money(ld.start) + '</b>, now <b>' + money(ld.start + ld.pl) + '</b> (' + money(ld.pl, true) + '). Worst point of the day <b>' + money(ld.start + ld.low) + '</b> = ' + num(ld.used, 0) + '% of the limit (grey tick).</p></section>';
+  }
+  const charts = '<div class="grid-2">' + totG + dayG + '</div>' +
+    panel('LIVE BALANCE CHART · RULES DRAWN ON IT', propChart(R, c) + '<p class="fine">Blue = balance · green dashed = profit target · red dashed = total drawdown floor · amber dotted = the daily loss floor of each day · grey dotted = initial balance. Hover the chart for the details of every trade. It redraws instantly when you change a rule above.</p>') +
+    panel('DAILY RESULT VS DAILY LOSS LIMIT · LAST ' + Math.min(40, R.list.length) + ' DAYS', propDayBars(R, c) + '<p class="fine">Any bar reaching the red line ends the challenge.</p>');
+  const avgLpct = R.avgL / c.bal * 100, rk = (l, v) => '<tr><td>' + l + '</td><td class="r">' + v + '</td></tr>';
+  const cap = '<div class="tbl-wrap"><table class="tbl kv"><tbody>' +
+    rk('Average losing trade', money(-R.avgL) + ' · ' + num(avgLpct, 2) + '% of initial') + rk('Worst single trade', R.worstTrade < 0 ? money(R.worstTrade) + ' · ' + num(-R.worstTrade / lim * 100, 0) + '% of daily limit' : '—') +
+    rk('Average losses to hit the daily limit', R.avgL > 0 && lim > 0 ? num(lim / R.avgL, 1) : '—') + rk('Average losses in a row to breach the total floor', R.avgL > 0 && R.buffer > 0 ? num(R.buffer / R.avgL, 1) : '—') +
+    rk('Rule-of-thumb max risk per trade', lim > 0 ? money(lim / 4) + ' · ' + num(lim / 4 / c.bal * 100, 2) + '%' : '—') + '</tbody></table></div><p class="fine">Rule of thumb: risk no more than a quarter of the daily limit per trade, so that four straight losses still cannot end the day. Compare it with your average loss above.</p>';
+  const S = propSim(R, c);
+  const sim = S ? '<div class="sim"><div class="sim-k"><div class="k-label">REACH TARGET FIRST</div><div class="k-val ' + (S.pass >= 0.5 ? 'pos' : '') + '">' + num(S.pass * 100, 0) + '%</div></div><div class="sim-k"><div class="k-label">BREACH A LIMIT FIRST</div><div class="k-val ' + (S.fail >= 0.4 ? 'neg' : '') + '">' + num(S.fail * 100, 0) + '%</div></div><div class="sim-k"><div class="k-label">STILL OPEN AFTER ' + S.maxD + ' DAYS</div><div class="k-val">' + num(S.open * 100, 0) + '%</div></div></div>' +
+    '<p class="fine">Method: your own ' + R.n + ' trades are re-sampled ' + S.runs.toLocaleString() + ' times, starting from today\'s balance, using your usual number of trades per day.' + (S.med ? ' Typical time to target in the runs that pass: ' + S.med + ' trading day(s).' : '') + ' It assumes the future looks like your past and ignores floating equity, so treat it as a rough gauge, not a promise.</p>'
+    : '<p class="muted">' + (R.breach ? 'The challenge is already failed — no projection.' : reachedT && daysOk ? 'The target is already reached.' : 'Needs at least 20 closed trades to project a pass probability.') + '</p>';
+  const risk = '<div class="grid-2"><section class="panel"><h3>RISK CAPACITY</h3>' + cap + '</section><section class="panel"><h3>PASS PROBABILITY · SIMULATION</h3>' + sim + '</section></div>';
+  const trs = R.list.slice(-40).reverse().map(d => {
     const pc = d.used >= 100 ? 'bad' : d.used >= 70 ? 'warn' : '';
     return '<tr><td>' + fmtDay(d.key) + '</td><td class="r muted">' + d.n + '</td><td class="r ' + cls(d.pl) + '">' + money(d.pl, true) + '</td><td class="r">' + (d.used ? '<span class="pill ' + pc + '">' + num(d.used, 0) + '%</span>' : '<span class="muted">—</span>') + '</td></tr>';
   }).join('');
   const p = [];
-  p.push('The account moved from ' + money(c.bal) + ' to ' + money(R.bal) + ' (' + (R.netPct >= 0 ? '+' : '') + num(R.netPct) + '%) over ' + R.daysTraded + ' trading days — ' + num(Math.max(0, R.progress), 0) + '% of the ' + c.target + '% profit target.' +
+  p.push('The account moved from ' + money(c.bal) + ' to ' + money(R.bal) + ' (' + (R.netPct >= 0 ? '+' : '') + num(R.netPct) + '%) over ' + R.daysTraded + ' trading days — ' + num(Math.max(0, R.progress), 0) + '% of the ' + c.target + '% target.' +
     (R.net > 0 && R.daysTraded ? ' At the current average of ' + money(R.net / R.daysTraded) + ' per trading day' + (R.remaining > 0 ? ', about ' + Math.ceil(R.remaining / (R.net / R.daysTraded)) + ' more day(s) would be needed.' : ', the target is already covered.') : ''));
   if (R.breach) p.push('<b class="neg">Rule breach:</b> the ' + (R.breach.type === 'daily' ? c.daily + '% daily drawdown limit' : c.total + '% max drawdown limit') + ' was crossed on ' + fmtDay(R.breach.key) + '. On most prop firms this ends the challenge — confirm with your firm how they count it.');
-  else p.push('No breach of the ' + c.daily + '% daily limit or the ' + c.total + '% total limit is visible on closed trades. Distance to the loss floor is ' + money(R.buffer) + (c.type === 'trail' ? ' (trailing: it rises with every new balance high).' : '.') + (R.daysNear ? ' <b class="neg">' + R.daysNear + ' day(s) used 80%+ of the daily limit</b> — risky territory.' : ''));
-  if (wd.ddPct > 0) p.push('Worst daily drawdown: ' + num(wd.ddPct, 2) + '% on ' + fmtDay(wd.key) + ' (' + num(wd.ddPct / c.daily * 100, 0) + '% of your daily limit). Total drawdown reached ' + num(R.totDD, 2) + '% of the ' + c.total + '% allowed; the account now sits ' + num(R.curDD, 2) + '% from its peak.');
+  else p.push('No breach of the ' + c.daily + '% daily limit or the ' + c.total + '% total limit is visible on closed trades; the distance to the loss floor is ' + money(R.buffer) + (c.type === 'trail' ? ' (trailing: it rises with every new balance high).' : '.') + (R.daysNear ? ' <b class="neg">' + R.daysNear + ' day(s) used 80%+ of the daily limit</b> — risky territory.' : ''));
+  if (wd.ddPct > 0) p.push('Worst daily drawdown ' + num(wd.ddPct, 2) + '% on ' + fmtDay(wd.key) + ' (' + num(wd.ddPct / c.daily * 100, 0) + '% of your daily limit). Total drawdown reached ' + num(R.totDD, 2) + '% of the ' + c.total + '% allowed; the account now sits ' + num(R.curDD, 2) + '% below its peak.');
+  if (R.worstTrade < 0 && lim > 0 && -R.worstTrade > 0.5 * lim) p.push('<b class="neg">Position sizing:</b> your worst trade (' + money(R.worstTrade) + ') alone used ' + num(-R.worstTrade / lim * 100, 0) + '% of the daily limit. Two such losses in a day would end the challenge.');
   if (R.bestShare != null && R.bestShare > 40) p.push('Consistency: your best day (' + fmtDay(R.best.key) + ', ' + money(R.best.pl, true) + ') is ' + num(R.bestShare, 0) + '% of total profit. Many firms apply a consistency rule (often 30–40%) — check yours.');
   if (R.avgL > 0 && R.avgW > 0) p.push('Average win is ' + num(R.avgW / R.avgL) + '× the average loss with a ' + num(R.wr, 0) + '% win rate' + (R.pf !== Infinity ? ' (profit factor ' + num(R.pf) + ')' : '') + (R.avgL > R.avgW && R.wr < 60 ? ' — losses are larger than wins, which is hard to sustain.' : '.'));
+  if (S) p.push('Simulation: roughly ' + num(S.pass * 100, 0) + ' of 100 continuations reach the target first and ' + num(S.fail * 100, 0) + ' end with a breach.');
   if (R.n < 30) p.push('Only ' + R.n + ' closed trades so far — treat these statistics as a rough guide, not a verdict.');
-  return k1 + '<div class="pp-prog"><i style="width:' + Math.max(0, Math.min(100, R.progress)) + '%"></i></div>' + k2 +
-    '<div class="grid-2"><section class="panel"><h3>BALANCE CURVE VS RULES</h3>' + propChart(R, c) + '<p class="fine">Green dashed = profit target · red dashed = loss floor · grey dashed = initial size.</p></section>' +
-    '<section class="panel"><h3>DAILY RESULTS · % OF DAILY LIMIT USED</h3><div class="pp-days tbl-wrap"><table class="tbl"><thead><tr><th>Day</th><th class="r">Trades</th><th class="r">P/L</th><th class="r">Daily limit used</th></tr></thead><tbody>' + rows + '</tbody></table></div></section></div>' +
-    panel('ASL PROP ACCOUNT REVIEW', '<div class="pp-p">' + p.map(t => '<p>' + t + '</p>').join('') + '</div><p class="fine">Uses closed trades only (a statement does not show floating/intraday equity), so a firm that tracks equity may flag a breach this view cannot see. Days follow the broker/server time of the statement. Rules differ between firms — confirm yours. Statistics on few trades are not reliable. Not investment advice.</p>');
+  const tail = '<div class="grid-2"><section class="panel"><h3>DAILY RESULTS · % OF DAILY LIMIT USED</h3><div class="pp-days tbl-wrap"><table class="tbl"><thead><tr><th>Day</th><th class="r">Trades</th><th class="r">P/L</th><th class="r">Daily limit used</th></tr></thead><tbody>' + trs + '</tbody></table></div></section>' +
+    panel('ASL PROP ACCOUNT REVIEW', '<div class="pp-p">' + p.map(t => '<p>' + t + '</p>').join('') + '</div><p class="fine">Uses closed trades only (a statement does not show floating/intraday equity), so a firm that tracks equity may flag a breach this view cannot see. Days follow the broker/server time of the statement. Rules differ between firms — confirm yours. Not investment advice.</p>') + '</div>';
+  return '<div class="grid-main">' + status + health + '</div>' + kp + charts + risk + tail;
 }
 function viewProp(a) {
   const r = propRules(a);
   const inp = (key, l, st) => '<label>' + l + '<input class="inp" type="number" min="0" step="' + st + '" data-pp="' + key + '" value="' + r[key] + '"></label>';
   const sel = (key, l, opts) => '<label>' + l + '<select class="inp" data-pp="' + key + '">' + opts.map(o => '<option value="' + o[0] + '"' + (r[key] === o[0] ? ' selected' : '') + '>' + o[1] + '</option>').join('') + '</select></label>';
   const form = '<div class="form-g pp-g">' + inp('bal', 'Initial account size', 1000) + inp('target', 'Profit target (%)', 0.5) + inp('days', 'Minimum trading days', 1) + inp('daily', 'Max daily drawdown (%)', 0.5) + inp('total', 'Max total drawdown (%)', 0.5) +
-    sel('dbase', 'Daily limit based on', [['initial', 'Initial balance'], ['start', 'Start-of-day balance']]) + sel('type', 'Max drawdown type', [['static', 'Static (from initial)'], ['trail', 'Trailing (from peak)']]) + '</div>' +
-    '<p class="fine">Type the rules of your challenge. Results update instantly and are saved in this browser for this account. This view always uses all trades of the account (the period filter above does not apply).</p>';
+    inp('cons', 'Consistency: best day ≤ % of profit (0 = off)', 1) + sel('dbase', 'Daily limit based on', [['initial', 'Initial balance'], ['start', 'Start-of-day balance']]) + sel('type', 'Max drawdown type', [['static', 'Static (from initial)'], ['trail', 'Trailing (from peak)']]) + '</div>' +
+    '<p class="fine">Type the rules of your challenge — results update instantly and are saved in this browser for this account. This view always uses all trades of the account (the period filter above does not apply).</p>';
   return panel('PROP FIRM CHALLENGE · RULES', form) + '<div id="prop-results">' + propResultsHTML(a) + '</div>';
 }
 
+function typeBanner() {
+  return '<section class="panel"><h3>WHAT KIND OF ACCOUNT IS THIS?</h3><div class="atype"><button type="button" class="acard" data-settype="prop"><b>Prop firm challenge</b><span>Adds the Prop tab: target, daily &amp; total drawdown, live chart and pass probability.</span></button>' +
+    '<button type="button" class="acard" data-settype="real"><b>Real / personal account</b><span>Keeps the full performance analysis, strengths, weaknesses and journal.</span></button></div></section>';
+}
+function propStrip(a) {
+  if (!a.trades.length) return '';
+  const c = propRules(a), R = analyseProp(a.trades, c), wd = R.worstDD, done = R.net >= c.bal * c.target / 100 && R.daysTraded >= c.days;
+  const st = R.breach ? 'FAILED' : done ? 'TARGET REACHED' : 'IN PROGRESS', sc = R.breach ? 'neg' : done ? 'pos' : '';
+  const k = (l, v, s, cl, sm) => '<div class="kpi"><div class="k-label">' + l + '</div><div class="k-val ' + (sm ? 'small ' : '') + (cl || '') + '">' + v + '</div><div class="k-sub">' + s + '</div></div>';
+  return '<div class="kpis">' + k('PROP CHALLENGE', st, R.breach ? (R.breach.type === 'daily' ? 'Daily' : 'Total') + ' drawdown breached ' + fmtDay(R.breach.key) : 'No rule breached', sc, true) +
+    k('TARGET PROGRESS', num(Math.max(0, R.progress), 1) + '%', money(R.net, true) + ' of ' + money(c.bal * c.target / 100), R.progress >= 100 ? 'pos' : '') +
+    k('WORST DAILY DRAWDOWN', num(wd.ddPct, 2) + '%', 'Limit ' + c.daily + '%', wd.ddPct > c.daily ? 'neg' : '') +
+    k('TOTAL DRAWDOWN', num(R.totDD, 2) + '%', 'Limit ' + c.total + '% · ' + money(R.buffer) + ' above floor', R.totDD > c.total ? 'neg' : '') + '</div>' +
+    '<p style="margin:-6px 0 16px"><a class="lnk" data-view="prop">Open the full prop analysis →</a></p>';
+}
 /* ---------------- render / state ---------------- */
 let ctxCache = { key: '', val: null };
 function getCtx(a) {
@@ -1461,11 +1588,15 @@ function render() {
   $('#acctbar').innerHTML = '<div class="ab-l"><div class="ab-name">' + esc(a.name) + (a.demo ? ' <span class="pill warn">DEMO DATA</span>' : '') + (a.acctType === 'prop' ? ' <span class="pill tag">PROP</span>' : '') + '</div><div class="ab-meta">' + esc(a.platform || 'MT4/MT5') + (a.login ? ' · Account ••••' + esc(String(a.login).slice(-4)) : '') + ' · ' + a.currency + ' · ' + a.trades.length + ' trades' + (a.startBalance ? ' · start ' + money(a.startBalance) : '') + '</div></div>' +
     '<div class="seg" role="group" aria-label="Period">' + ranges.map(r => '<button data-range="' + r[0] + '" aria-pressed="' + (DB.ui.range === r[0]) + '">' + r[1] + '</button>').join('') + '</div>' +
     '<div class="ab-r"><button class="btn-mini" data-open="add">+ Trade</button><button class="btn-mini" data-open="connect">Import</button><button class="btn-mini" data-open="settings">Settings</button></div>';
+  const isProp = a.acctType === 'prop', pt = $('#tabs [data-view="prop"]');
+  if (pt) pt.hidden = !isProp;
+  if (DB.ui.view === 'prop' && !isProp) DB.ui.view = 'overview';
   $$('#tabs button').forEach(b => b.setAttribute('aria-selected', String(b.dataset.view === DB.ui.view)));
   HOVERS.length = 0;
   ensureCal(a);
   const ctx = getCtx(a);
-  $('#view').innerHTML = (VIEWS[DB.ui.view] || VIEWS.overview)(a, ctx);
+  const ask = (!a.acctType && !a.demo) ? typeBanner() : '', strip = (isProp && DB.ui.view === 'overview') ? propStrip(a) : '';
+  $('#view').innerHTML = ask + strip + (VIEWS[DB.ui.view] || VIEWS.overview)(a, ctx);
   bindHovers();
 }
 function bindHovers() {
@@ -1524,14 +1655,32 @@ function connectModal(targetId, initialFile) {
         pending = res;
         const t = res.trades, from = Math.min(...t.map(x => x.open)), to = Math.max(...t.map(x => x.close));
         pv.innerHTML = '<div class="ok-box"><b>' + t.length + ' closed trades</b> found · ' + fmtDate(from) + ' → ' + fmtDate(to) + (res.meta.currency ? ' · ' + esc(res.meta.currency) : '') + (res.meta.platform ? ' · ' + esc(res.meta.platform) : '') + (res.skipped ? ' · ' + res.skipped + ' rows skipped (open or pending orders)' : '') + '</div>' + (res.notes && res.notes.length ? '<div class="note-box">' + res.notes.map(esc).join('<br>') + '</div>' : '') +
-          '<div class="form-g"><label>Account name<input id="c-name" class="inp" value="' + esc((res.meta.platform || 'Trading') + (res.meta.account ? ' ••••' + res.meta.account.slice(-4) : ' account')) + '"></label>' +
-          '<label>Starting balance (deposit)<input id="c-start" class="inp" type="number" step="0.01" value="' + (res.startBalance != null ? res.startBalance : '') + '" placeholder="e.g. 10000"></label>' +
+                    '<div class="lbl" style="margin-top:22px">STEP 2 · WHAT KIND OF ACCOUNT IS THIS?</div>' +
+          '<div class="atype"><button type="button" class="acard" data-atype="prop" aria-pressed="false"><b>Prop firm challenge</b><span>Check the account against the profit target, daily drawdown and total drawdown rules.</span></button>' +
+          '<button type="button" class="acard" data-atype="real" aria-pressed="false"><b>Real / personal account</b><span>Full performance analysis: equity, strengths, weaknesses and journal.</span></button></div>' +
+          '<div id="c-prop" hidden><div class="lbl">STEP 3 · YOUR CHALLENGE RULES (as given by your firm)</div><div class="form-g">' +
+          '<label>Profit target (%)<input id="c-ptarget" class="inp" type="number" step="0.5" value="8"></label><label>Minimum trading days<input id="c-pdays" class="inp" type="number" step="1" value="0"></label>' +
+          '<label>Max daily drawdown (%)<input id="c-pdaily" class="inp" type="number" step="0.5" value="5"></label><label>Max total drawdown (%)<input id="c-ptotal" class="inp" type="number" step="0.5" value="10"></label>' +
+          '<label>Daily limit based on<select id="c-pdbase" class="inp"><option value="initial">Initial balance</option><option value="start">Start-of-day balance</option></select></label>' +
+          '<label>Max drawdown type<select id="c-ptype" class="inp"><option value="static">Static (from initial)</option><option value="trail">Trailing (from peak)</option></select></label>' +
+          '<label>Consistency rule: best day ≤ % of profit (0 = none)<input id="c-pcons" class="inp" type="number" step="1" value="0"></label></div></div>' +
+          '<div class="lbl">ACCOUNT DETAILS</div><div class="form-g"><label>Account name<input id="c-name" class="inp" value="' + esc((res.meta.platform || 'Trading') + (res.meta.account ? ' ••••' + res.meta.account.slice(-4) : ' account')) + '"></label>' +
+          '<label>Starting balance / initial account size<input id="c-start" class="inp" type="number" step="0.01" value="' + (res.startBalance != null ? res.startBalance : '') + '" placeholder="e.g. 100000"></label>' +
           '<label>Currency<input id="c-cur" class="inp" maxlength="3" value="' + esc(res.meta.currency || 'USD') + '"></label>' +
-          '<label>Import into<select id="c-target" class="inp"><option value="new">New account</option>' + exist.map(a => '<option value="' + esc(a.id) + '"' + (a.id === targetId ? ' selected' : '') + '>' + esc(a.name) + '</option>').join('') + '</select></label>' +
-          '<label>Account type<select id="c-acct" class="inp"><option value="real">Real / personal account</option><option value="prop">Prop firm challenge</option></select></label></div>' +
-          '<p class="fine">Starting balance is used for drawdown % and returns. Later deposits/withdrawals are ignored so results reflect trading only.</p><button class="btn btn-primary" id="do-import">Import trades</button>';
+          '<label>Import into<select id="c-target" class="inp"><option value="new">New account</option>' + exist.map(a => '<option value="' + esc(a.id) + '"' + (a.id === targetId ? ' selected' : '') + '>' + esc(a.name) + '</option>').join('') + '</select></label></div>' +
+          '<p class="fine">Starting balance is used for drawdown % and returns. Later deposits/withdrawals are ignored so results reflect trading only.</p><button class="btn btn-primary" id="do-import" disabled>Choose an account type to continue</button>';
+        let atype = null;
+        const sync = () => {
+          $$('.acard', root).forEach(x => x.setAttribute('aria-pressed', String(x.dataset.atype === atype)));
+          $('#c-prop', root).hidden = atype !== 'prop';
+          const bt = $('#do-import', root); bt.disabled = !atype; bt.textContent = atype ? 'Import trades & open ' + (atype === 'prop' ? 'prop analysis' : 'analysis') : 'Choose an account type to continue';
+        };
+        $$('.acard', root).forEach(x => x.onclick = () => { atype = x.dataset.atype; sync(); });
+        sync();
         $('#do-import', root).onclick = () => {
-          const target = $('#c-target', root).value, start = parseFloat($('#c-start', root).value), cur = ($('#c-cur', root).value || 'USD').toUpperCase().slice(0, 3), atype = $('#c-acct', root).value;
+          if (!atype) return;
+          const target = $('#c-target', root).value, start = parseFloat($('#c-start', root).value), cur = ($('#c-cur', root).value || 'USD').toUpperCase().slice(0, 3);
+          if (atype === 'prop' && !(start > 0)) { toast('Enter the starting balance (initial account size) of the challenge.'); return; }
           let acc, msg;
           if (target === 'new') {
             acc = { id: uid(), name: ($('#c-name', root).value || 'My account').trim(), platform: res.meta.platform || 'Statement', login: res.meta.account || '', currency: cur, startBalance: isFinite(start) ? start : 0, demo: false, trades: res.trades, dayNotes: {}, created: Date.now(), rev: 0 };
@@ -1541,7 +1690,9 @@ function connectModal(targetId, initialFile) {
             if (!acc.startBalance && isFinite(start)) acc.startBalance = start;
             msg = 'Added ' + m.added + ' new trades (' + m.dup + ' duplicates skipped).';
           }
-          acc.acctType = atype; DB.activeId = acc.id; UI.cal = null; UI.day = null; DB.ui.view = atype === 'prop' ? 'prop' : 'overview';
+          acc.acctType = atype;
+          if (atype === 'prop') { const g = id => parseFloat($('#' + id, root).value) || 0; acc.prop = { bal: start, target: g('c-ptarget'), days: g('c-pdays'), daily: g('c-pdaily'), total: g('c-ptotal'), cons: g('c-pcons'), dbase: $('#c-pdbase', root).value, type: $('#c-ptype', root).value }; }
+          DB.activeId = acc.id; UI.cal = null; UI.day = null; DB.ui.view = atype === 'prop' ? 'prop' : 'overview';
           saveDB(); closeModal(); render(); toast(msg);
         };
       } catch (e) { pv.innerHTML = '<div class="err">Could not read this file: ' + esc(e.message) + '</div>'; }
@@ -1624,12 +1775,13 @@ function init() {
   loadDB();
   applyTheme(document.documentElement.getAttribute('data-theme') === 'light' ? 'light' : 'dark', false);
   document.addEventListener('click', e => {
-    const t = e.target.closest('[data-view],[data-range],[data-open],[data-edit],[data-cal],[data-day],[data-more],[data-close],[data-theme-btn],[data-demo]');
+    const t = e.target.closest('[data-view],[data-range],[data-open],[data-edit],[data-cal],[data-day],[data-more],[data-close],[data-theme-btn],[data-demo],[data-settype]');
     if (!t) return;
     const d = t.dataset;
     if (d.close && (e.target === t || t.classList.contains('x'))) return closeModal();
     if (d.themeBtn) return applyTheme(d.themeBtn, true);
     if ('demo' in d) return addDemo();
+    if (d.settype) { const a = active(); a.acctType = d.settype; if (d.settype === 'prop') DB.ui.view = 'prop'; saveDB(); render(); return; }
     if (d.view) { DB.ui.view = d.view; saveDB(); render(); window.scrollTo({ top: 0, behavior: 'smooth' }); return; }
     if (d.range) { DB.ui.range = d.range; saveDB(); render(); return; }
     if (d.open === 'connect') return connectModal(active() && !active().demo ? active().id : null);
@@ -1652,7 +1804,7 @@ function init() {
       const a = active(); a.prop = a.prop || {}; const key = el.dataset.pp;
       a.prop[key] = (key === 'dbase' || key === 'type') ? el.value : (parseFloat(el.value) || 0);
       clearTimeout(init.t2); init.t2 = setTimeout(saveDB, 400);
-      const r = $('#prop-results'); if (r) r.innerHTML = propResultsHTML(a);
+      const r = $('#prop-results'); if (r) { r.innerHTML = propResultsHTML(a); bindHovers(); }
       return;
     }
     const map = { 'jf-q': 'q', 'jf-res': 'res', 'jf-setup': 'setup', 'jf-mistake': 'mistake' };
