@@ -734,7 +734,7 @@
       <h2>Signal Snapshot — 3 Timeframes</h2>
       <span class="rule"></span>
     </div>
-    <div class="section-note" id="tf-grid-note">Two independent live ratings per timeframe: TradingView's technical-analysis widget above, and ASL's own RSI/MACD/moving-average rating below, computed from xaus.com's hourly and daily gold candles and recalculated every minute</div>
+    <div class="section-note" id="tf-grid-note">ASL live ratings for 1H, 4H and Daily, computed from xaus.com's gold candles using RSI, MACD and moving-average rules and recalculated automatically</div>
     <div class="master-score" id="master-score">
       <div class="ms-head">
         <div class="ms-label">MASTER SIGNAL</div>
@@ -746,18 +746,21 @@
     <div class="tf-grid">
       <div class="tf-card">
         <h4>1H</h4>
-        <div class="tv-embed" id="tv-tf-1h" data-src="https://s3.tradingview.com/external-embedding/embed-widget-technical-analysis.js" data-config='{"interval":"1h","width":"100%","isTransparent":true,"height":"100%","symbol":"OANDA:XAUUSD","showIntervalTabs":false,"displayMode":"single","locale":"en"}'></div>
-        <div class="tf-fallback" id="tf-fb-1h"></div>
+        <div class="tf-fallback" id="tf-fb-1h">
+          <span class="fb-meta">Building live signal…</span>
+        </div>
       </div>
       <div class="tf-card">
         <h4>4H</h4>
-        <div class="tv-embed" id="tv-tf-4h" data-src="https://s3.tradingview.com/external-embedding/embed-widget-technical-analysis.js" data-config='{"interval":"4h","width":"100%","isTransparent":true,"height":"100%","symbol":"OANDA:XAUUSD","showIntervalTabs":false,"displayMode":"single","locale":"en"}'></div>
-        <div class="tf-fallback" id="tf-fb-4h"></div>
+        <div class="tf-fallback" id="tf-fb-4h">
+          <span class="fb-meta">Building live signal…</span>
+        </div>
       </div>
       <div class="tf-card">
         <h4>DAILY</h4>
-        <div class="tv-embed" id="tv-tf-1d" data-src="https://s3.tradingview.com/external-embedding/embed-widget-technical-analysis.js" data-config='{"interval":"1D","width":"100%","isTransparent":true,"height":"100%","symbol":"OANDA:XAUUSD","showIntervalTabs":false,"displayMode":"single","locale":"en"}'></div>
-        <div class="tf-fallback" id="tf-fb-1d"></div>
+        <div class="tf-fallback" id="tf-fb-1d">
+          <span class="fb-meta">Building live signal…</span>
+        </div>
       </div>
     </div>
   </section>
@@ -1004,7 +1007,7 @@
 
   <footer>
     <div class="disclaimer">
-      Market data on this page (spot price, pivot levels, indicators, correlations, session status) is calculated automatically from third-party feeds and is indicative only — it may be delayed, incomplete or differ from your broker's prices. The trade plan (entry, stop-loss, take-profit), the confluence score and the 30-day strategy chart are generated automatically by fixed rules for educational illustration; the strategy chart is a hypothetical simulation, not actual trading results. The 1H/4H/Daily Signal Snapshot shows two independent ratings: TradingView's own technical-analysis engine, and ASL's own RSI/MACD/moving-average rating computed from xaus.com's candles — the two can disagree, since they use different data and methods. The Daily Outlook is generated automatically from the same live indicators shown above, not written by a person, and regenerates every minute. This page is for educational purposes only and does not constitute investment advice or a recommendation to buy or sell any financial instrument; trading gold and other leveraged instruments carries a high level of risk, and you should consult an independent financial advisor before making trading decisions.
+      Market data on this page (spot price, pivot levels, indicators, correlations, session status) is calculated automatically from third-party feeds and is indicative only — it may be delayed, incomplete or differ from your broker's prices. The trade plan (entry, stop-loss, take-profit), the confluence score and the 30-day strategy chart are generated automatically by fixed rules for educational illustration; the strategy chart is a hypothetical simulation, not actual trading results. The 1H/4H/Daily Signal Snapshot shows ASL's own RSI/MACD/moving-average rating computed from xaus.com's candles. The Daily Outlook is generated automatically from the same live indicators shown above, not written by a person, and regenerates every minute. This page is for educational purposes only and does not constitute investment advice or a recommendation to buy or sell any financial instrument; trading gold and other leveraged instruments carries a high level of risk, and you should consult an independent financial advisor before making trading decisions.
     </div>
     <div class="foot-brand"><b>ASL UNIVERSITY</b> — Market Research Desk · Market data refreshes every 60 seconds · Spot &amp; candles via XAUS.com · Chart, news &amp; calendar via TradingView</div>
   </footer>
