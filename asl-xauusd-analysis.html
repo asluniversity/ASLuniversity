@@ -13,7 +13,17 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="preconnect" href="https://xaus.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<script>
+  /* start the critical data requests immediately, before the page even finishes parsing */
+  (function(){
+    var B='https://xaus.com/api/v1', P=window.__pre={};
+    ['/spot?compact=1','/history','/chart?symbol=xau&range=1mo&interval=60m'].forEach(function(u){
+      try{ P[B+u]=fetch(B+u).then(function(r){ if(!r.ok) throw 0; return r.json(); }); P[B+u].catch(function(){}); }catch(e){}
+    });
+  })();
+</script>
+<link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" onload="this.onload=null;this.rel='stylesheet'">
+<noscript><link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet"></noscript>
 <style>
   :root{
     --black:#0A0A0B;
@@ -1279,6 +1289,13 @@ function extractIntraday(json) {
 }
 
 async function getJSON(url, ms = 9000) {
+  const pre = window.__pre && window.__pre[url];
+  if (pre) {
+    delete window.__pre[url];
+    try {
+      return await Promise.race([pre, new Promise((_, rej) => setTimeout(() => rej(new Error('timeout')), ms))]);
+    } catch (e) { /* fall through to a normal request */ }
+  }
   const ctrl = new AbortController();
   const t = setTimeout(() => ctrl.abort(), ms);
   try {
@@ -1485,30 +1502,39 @@ async function loadSpot() {
   const p = num(j.spot_usd_oz ?? (j.xau && j.xau.price));
   if (!isFinite(p)) throw new Error('bad spot');
   S.spot = { price: p, silver: num(j.silver_usd_oz), gsr: num(j.gold_silver_ratio), at: j.updated_at };
+  try { localStorage.setItem('asl-spot-v1', JSON.stringify(S.spot)); } catch (e) {}
 }
 
 async function loadHourly() {
   const j = await getJSON(API_BASE + '/chart?symbol=xau&range=1mo&interval=60m', 9000);
   const bars = extractIntraday(j);
-  if (bars.length) { S.hourly = bars; S.hourlyLoadedAt = Date.now(); }
+  if (bars.length) {
+    S.hourly = bars; S.hourlyLoadedAt = Date.now();
+    try { localStorage.setItem('asl-hourly-v1', JSON.stringify(bars.slice(-400))); } catch (e) {}
+  }
 }
 
 /* Gold history first (page becomes usable), other assets + backtest after */
 async function loadSlow() {
+  const keys = ['dxy', 'sp500', 'silver', 'oil'];
+  const othersP = Promise.allSettled(keys.map(k =>
+    getJSON(API_BASE + '/chart?symbol=' + k + '&range=6mo&interval=1d', 9000).then(extractBars)));
   S.hist = extractBars(await getJSON(API_BASE + '/history', 10000));
   S.lastSlow = Date.now();
   try { localStorage.setItem('asl-hist-v2', JSON.stringify(S.hist.slice(-1300))); } catch (e) {}
   renderAll();
-  const keys = ['dxy', 'sp500', 'silver', 'oil'];
-  const res = await Promise.allSettled(keys.map(k =>
-    getJSON(API_BASE + '/chart?symbol=' + k + '&range=6mo&interval=1d', 9000).then(extractBars)));
+  const res = await othersP;
   res.forEach((r, i) => { if (r.status === 'fulfilled' && r.value.length) S.others[keys[i]] = r.value; });
   for (const k of Object.keys(S.others)) S.corr[k] = correlation(S.hist, S.others[k], 30);
-  try {
-    S.bt = backtest(S.hist.slice(-450), S.others.dxy, null);
-    if (S.bt) S.dir = S.bt.lastDir;
-  } catch (e) { console.warn('ASL dashboard: backtest failed', e); S.bt = null; }
   renderAll();
+  /* heavy backtest runs after the page is already painted */
+  setTimeout(() => {
+    try {
+      S.bt = backtest(S.hist.slice(-450), S.others.dxy, null);
+      if (S.bt) S.dir = S.bt.lastDir;
+    } catch (e) { console.warn('ASL dashboard: backtest failed', e); S.bt = null; }
+    renderAll();
+  }, 50);
 }
 
 /* ---------------- candle helpers ---------------- */
@@ -1575,7 +1601,7 @@ function drawASLChart() {
   const ctx = canvas.getContext('2d'); ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
   const light = currentTheme() === 'light';
   const bg = light ? '#ffffff' : '#101416', grid = light ? 'rgba(6,135,162,.12)' : 'rgba(11,177,210,.09)', text = light ? '#586A73' : '#8A9096';
-  const up = light ? '#118A50' : '#2FBE7A', down = light ? '#CC3D31' : '#E15B4D';
+  const up = light ? '#0687A2' : '#0BB1D2', down = light ? '#FFFFFF' : '#F5F7F8', downEdge = light ? '#203038' : '#F5F7F8';
   ctx.fillStyle = bg; ctx.fillRect(0, 0, w, h);
   const bars = chartBars(S.chartTF);
   if (!bars.length) {
@@ -1596,19 +1622,21 @@ function drawASLChart() {
   const bodyW = Math.max(2, Math.min(18, cw * 0.62));
   bars.forEach((b, i) => {
     const x = Math.round(L + cw * i + cw / 2) + .5, o = b.o ?? b.c;
-    const color = b.c >= o ? up : down;
-    ctx.strokeStyle = color; ctx.fillStyle = color; ctx.lineWidth = 1.2;
+    const bull = b.c >= o, edge = bull ? up : downEdge;
+    ctx.strokeStyle = edge; ctx.fillStyle = bull ? up : down; ctx.lineWidth = 1.2;
     ctx.beginPath(); ctx.moveTo(x, y(b.h)); ctx.lineTo(x, y(b.l)); ctx.stroke();
     const yo = y(o), yc = y(b.c), top = Math.min(yo, yc), body = Math.max(1.5, Math.abs(yc - yo));
-    ctx.fillRect(Math.round(x - bodyW / 2), top, Math.round(bodyW), body);
+    const bx = Math.round(x - bodyW / 2), bw = Math.round(bodyW);
+    ctx.fillRect(bx, top, bw, body);
+    if (!bull && light) { ctx.strokeRect(bx + .5, top + .5, Math.max(1, bw - 1), Math.max(1, body - 1)); }
   });
   ctx.lineWidth = 1;
-  const lb = last(bars), ly = y(lb.c), lc = lb.c >= (lb.o ?? lb.c) ? up : down;
+  const lb = last(bars), ly = y(lb.c), lbull = lb.c >= (lb.o ?? lb.c), lc = lbull ? up : (light ? '#203038' : '#F5F7F8');
   ctx.strokeStyle = lc; ctx.globalAlpha = .7; ctx.setLineDash([4, 4]);
   ctx.beginPath(); ctx.moveTo(L, ly); ctx.lineTo(w - R, ly); ctx.stroke();
   ctx.setLineDash([]); ctx.globalAlpha = 1;
   ctx.fillStyle = lc; ctx.fillRect(w - R + 2, ly - 9, R - 4, 18);
-  ctx.fillStyle = '#fff'; ctx.font = '600 11px JetBrains Mono, monospace'; ctx.fillText(fmt(lb.c), w - R + 6, ly + 4);
+  ctx.fillStyle = (lbull || light) ? '#fff' : '#0A0A0B'; ctx.font = '600 11px JetBrains Mono, monospace'; ctx.fillText(fmt(lb.c), w - R + 6, ly + 4);
   ctx.fillStyle = text; ctx.font = '10px JetBrains Mono, monospace';
   const intra = S.chartTF === '1H' || S.chartTF === '4H';
   [bars[0], bars[Math.floor(bars.length / 2)], lb].forEach((b, i) => {
@@ -1621,7 +1649,7 @@ function drawASLChart() {
   setText('chart-last-price', '$' + fmt(lb.c));
   const first = bars[0].o ?? bars[0].c, ch = first ? ((lb.c / first) - 1) * 100 : 0;
   const chEl = $('chart-change');
-  if (chEl) { chEl.textContent = (ch >= 0 ? '+' : '') + ch.toFixed(2) + '%'; chEl.style.color = ch >= 0 ? 'var(--buy)' : 'var(--sell)'; }
+  if (chEl) { chEl.textContent = (ch >= 0 ? '+' : '') + ch.toFixed(2) + '%'; chEl.style.color = ch >= 0 ? 'var(--blue)' : 'var(--white)'; }
   setText('chart-data-state', (S.feedOk ? 'LIVE' : 'RECONNECTING') + ' · ' + S.chartTF + ' · UTC');
 }
 window.ASL_REDRAW_CHART = drawASLChart;
@@ -2336,6 +2364,10 @@ document.addEventListener('visibilitychange', () => {
 try {
   const c = JSON.parse(localStorage.getItem('asl-hist-v2') || 'null');
   if (Array.isArray(c) && c.length > 230 && c[0].o != null) { S.hist = c; }
+  const hc = JSON.parse(localStorage.getItem('asl-hourly-v1') || 'null');
+  if (Array.isArray(hc) && hc.length > 40 && hc[0].o != null) S.hourly = hc;
+  const sc = JSON.parse(localStorage.getItem('asl-spot-v1') || 'null');
+  if (sc && isFinite(sc.price)) S.spot = sc;
   const k = JSON.parse(localStorage.getItem('asl-cot-v1') || 'null');
   if (Array.isArray(k) && k.length) { S.cot = k; renderCOT(); }
 } catch (e) {}
