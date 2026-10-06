@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -13,6 +12,7 @@
 </script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://xaus.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
   :root{
@@ -126,11 +126,7 @@
   }
   .wrap{max-width:1100px; margin:0 auto; padding:0 24px; position:relative; z-index:1;}
 
-  /* ===== Logo =====
-     mix-blend-mode treats the logo's own background as "transparent": screen drops
-     out black in dark mode, multiply drops out white in light mode. If the source
-     PNG has a black background baked into its pixels (no real alpha channel), this
-     is the only way to hide it without re-exporting the image with transparency. */
+  /* ===== Logo ===== */
   .logo-wrap{
     width:64px; height:64px; margin:0 auto 14px;
     display:flex; align-items:center; justify-content:center; overflow:visible;
@@ -529,7 +525,7 @@
   }
   .foot-brand b{color:var(--blue);}
 
-  /* ===== Trade plan (horizontal, inside the verdict bar) ===== */
+  /* ===== Trade plan ===== */
   .trade-plan{
     display:flex; flex-wrap:wrap; align-items:center; gap:20px;
     flex:1; min-width:0;
@@ -607,6 +603,9 @@
   .mtf-row .mtf-tf{font-family:var(--mono); font-size:11px; color:var(--muted); letter-spacing:0.05em;}
   .mtf-row .mtf-bar{height:8px; border-radius:4px; background:var(--hairline); position:relative; overflow:hidden;}
   .mtf-row .mtf-bar i{position:absolute; top:0; bottom:0; border-radius:4px;}
+  .mtf-row .mtf-bar i.buy{background:var(--buy);}
+  .mtf-row .mtf-bar i.sell{background:var(--sell);}
+  .mtf-row .mtf-bar i.neutral{background:var(--muted);}
   .mtf-row .mtf-rate{font-family:var(--mono); font-size:12px; font-weight:600;}
 
   /* ===== Volatility meter ===== */
@@ -680,7 +679,7 @@
       </button>
     </div>
     <div class="logo-wrap">
-      <img src="asl-logo-transparent.png" alt="ASL University logo" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+      <img src="asl-logo-transparent.png" alt="ASL University logo" width="64" height="64" decoding="async" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
       <span class="logo-fallback">ASL</span>
     </div>
     <div class="brand-title"><span class="mark"></span>ASL UNIVERSITY</div>
@@ -1054,16 +1053,18 @@
    ASL LIVE DASHBOARD ENGINE — GOLD (XAU/USD) ONLY
    Data feed : xaus.com public API (no key, CORS open)
      /spot     -> live XAU/USD, silver, gold/silver ratio
-     /history  -> daily XAU/USD candles (up to 5y, h/l/c)
-     /chart    -> daily candles for DXY, S&P 500, silver, oil
-   ASL owns the calculation layer. Gold spot, intraday and daily candles
-   are read from XAUS; indicators, chart rendering, timeframe scoring,
-   macro impact tags and news deduplication are calculated by this page.
-   Everything below recomputes automatically every minute.
+     /history  -> daily XAU/USD candles
+     /chart    -> candles for XAU (60m), DXY, S&P 500, silver, oil
+   Performance notes:
+     - all network jobs run in parallel and each one renders as soon as it lands
+     - gold daily history is cached in localStorage so repeat visits paint instantly
+     - heavy backtest only uses the last ~450 daily bars
    ========================================================= */
 const API_BASE = 'https://xaus.com/api/v1';
-const REFRESH_SECONDS = 60;          // whole dashboard
-const SLOW_REFRESH_SECONDS = 600;    // daily candles + correlations (they only change once a day)
+const REFRESH_SECONDS = 60;
+const SLOW_REFRESH_SECONDS = 600;
+const HOURLY_REFRESH_SECONDS = 120;
+const COT_REFRESH_SECONDS = 6 * 3600;
 
 /* ---------------- helpers ---------------- */
 const $ = id => document.getElementById(id);
@@ -1189,7 +1190,6 @@ function pearson(x, y) {
   return sxx && syy ? sxy / Math.sqrt(sxx * syy) : null;
 }
 
-/* Correlation of the last `n` daily log-returns, aligned on common dates */
 function correlation(goldBars, otherBars, n = 30) {
   const g = new Map(goldBars.map(b => [b.date, b.c]));
   const o = new Map(otherBars.map(b => [b.date, b.c]));
@@ -1211,7 +1211,7 @@ function rating(score) {
 }
 const ratingClass = r => /Buy/.test(r) ? 'buy' : /Sell/.test(r) ? 'sell' : 'neutral';
 
-/* ---------------- feed parsing (defensive: tolerates small shape changes) ---------------- */
+/* ---------------- feed parsing ---------------- */
 function toDate(v) {
   if (v == null) return null;
   if (typeof v === 'number') return new Date(v > 1e11 ? v : v * 1000).toISOString().slice(0, 10);
@@ -1224,7 +1224,7 @@ function toDate(v) {
 }
 const num = v => (v == null || v === '') ? NaN : +v;
 
-function extractBars(json) {
+function findArray(json) {
   let arr = Array.isArray(json) ? json : null;
   if (!arr && json && typeof json === 'object') {
     for (const k of ['points', 'data', 'candles', 'series', 'result', 'bars']) {
@@ -1232,9 +1232,13 @@ function extractBars(json) {
     }
     if (!arr) arr = Object.values(json).find(Array.isArray) || null;
   }
-  if (!arr) return [];
+  return arr || [];
+}
+
+/* Daily bars with a real OPEN (falls back to previous close when the feed has no open) */
+function extractBars(json) {
   const byDate = new Map();
-  for (const p of arr) {
+  for (const p of findArray(json)) {
     if (!p) continue;
     const date = toDate(p.d ?? p.t ?? p.date ?? p.time ?? p.timestamp);
     const c = num(p.c ?? p.close);
@@ -1242,12 +1246,39 @@ function extractBars(json) {
     let h = num(p.h ?? p.high), l = num(p.l ?? p.low);
     if (!isFinite(h)) h = c;
     if (!isFinite(l)) l = c;
-    byDate.set(date, { date, c, h: Math.max(h, c), l: Math.min(l, c) });
+    byDate.set(date, { date, o: num(p.o ?? p.open), c, h: Math.max(h, c), l: Math.min(l, c) });
   }
-  return [...byDate.values()].sort((a, b) => a.date < b.date ? -1 : a.date > b.date ? 1 : 0);
+  const bars = [...byDate.values()].sort((a, b) => a.date < b.date ? -1 : a.date > b.date ? 1 : 0);
+  for (let i = 0; i < bars.length; i++) {
+    const b = bars[i];
+    if (!isFinite(b.o)) b.o = i ? bars[i - 1].c : b.c;
+    b.h = Math.max(b.h, b.o, b.c); b.l = Math.min(b.l, b.o, b.c);
+  }
+  return bars;
 }
 
-async function getJSON(url, ms = 12000) {
+/* Intraday (60m) bars with a real OPEN */
+function extractIntraday(json) {
+  const out = [];
+  for (const p of findArray(json)) {
+    if (!p) continue;
+    const t = p.t ?? p.time ?? p.timestamp;
+    if (t == null) continue;
+    const ms = typeof t === 'number' ? (t > 2e10 ? t : t * 1000) : Date.parse(t);
+    if (!isFinite(ms)) continue;
+    const c = num(p.c ?? p.close ?? p.p ?? p.price);
+    if (!isFinite(c)) continue;
+    let h = num(p.h ?? p.high), l = num(p.l ?? p.low), o = num(p.o ?? p.open);
+    if (!isFinite(h)) h = c;
+    if (!isFinite(l)) l = c;
+    if (!isFinite(o)) o = out.length ? out[out.length - 1].c : c;
+    out.push({ date: new Date(ms).toISOString(), o, c, h: Math.max(h, c, o), l: Math.min(l, c, o) });
+  }
+  out.sort((a, b) => a.date < b.date ? -1 : a.date > b.date ? 1 : 0);
+  return out.filter((b, i) => !i || b.date !== out[i - 1].date);
+}
+
+async function getJSON(url, ms = 9000) {
   const ctrl = new AbortController();
   const t = setTimeout(() => ctrl.abort(), ms);
   try {
@@ -1265,12 +1296,11 @@ function analyse(rawBars, live, now = new Date()) {
   if (live != null && isFinite(live)) {
     const L = last(bars);
     if (L.date === today) { L.c = live; L.h = Math.max(L.h, live); L.l = Math.min(L.l, live); }
-    else if (L.date < today && dow >= 1 && dow <= 5) bars.push({ date: today, c: live, h: live, l: live });
+    else if (L.date < today && dow >= 1 && dow <= 5) bars.push({ date: today, o: live, c: live, h: live, l: live });
   }
   const C = bars.map(b => b.c), H = bars.map(b => b.h), Lo = bars.map(b => b.l);
   const price = live != null && isFinite(live) ? live : last(C);
 
-  /* 12 moving averages (SMA + EMA x 10/20/30/50/100/200), buy when price is above */
   const periods = [10, 20, 30, 50, 100, 200];
   const mas = [];
   for (const n of periods) {
@@ -1288,7 +1318,6 @@ function analyse(rawBars, live, now = new Date()) {
     adx: adx(H, Lo, C), boll: bollinger(C), atr: atr(H, Lo, C)
   };
 
-  /* oscillator votes */
   let ob = 0, os = 0;
   const vote = v => { if (v > 0) ob++; else if (v < 0) os++; };
   A.sig = {};
@@ -1304,7 +1333,6 @@ function analyse(rawBars, live, now = new Date()) {
   const total = mas.length + oscN;
   A.overall = rating(total ? (maBuy - maSell + ob - os) / total : 0);
 
-  /* classic pivots from the last COMPLETED daily candle */
   const L = last(rawBars);
   const prev = L.date === today ? rawBars[rawBars.length - 2] : L;
   if (prev) {
@@ -1320,7 +1348,6 @@ function analyse(rawBars, live, now = new Date()) {
 /* ---------------- confluence, signal, trade plan, backtest ---------------- */
 const roundHalf = x => Math.round(x * 2) / 2;
 
-/* 5-day change of the dollar index as of a date (null when unavailable) */
 function dxyChangeAt(dxyBars, date, n = 5) {
   if (!dxyBars || !dxyBars.length) return null;
   let idx = -1;
@@ -1329,7 +1356,6 @@ function dxyChangeAt(dxyBars, date, n = 5) {
   return dxyBars[idx].c / dxyBars[idx - n].c - 1;
 }
 
-/* Seven independent factors; each votes +1 (bullish), -1 (bearish) or 0 (neutral) */
 function confluenceOf(A, dxyChg) {
   const f = [];
   const add = (key, name, dir, detail) => f.push({ key, name, dir, detail });
@@ -1367,8 +1393,6 @@ function confluenceOf(A, dxyChg) {
   return { factors: f, bull, bear, neutral: f.length - bull - bear, n: f.length, net: bull - bear };
 }
 
-/* net vote -> position, with hysteresis so the signal does not flip every minute.
-   +-1 = Buy/Sell, +-2 = Strong Buy/Sell, 0 = no trade */
 function dirFromNet(net, prev = 0) {
   if (net >= 5) return 2;
   if (net >= 3) return 1;
@@ -1380,7 +1404,6 @@ function dirFromNet(net, prev = 0) {
 }
 const SIGNAL_LABEL = { 2: 'Strong Buy', 1: 'Buy', 0: 'Neutral · Wait', '-1': 'Sell', '-2': 'Strong Sell' };
 
-/* Entry / stop-loss / take-profit from ATR and the daily pivot map (levels rounded to 0.5) */
 function tradePlan(A, dir) {
   if (!dir || !A.atr || !A.pivots) return null;
   const long = dir > 0, price = A.price, a = A.atr, pv = A.pivots;
@@ -1413,8 +1436,6 @@ function tradePlan(A, dir) {
   };
 }
 
-/* Honest simulation of the same rules over the last 30 calendar days of daily closes:
-   signal at each daily close, held to the next close, no costs. Last leg is marked to the live price. */
 function backtest(bars, dxyBars, live, now = new Date(), windowDays = 30) {
   const today = now.toISOString().slice(0, 10);
   const done = bars.filter(b => b.date < today);
@@ -1425,7 +1446,8 @@ function backtest(bars, dxyBars, live, now = new Date(), windowDays = 30) {
   const days = [];
   let prev = 0;
   for (let i = Math.max(0, startIdx - 8); i < done.length; i++) {
-    const A = analyse(done.slice(0, i + 1), null, new Date(done[i].date + 'T23:59:59Z'));
+    /* only the last 260 bars are needed for every indicator (200-day MA is the longest) */
+    const A = analyse(done.slice(Math.max(0, i + 1 - 260), i + 1), null, new Date(done[i].date + 'T23:59:59Z'));
     const conf = confluenceOf(A, dxyChangeAt(dxyBars, done[i].date));
     prev = dirFromNet(conf.net, prev);
     if (i >= startIdx) days.push({ date: done[i].date, c: done[i].c, dir: prev, net: conf.net });
@@ -1433,13 +1455,11 @@ function backtest(bars, dxyBars, live, now = new Date(), windowDays = 30) {
   return { days, lastDir: prev };
 }
 
-/* Equity curves from cached signals + the live price */
 function equityCurves(bt, live, now = new Date()) {
   if (!bt || !bt.days.length) return null;
   const today = now.toISOString().slice(0, 10);
   const pts = bt.days.map(d => ({ date: d.date, c: d.c, dir: d.dir }));
-  const lastClose = pts[pts.length - 1].c;
-  const legOpen = marketOpen(now) || now.getUTCDay() === 5;   // no phantom leg on weekends
+  const legOpen = marketOpen(now) || now.getUTCDay() === 5;
   if (live != null && isFinite(live) && legOpen && pts[pts.length - 1].date < today) pts.push({ date: today, c: live, dir: null, live: true });
   const out = [{ date: pts[0].date, strat: 0, bh: 0, dir: pts[0].dir }];
   let eq = 1, peak = 1, maxDD = 0, active = 0, wins = 0;
@@ -1458,101 +1478,194 @@ function equityCurves(bt, live, now = new Date()) {
 }
 
 /* ---------------- state ---------------- */
-const S = { spot: null, hist: null, hourly: null, hourlyLoadedAt: 0, others: {}, corr: {}, lastSlow: 0, lastOk: null, feedOk: false, dir: 0, bt: null, cot: null, cotLoadedAt: 0, fund: {macro:[], news:[]}, fundLoadedAt:0, chartTF:'1H', intraday:[] };
+const S = { spot: null, hist: null, hourly: null, hourlyLoadedAt: 0, others: {}, corr: {}, lastSlow: 0, lastOk: null, feedOk: false, dir: 0, bt: null, cot: null, cotLoadedAt: 0, fund: {macro:[], news:[]}, fundLoadedAt:0, chartTF:'1H' };
 
 async function loadSpot() {
-  const j = await getJSON(API_BASE + '/spot?compact=1');
+  const j = await getJSON(API_BASE + '/spot?compact=1', 7000);
   const p = num(j.spot_usd_oz ?? (j.xau && j.xau.price));
   if (!isFinite(p)) throw new Error('bad spot');
   S.spot = { price: p, silver: num(j.silver_usd_oz), gsr: num(j.gold_silver_ratio), at: j.updated_at };
 }
 
-async function loadIntraday(){
-  const j=await getJSON(API_BASE + '/intraday?symbol=xau&hours=48&fresh='+Date.now());
-  const pts=Array.isArray(j.points)?j.points:[];
-  S.intraday=pts.map(p=>{const t=p.t??p.time??p.timestamp;return {date:new Date(t>2e10?t:t*1000).toISOString(),c:num(p.p??p.price??p.close),h:num(p.p??p.price??p.close),l:num(p.p??p.price??p.close),o:num(p.p??p.price??p.close)}}).filter(p=>isFinite(p.c)).sort((a,b)=>a.date.localeCompare(b.date));
-  S.hourlyLoadedAt=Date.now();
+async function loadHourly() {
+  const j = await getJSON(API_BASE + '/chart?symbol=xau&range=1mo&interval=60m', 9000);
+  const bars = extractIntraday(j);
+  if (bars.length) { S.hourly = bars; S.hourlyLoadedAt = Date.now(); }
 }
 
+/* Gold history first (page becomes usable), other assets + backtest after */
 async function loadSlow() {
-  const jobs = {
-    hist: getJSON(API_BASE + '/history').then(extractBars),
-    dxy: getJSON(API_BASE + '/chart?symbol=dxy&range=6mo&interval=1d').then(extractBars),
-    sp500: getJSON(API_BASE + '/chart?symbol=sp500&range=6mo&interval=1d').then(extractBars),
-    silver: getJSON(API_BASE + '/chart?symbol=silver&range=6mo&interval=1d').then(extractBars),
-    oil: getJSON(API_BASE + '/chart?symbol=oil&range=6mo&interval=1d').then(extractBars)
-  };
-  const keys = Object.keys(jobs);
-  const res = await Promise.allSettled(keys.map(k => jobs[k]));
-  res.forEach((r, i) => {
-    if (r.status !== 'fulfilled' || !r.value.length) return;
-    if (keys[i] === 'hist') S.hist = r.value; else S.others[keys[i]] = r.value;
-  });
-  if (S.hist) {
-    for (const k of Object.keys(S.others)) S.corr[k] = correlation(S.hist, S.others[k], 30);
-    try {
-      S.bt = backtest(S.hist, S.others.dxy, null);
-      if (S.bt) S.dir = S.bt.lastDir;
-    } catch (e) { console.warn('ASL dashboard: backtest failed', e); S.bt = null; }
-  }
+  S.hist = extractBars(await getJSON(API_BASE + '/history', 10000));
   S.lastSlow = Date.now();
+  try { localStorage.setItem('asl-hist-v2', JSON.stringify(S.hist.slice(-1300))); } catch (e) {}
+  renderAll();
+  const keys = ['dxy', 'sp500', 'silver', 'oil'];
+  const res = await Promise.allSettled(keys.map(k =>
+    getJSON(API_BASE + '/chart?symbol=' + k + '&range=6mo&interval=1d', 9000).then(extractBars)));
+  res.forEach((r, i) => { if (r.status === 'fulfilled' && r.value.length) S.others[keys[i]] = r.value; });
+  for (const k of Object.keys(S.others)) S.corr[k] = correlation(S.hist, S.others[k], 30);
+  try {
+    S.bt = backtest(S.hist.slice(-450), S.others.dxy, null);
+    if (S.bt) S.dir = S.bt.lastDir;
+  } catch (e) { console.warn('ASL dashboard: backtest failed', e); S.bt = null; }
+  renderAll();
+}
+
+/* ---------------- candle helpers ---------------- */
+/* hours-based buckets aligned to UTC (00,04,08,...) with correct open/high/low/close */
+function resampleBars(bars, hours) {
+  const ms = hours * 3600000, out = [];
+  let cur = null, key = null;
+  for (const b of bars) {
+    const t = Date.parse(b.date);
+    if (isNaN(t)) continue;
+    const k = Math.floor(t / ms);
+    if (k !== key) {
+      if (cur) out.push(cur);
+      key = k;
+      cur = { date: new Date(k * ms).toISOString(), o: b.o ?? b.c, h: b.h, l: b.l, c: b.c };
+    } else {
+      cur.h = Math.max(cur.h, b.h); cur.l = Math.min(cur.l, b.l); cur.c = b.c;
+    }
+  }
+  if (cur) out.push(cur);
+  return out;
+}
+
+/* Monday-based weekly candles built from daily bars */
+function weeklyBars(bars) {
+  const out = [];
+  let cur = null, key = null;
+  for (const b of bars) {
+    const d = new Date(b.date + 'T00:00:00Z');
+    const mon = new Date(d.getTime() - ((d.getUTCDay() + 6) % 7) * 86400000).toISOString().slice(0, 10);
+    if (mon !== key) {
+      if (cur) out.push(cur);
+      key = mon;
+      cur = { date: mon, o: b.o ?? b.c, h: b.h, l: b.l, c: b.c };
+    } else {
+      cur.h = Math.max(cur.h, b.h); cur.l = Math.min(cur.l, b.l); cur.c = b.c;
+    }
+  }
+  if (cur) out.push(cur);
+  return out;
 }
 
 /* ---------------- ASL custom chart ---------------- */
-function chartBars(tf){
-  if(tf==='1H') return (S.intraday||[]).slice(-48).map(x=>({date:x.date,c:x.c,h:x.h,l:x.l}));
-  if(tf==='4H') return resampleBars((S.intraday||[]),4).slice(-60);
-  if(tf==='1D') return (S.hist||[]).slice(-90);
-  return resampleBars((S.hist||[]),5).slice(-60);
+function chartBars(tf) {
+  let bars;
+  if (tf === '1H') bars = (S.hourly || []).slice(-80);
+  else if (tf === '4H') bars = resampleBars(S.hourly || [], 4).slice(-70);
+  else if (tf === '1D') bars = (S.hist || []).slice(-90);
+  else bars = weeklyBars(S.hist || []).slice(-60);
+  bars = bars.map(b => ({ ...b }));
+  if (bars.length && S.spot && marketOpen(new Date())) {
+    const L = last(bars);
+    L.c = S.spot.price; L.h = Math.max(L.h, L.c); L.l = Math.min(L.l, L.c);
+  }
+  return bars;
 }
-function drawASLChart(){
-  const canvas=$('candle-chart-canvas'); if(!canvas) return;
-  const box=canvas.parentElement, dpr=Math.max(1,window.devicePixelRatio||1);
-  const w=Math.max(320,box.clientWidth), h=Math.max(300,box.clientHeight);
-  canvas.width=Math.round(w*dpr); canvas.height=Math.round(h*dpr); canvas.style.width=w+'px'; canvas.style.height=h+'px';
-  const ctx=canvas.getContext('2d'); ctx.setTransform(dpr,0,0,dpr,0,0);
-  const light=currentTheme()==='light', bg=light?'#ffffff':'#101416', grid=light?'rgba(6,135,162,.10)':'rgba(11,177,210,.08)', text=light?'#586A73':'#8A9096', up='#0BB1D2', down=light?'#203038':'#F5F7F8';
-  ctx.fillStyle=bg; ctx.fillRect(0,0,w,h);
-  const bars=chartBars(S.chartTF); if(!bars.length){return;}
-  const L=58,R=76,T=22,B=34, cw=(w-L-R)/bars.length;
-  const hi=Math.max(...bars.map(b=>b.h)), lo=Math.min(...bars.map(b=>b.l)), pad=(hi-lo)*.08||1; const ymax=hi+pad,ymin=lo-pad;
-  const y=v=>T+(h-T-B)*(1-(v-ymin)/(ymax-ymin));
-  ctx.font='11px JetBrains Mono, monospace'; ctx.lineWidth=1;
-  for(let i=0;i<5;i++){const v=ymin+(ymax-ymin)*i/4, yy=y(v);ctx.strokeStyle=grid;ctx.beginPath();ctx.moveTo(L,yy);ctx.lineTo(w-R,yy);ctx.stroke();ctx.fillStyle=text;ctx.fillText(fmt(v,2),w-R+8,yy+4);}
-  bars.forEach((b,i)=>{const x=L+cw*i+cw/2, yo=y(b.h), yl=y(b.l), yc=y(b.c), op=y(b.o??b.c), color=b.c>=(b.o??b.c)?up:down;ctx.strokeStyle=color;ctx.fillStyle=color;ctx.beginPath();ctx.moveTo(x,yo);ctx.lineTo(x,yl);ctx.stroke();const body=Math.max(1.5,Math.abs(yc-op)), top=Math.min(yc,op);ctx.fillRect(x-Math.max(1.5,cw*.28),top,Math.max(2,cw*.56),body);});
-  const lastBar=bars[bars.length-1]; ctx.strokeStyle='rgba(11,177,210,.55)';ctx.setLineDash([4,4]);ctx.beginPath();ctx.moveTo(L,y(lastBar.c));ctx.lineTo(w-R,y(lastBar.c));ctx.stroke();ctx.setLineDash([]);
-  ctx.fillStyle=up;ctx.font='600 12px JetBrains Mono, monospace';ctx.fillText('$'+fmt(lastBar.c),w-R+8,y(lastBar.c)-7);
-  ctx.fillStyle=text;ctx.font='10px JetBrains Mono, monospace'; const labels=[bars[0],bars[Math.floor(bars.length/2)],bars[bars.length-1]]; labels.forEach((b,i)=>ctx.fillText(new Date(b.date).toLocaleDateString('en-GB',{day:'2-digit',month:'short',timeZone:'UTC'}), i===0?L:i===1?w/2:w-R-20,h-10));
-  setText('chart-last-price','$'+fmt(lastBar.c));
-  const first=bars[0].c, ch=first?((lastBar.c/first)-1)*100:0; setText('chart-change',(ch>=0?'+':'')+ch.toFixed(2)+'%');
-  setText('chart-data-state',S.feedOk?'LIVE':'RECONNECTING');
-}
-window.ASL_REDRAW_CHART=drawASLChart;
 
-document.querySelectorAll('[data-chart-tf]').forEach(btn=>btn.addEventListener('click',()=>{S.chartTF=btn.dataset.chartTf;document.querySelectorAll('[data-chart-tf]').forEach(b=>b.classList.toggle('active',b===btn));drawASLChart();}));
-window.addEventListener('resize',()=>{clearTimeout(window.__aslChartResize);window.__aslChartResize=setTimeout(drawASLChart,120);});
+function drawASLChart() {
+  const canvas = $('candle-chart-canvas'); if (!canvas) return;
+  const box = canvas.parentElement, dpr = Math.max(1, window.devicePixelRatio || 1);
+  const w = Math.max(320, box.clientWidth), h = Math.max(300, box.clientHeight);
+  canvas.width = Math.round(w * dpr); canvas.height = Math.round(h * dpr);
+  canvas.style.width = w + 'px'; canvas.style.height = h + 'px';
+  const ctx = canvas.getContext('2d'); ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  const light = currentTheme() === 'light';
+  const bg = light ? '#ffffff' : '#101416', grid = light ? 'rgba(6,135,162,.12)' : 'rgba(11,177,210,.09)', text = light ? '#586A73' : '#8A9096';
+  const up = light ? '#118A50' : '#2FBE7A', down = light ? '#CC3D31' : '#E15B4D';
+  ctx.fillStyle = bg; ctx.fillRect(0, 0, w, h);
+  const bars = chartBars(S.chartTF);
+  if (!bars.length) {
+    ctx.fillStyle = text; ctx.font = '12px JetBrains Mono, monospace'; ctx.textAlign = 'center';
+    ctx.fillText('Loading candles…', w / 2, h / 2); ctx.textAlign = 'left';
+    return;
+  }
+  const L = 58, R = 82, T = 22, B = 34, cw = (w - L - R) / bars.length;
+  const hi = Math.max(...bars.map(b => b.h)), lo = Math.min(...bars.map(b => b.l)), pad = (hi - lo) * .08 || 1;
+  const ymax = hi + pad, ymin = lo - pad;
+  const y = v => T + (h - T - B) * (1 - (v - ymin) / (ymax - ymin));
+  ctx.font = '11px JetBrains Mono, monospace'; ctx.lineWidth = 1;
+  for (let i = 0; i < 5; i++) {
+    const v = ymin + (ymax - ymin) * i / 4, yy = Math.round(y(v)) + .5;
+    ctx.strokeStyle = grid; ctx.beginPath(); ctx.moveTo(L, yy); ctx.lineTo(w - R, yy); ctx.stroke();
+    ctx.fillStyle = text; ctx.fillText(fmt(v, 2), w - R + 8, yy + 4);
+  }
+  const bodyW = Math.max(2, Math.min(18, cw * 0.62));
+  bars.forEach((b, i) => {
+    const x = Math.round(L + cw * i + cw / 2) + .5, o = b.o ?? b.c;
+    const color = b.c >= o ? up : down;
+    ctx.strokeStyle = color; ctx.fillStyle = color; ctx.lineWidth = 1.2;
+    ctx.beginPath(); ctx.moveTo(x, y(b.h)); ctx.lineTo(x, y(b.l)); ctx.stroke();
+    const yo = y(o), yc = y(b.c), top = Math.min(yo, yc), body = Math.max(1.5, Math.abs(yc - yo));
+    ctx.fillRect(Math.round(x - bodyW / 2), top, Math.round(bodyW), body);
+  });
+  ctx.lineWidth = 1;
+  const lb = last(bars), ly = y(lb.c), lc = lb.c >= (lb.o ?? lb.c) ? up : down;
+  ctx.strokeStyle = lc; ctx.globalAlpha = .7; ctx.setLineDash([4, 4]);
+  ctx.beginPath(); ctx.moveTo(L, ly); ctx.lineTo(w - R, ly); ctx.stroke();
+  ctx.setLineDash([]); ctx.globalAlpha = 1;
+  ctx.fillStyle = lc; ctx.fillRect(w - R + 2, ly - 9, R - 4, 18);
+  ctx.fillStyle = '#fff'; ctx.font = '600 11px JetBrains Mono, monospace'; ctx.fillText(fmt(lb.c), w - R + 6, ly + 4);
+  ctx.fillStyle = text; ctx.font = '10px JetBrains Mono, monospace';
+  const intra = S.chartTF === '1H' || S.chartTF === '4H';
+  [bars[0], bars[Math.floor(bars.length / 2)], lb].forEach((b, i) => {
+    const dt = new Date(b.date);
+    const s = intra
+      ? dt.toLocaleString('en-GB', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit', timeZone: 'UTC', hour12: false })
+      : dt.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', timeZone: 'UTC' });
+    ctx.fillText(s, i === 0 ? L : i === 1 ? w / 2 - 30 : w - R - 80, h - 10);
+  });
+  setText('chart-last-price', '$' + fmt(lb.c));
+  const first = bars[0].o ?? bars[0].c, ch = first ? ((lb.c / first) - 1) * 100 : 0;
+  const chEl = $('chart-change');
+  if (chEl) { chEl.textContent = (ch >= 0 ? '+' : '') + ch.toFixed(2) + '%'; chEl.style.color = ch >= 0 ? 'var(--buy)' : 'var(--sell)'; }
+  setText('chart-data-state', (S.feedOk ? 'LIVE' : 'RECONNECTING') + ' · ' + S.chartTF + ' · UTC');
+}
+window.ASL_REDRAW_CHART = drawASLChart;
+
+document.querySelectorAll('[data-chart-tf]').forEach(btn => btn.addEventListener('click', () => {
+  S.chartTF = btn.dataset.chartTf;
+  document.querySelectorAll('[data-chart-tf]').forEach(b => b.classList.toggle('active', b === btn));
+  drawASLChart();
+}));
+window.addEventListener('resize', () => { clearTimeout(window.__aslChartResize); window.__aslChartResize = setTimeout(drawASLChart, 120); });
 
 /* ---------------- ASL fundamental intelligence ---------------- */
 function cleanTitle(v){return String(v||'').toLowerCase().replace(/https?:\/\/\S+/g,'').replace(/[^a-z0-9]+/g,' ').trim().replace(/\s+/g,' ');}
 function newsImpact(title){const t=String(title||'').toLowerCase();const high=['fed','fomc','rate decision','interest rate','cpi','inflation','pce','payroll','nfp','jobs report','treasury yield','yield','dollar','usd','central bank','war','ceasefire','sanction'];const med=['gold','xau','silver','oil','geopolit','tariff','trade','economy','recession'];if(high.some(k=>t.includes(k)))return 'HIGH';if(med.some(k=>t.includes(k)))return 'MEDIUM';return 'LOW';}
 function goldEffect(title){const t=String(title||'').toLowerCase(); if(/rate hike|hawkish|higher for longer|strong jobs|hot cpi|higher inflation|strong dollar|rising yields/.test(t))return {label:'Potential XAU/USD ↓',cls:'sell'}; if(/rate cut|dovish|weak jobs|cooling inflation|lower cpi|falling yields|weaker dollar|safe haven|geopolitical risk/.test(t))return {label:'Potential XAU/USD ↑',cls:'buy'}; return {label:'Context dependent',cls:'neutral'};}
 function dedupeNews(rows){const seen=new Set();return rows.filter(x=>{const k=cleanTitle(x.title);if(!k||seen.has(k))return false;seen.add(k);return true;}).slice(0,10);}
+function escapeHTML(v){return String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));}
+function escapeAttr(v){return escapeHTML(v).replace(/`/g,'&#96;');}
+function safeUrl(u){return /^https?:\/\//i.test(String(u||''))?u:'#';}
+function parseGDELTDate(s){if(!s)return null;const m=String(s).match(/^(\d{4})(\d{2})(\d{2})T?(\d{2})(\d{2})(\d{2})?/);return m ? new Date(Date.UTC(+m[1],+m[2]-1,+m[3],+(m[4]||0),+(m[5]||0),+(m[6]||0))) : new Date(s);}
+function relativeTime(d){const sec=Math.max(0,(Date.now()-d.getTime())/1000);if(sec<60)return 'now';if(sec<3600)return Math.floor(sec/60)+'m';if(sec<86400)return Math.floor(sec/3600)+'h';return Math.floor(sec/86400)+'d';}
 function renderFundamentals(){
   const ml=$('macro-list'), nl=$('asl-news-list');
   if(ml){const rows=S.fund.macro||[];ml.innerHTML=rows.length?rows.slice(0,12).map(e=>{const dt=e.scheduledAt?new Date(e.scheduledAt):null;const impact=(e.importance||'medium').toUpperCase();const eff=goldEffect(e.eventName);return '<div class="macro-row"><div class="macro-time">'+(dt?dt.toLocaleDateString('en-GB',{day:'2-digit',month:'short',timeZone:'UTC'})+'<br>'+dt.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit',timeZone:'UTC'})+' UTC':'—')+'</div><div class="macro-main"><b>'+escapeHTML(e.eventName||'US release')+'</b><span>'+escapeHTML(e.periodLabel||'')+'</span></div><div class="macro-values"><span>ACT <b>'+escapeHTML(e.actual??'—')+'</b></span><span>PREV <b>'+escapeHTML(e.previous??'—')+'</b></span><span>FCST <b>'+escapeHTML(e.forecast??'—')+'</b></span></div><div class="macro-impact '+impact.toLowerCase()+'">'+impact+'</div><div class="macro-effect '+eff.cls+'">'+eff.label+'</div></div>';}).join(''):'<div class="fund-empty">No verified US releases returned by the calendar source.</div>';}
-  if(nl){const rows=S.fund.news||[];nl.innerHTML=rows.length?rows.map(n=>{const eff=goldEffect(n.title),imp=newsImpact(n.title),dt=n.seendate?parseGDELTDate(n.seendate):null;return '<a class="asl-news-row" href="'+escapeAttr(n.url||'#')+'" target="_blank" rel="noopener"><div class="news-time2">'+(dt?relativeTime(dt):'—')+'</div><div class="asl-news-body"><div class="news-meta"><span>'+escapeHTML(n.domain||'Market source')+'</span><i class="news-impact '+imp.toLowerCase()+'">'+imp+'</i></div><h4>'+escapeHTML(n.title||'Untitled')+'</h4><div class="news-effect '+eff.cls+'">'+eff.label+'</div></div></a>';}).join(''):'<div class="fund-empty">No fresh market headlines available right now.</div>';}
+  if(nl){const rows=S.fund.news||[];nl.innerHTML=rows.length?rows.map(n=>{const eff=goldEffect(n.title),imp=newsImpact(n.title),dt=n.seendate?parseGDELTDate(n.seendate):null;return '<a class="asl-news-row" href="'+escapeAttr(safeUrl(n.url))+'" target="_blank" rel="noopener"><div class="news-time2">'+(dt?relativeTime(dt):'—')+'</div><div class="asl-news-body"><div class="news-meta"><span>'+escapeHTML(n.domain||'Market source')+'</span><i class="news-impact '+imp.toLowerCase()+'">'+imp+'</i></div><h4>'+escapeHTML(n.title||'Untitled')+'</h4><div class="news-effect '+eff.cls+'">'+eff.label+'</div></div></a>';}).join(''):'<div class="fund-empty">No fresh market headlines available right now.</div>';}
   setText('fund-note','US macro releases + global gold intelligence · ASL deduplication active · last sync '+utcClock(new Date()));
 }
-function escapeHTML(v){return String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));}
-function escapeAttr(v){return escapeHTML(v).replace(/`/g,'&#96;');}
-function parseGDELTDate(s){if(!s)return null;const m=String(s).match(/^(\d{4})(\d{2})(\d{2})T?(\d{2})(\d{2})(\d{2})?/);return m ? new Date(Date.UTC(+m[1],+m[2]-1,+m[3],+(m[4]||0),+(m[5]||0),+(m[6]||0))) : new Date(s);}
-function relativeTime(d){const sec=Math.max(0,(Date.now()-d.getTime())/1000);if(sec<60)return 'now';if(sec<3600)return Math.floor(sec/60)+'m';if(sec<86400)return Math.floor(sec/3600)+'h';return Math.floor(sec/86400)+'d';}
+function fetchTimeout(url, ms){
+  const ctrl=new AbortController(); const t=setTimeout(()=>ctrl.abort(),ms);
+  return fetch(url,{signal:ctrl.signal}).finally(()=>clearTimeout(t));
+}
+/* calendar and news render independently, so one slow source never blocks the other */
 async function loadFundamentals(){
-  const jobs=[];
-  jobs.push(fetch('https://xoomar.com/api/markets/calendar?importance=high').then(r=>{if(!r.ok)throw Error('calendar HTTP '+r.status);return r.json();}).then(j=>Array.isArray(j.data)?j.data:[]).catch(()=>[]));
+  S.fundLoadedAt=Date.now();
+  const cal=fetchTimeout('https://xoomar.com/api/markets/calendar?importance=high',7000)
+    .then(r=>{if(!r.ok)throw Error('calendar HTTP '+r.status);return r.json();})
+    .then(j=>Array.isArray(j.data)?j.data:[]).catch(()=>[])
+    .then(macro=>{S.fund.macro=macro.filter(e=>String(e.country||'US').toUpperCase()==='US').sort((a,b)=>new Date(a.scheduledAt)-new Date(b.scheduledAt)).slice(0,12);renderFundamentals();});
   const q='("gold" OR "XAU" OR "Federal Reserve" OR "Fed" OR "US dollar" OR "Treasury yield" OR "inflation" OR "interest rates")';
-  jobs.push(fetch('https://api.gdeltproject.org/api/v2/doc/doc?query='+encodeURIComponent(q)+'&mode=artlist&maxrecords=40&timespan=24h&sort=datedesc&format=json').then(r=>{if(!r.ok)throw Error('news HTTP '+r.status);return r.json();}).then(j=>j.articles||j.data||[]).catch(()=>[]));
-  const [macro,news]=await Promise.all(jobs);S.fund.macro=macro.filter(e=>String(e.country||'US').toUpperCase()==='US').sort((a,b)=>new Date(a.scheduledAt)-new Date(b.scheduledAt)).slice(0,12);S.fund.news=dedupeNews(news.map(a=>({title:a.title,url:a.url,domain:a.domain||a.sourcecountry,seendate:a.seendate})).filter(a=>a.title));S.fundLoadedAt=Date.now();renderFundamentals();
+  const nws=fetchTimeout('https://api.gdeltproject.org/api/v2/doc/doc?query='+encodeURIComponent(q)+'&mode=artlist&maxrecords=40&timespan=24h&sort=datedesc&format=json',8000)
+    .then(r=>{if(!r.ok)throw Error('news HTTP '+r.status);return r.json();})
+    .then(j=>j.articles||j.data||[]).catch(()=>[])
+    .then(news=>{S.fund.news=dedupeNews(news.map(a=>({title:a.title,url:a.url,domain:a.domain||a.sourcecountry,seendate:a.seendate})).filter(a=>a.title));renderFundamentals();});
+  await Promise.allSettled([cal,nws]);
 }
 
 /* ---------------- renderers ---------------- */
@@ -1750,7 +1863,6 @@ function renderPerformance(bt, livePrice, label) {
 
   const wr = eq.active ? Math.round(eq.wins / eq.active * 100) + '%' : '—';
   const stat = (label, val, cls) => '<div class="perf-stat"><div class="ps-label">' + label + '</div><div class="ps-val ' + (cls || '') + '">' + val + '</div></div>';
-  setText('perf-stats', '');
   const ps = $('perf-stats');
   if (ps) ps.innerHTML =
     stat('STRATEGY RETURN', sgn(eq.ret) + '%', eq.ret >= 0 ? 'buy' : 'sell') +
@@ -1852,54 +1964,6 @@ function renderSessions(now = new Date()) {
     (isFriClose ? 'weekly market close' : next.label) + ' in ' + dur(next.t - now);
 }
 
-/* ---------------- 1H / 4H signal cards, from xaus.com's own hourly candles ---------------- */
-/* xaus.com's /api/v1/chart endpoint (same trusted, CORS-open feed already used for
-   gold's daily history and cross-asset correlations) also serves 60-minute candles.
-   That lets the exact same indicator math above run on 1H bars directly, and on
-   4H bars built by grouping every four 1H candles - so the Signal Snapshot cards
-   are ASL's own live, continuously-recalculated rating, not just a static badge. */
-const HOURLY_REFRESH_SECONDS = 300; // xaus.com hourly candles: refetch every 5 minutes
-
-function extractIntraday(json) {
-  let arr = Array.isArray(json) ? json : (json && Array.isArray(json.points) ? json.points : null);
-  if (!arr) return [];
-  const out = [];
-  for (const p of arr) {
-    if (!p) continue;
-    const t = p.t ?? p.time ?? p.timestamp;
-    if (t == null) continue;
-    const date = new Date(t > 2e10 ? t : t * 1000).toISOString();
-    const c = num(p.c ?? p.close);
-    if (!isFinite(c)) continue;
-    let h = num(p.h ?? p.high), l = num(p.l ?? p.low);
-    if (!isFinite(h)) h = c;
-    if (!isFinite(l)) l = c;
-    out.push({ date, c, h: Math.max(h, c), l: Math.min(l, c) });
-  }
-  return out;
-}
-
-function resampleBars(bars, groupSize) {
-  const out = [];
-  for (let i = 0; i < bars.length; i += groupSize) {
-    const chunk = bars.slice(i, i + groupSize);
-    if (!chunk.length) continue;
-    out.push({
-      date: chunk[chunk.length - 1].date,
-      c: chunk[chunk.length - 1].c,
-      h: Math.max.apply(null, chunk.map(b => b.h)),
-      l: Math.min.apply(null, chunk.map(b => b.l))
-    });
-  }
-  return out;
-}
-
-async function loadHourly() {
-  const j = await getJSON(API_BASE + '/chart?symbol=xau&range=1mo&interval=60m');
-  const bars = extractIntraday(j);
-  if (bars.length) { S.hourly = bars; S.hourlyLoadedAt = Date.now(); }
-}
-
 /* ---------------- 08 - Multi-timeframe confluence gauge ---------------- */
 function tfScore(A) {
   if (!A) return null;
@@ -1955,7 +2019,7 @@ function renderMTF(h1, h4, d1) {
     renderMTFArc(0);
     if (lbl) { lbl.textContent = '—'; lbl.style.color = 'var(--muted)'; }
     if (verdict) verdict.textContent = 'Waiting for 1H, 4H and Daily data…';
-    return;
+    return null;
   }
   const wsum = weighted.reduce((a, x) => a + x.s * x.w, 0);
   const wtot = weighted.reduce((a, x) => a + x.w, 0);
@@ -1967,9 +2031,10 @@ function renderMTF(h1, h4, d1) {
   const agreeCount = weighted.filter(x => Math.sign(x.s) === Math.sign(combined) || x.s === 0).length;
   if (verdict) verdict.textContent = available + ' of 3 timeframes available, ' + agreeCount + ' agreeing · weighted score ' +
     combined.toFixed(2) + ' of ±2 (1H ×1, 4H ×1.5, Daily ×2)';
+  return { combined, label, cls };
 }
 
-/* ---------------- 09 - Volatility regime (ATR percentile vs its own history) ---------------- */
+/* ---------------- 09 - Volatility regime ---------------- */
 function renderVolatility(bars) {
   const scoreEl = $('vol-score');
   if (!bars || bars.length < 60) { if (scoreEl) scoreEl.textContent = 'Not enough daily history yet…'; return; }
@@ -1993,7 +2058,7 @@ function renderVolatility(bars) {
     ' · ' + pct + 'th percentile of ' + sorted.length + ' days of its own history';
 }
 
-/* ---------------- 09 - Seasonality (average monthly return across available history) ---------------- */
+/* ---------------- 09 - Seasonality ---------------- */
 function renderSeasonality(bars) {
   const box = $('seasonality-chart');
   if (!box) return;
@@ -2027,8 +2092,7 @@ function renderSeasonality(bars) {
   }).join('');
 }
 
-/* ---------------- 10 - CFTC Commitment of Traders (public, free, no key) ---------------- */
-const COT_REFRESH_SECONDS = 6 * 3600; // weekly data, no need to poll often
+/* ---------------- 10 - CFTC Commitment of Traders ---------------- */
 const COT_URL = 'https://publicreporting.cftc.gov/resource/6dca-aqww.json' +
   '?$where=' + encodeURIComponent("market_and_exchange_names='GOLD - COMMODITY EXCHANGE INC.'") +
   '&$order=' + encodeURIComponent('report_date_as_yyyy_mm_dd DESC') +
@@ -2036,7 +2100,7 @@ const COT_URL = 'https://publicreporting.cftc.gov/resource/6dca-aqww.json' +
   '&$select=' + encodeURIComponent('report_date_as_yyyy_mm_dd,noncomm_positions_long_all,noncomm_positions_short_all,open_interest_all');
 
 async function loadCOT() {
-  const rows = await getJSON(COT_URL, 15000);
+  const rows = await getJSON(COT_URL, 12000);
   if (!Array.isArray(rows) || !rows.length) throw new Error('no rows returned');
   const parsed = rows.map(r => ({
     date: String(r.report_date_as_yyyy_mm_dd).slice(0, 10),
@@ -2045,6 +2109,7 @@ async function loadCOT() {
   })).sort((a, b) => a.date < b.date ? -1 : a.date > b.date ? 1 : 0);
   S.cot = parsed;
   S.cotLoadedAt = Date.now();
+  try { localStorage.setItem('asl-cot-v1', JSON.stringify(parsed)); } catch (e) {}
 }
 
 function renderCOT() {
@@ -2070,7 +2135,7 @@ function renderCOTChart(rows) {
   const nets = rows.map(r => r.net);
   let lo = Math.min(...nets), hi = Math.max(...nets);
   const pad = (hi - lo) * 0.1 || 1; lo -= pad; hi += pad;
-  const x = i => L + (W - L - R) * (i / (rows.length - 1));
+  const x = i => L + (W - L - R) * (i / Math.max(1, rows.length - 1));
   const y = v => T + (H - T - B) * (1 - (v - lo) / (hi - lo));
   const line = rows.map((r, i) => (i ? 'L' : 'M') + x(i).toFixed(1) + ' ' + y(r.net).toFixed(1)).join(' ');
   const zeroY = y(0);
@@ -2108,7 +2173,8 @@ function updateCalc() {
   }
 }
 
-function renderTfSignals(dailyA) {
+/* 1H / 4H / Daily signal cards + master signal */
+function renderTfSignals(dailyA, conf) {
   const mk = bars => { try { return bars && bars.length > 35 ? analyse(bars, null) : null; } catch (e) { return null; } };
   const h1 = mk(S.hourly);
   const h4 = mk(resampleBars(S.hourly || [], 4));
@@ -2117,15 +2183,29 @@ function renderTfSignals(dailyA) {
     const el = $(id);
     if (!el) continue;
     const A = sets[id];
-    if (!A) { el.innerHTML = '<span class="fb-meta">building live signal…</span>'; continue; }
+    if (!A) { el.innerHTML = '<span class="fb-meta">Building live signal…</span>'; continue; }
     const cls = /Buy/.test(A.overall) ? 'buy' : /Sell/.test(A.overall) ? 'sell' : 'neutral';
     el.innerHTML = '<span class="sig ' + cls + '">' + A.overall + '</span>' +
       '<span class="fb-meta">RSI ' + fmt(A.rsi, 1) + ' · ' + A.maBuy + '/' + A.maTotal + ' MAs bullish</span>';
   }
-  renderMTF(h1, h4, dailyA);
+  const m = renderMTF(h1, h4, dailyA);
+  /* master signal: multi-timeframe score + daily confluence */
+  const mv = $('ms-value'), chips = $('ms-chips');
+  if (mv && chips) {
+    if (!m) { mv.textContent = 'Calculating…'; mv.className = 'ms-value neutral'; chips.innerHTML = ''; }
+    else {
+      let score = m.combined / 2;                       // -1 .. +1
+      if (conf && conf.n) score = (score + conf.net / conf.n) / 2;
+      const lbl = score >= 0.5 ? 'Strong Buy' : score >= 0.15 ? 'Buy' : score > -0.15 ? 'Neutral' : score > -0.5 ? 'Sell' : 'Strong Sell';
+      mv.textContent = lbl; mv.className = 'ms-value ' + ratingClass(lbl);
+      const chip = (t, A) => '<span class="ms-chip ' + (A ? ratingClass(A.overall) : '') + '">' + t + ' · ' + (A ? A.overall : '—') + '</span>';
+      chips.innerHTML = chip('1H', h1) + chip('4H', h4) + chip('DAILY', dailyA) +
+        (conf ? '<span class="ms-chip ' + (conf.net >= 3 ? 'buy' : conf.net <= -3 ? 'sell' : '') + '">CONFLUENCE · ' + conf.bull + '↑ ' + conf.bear + '↓</span>' : '');
+    }
+  }
 }
 
-/* ---------------- 12 - Daily Outlook, written automatically from live indicators ---------------- */
+/* ---------------- 12 - Daily Outlook ---------------- */
 function renderDailyOutlook(A, conf) {
   const panel = $('outlook-panel');
   if (!panel) return;
@@ -2176,57 +2256,62 @@ function renderDailyOutlook(A, conf) {
   panel.innerHTML = [p1, p2, p3].filter(Boolean).map(t => '<p>' + t.trim() + '</p>').join('');
 }
 
+/* ---------------- render everything (throttled to one frame) ---------------- */
+let renderQueued = false;
 function renderAll() {
-  renderHeader();
-  renderCorrelations();
-  let dailyA = null;
-  if (S.hist) {
-    dailyA = analyse(S.hist, S.spot ? S.spot.price : null);
-    dailyA.marketLabel = 'Gold';
-    const conf = confluenceOf(dailyA, dxyChangeAt(S.others.dxy, new Date().toISOString().slice(0, 10)));
-    S.dir = dirFromNet(conf.net, S.dir);
-    renderTechnical(dailyA);
-    renderVerdict(dailyA, conf, S.dir);
-    renderConfluence(conf);
-    renderLevels(dailyA);
-    renderPerformance(S.bt, S.spot ? S.spot.price : null, 'gold');
-    renderVolatility(S.hist);
-    renderSeasonality(S.hist);
-    renderDailyOutlook(dailyA, conf);
-  }
-  renderTfSignals(dailyA);
-  renderSessions();
-  drawASLChart();
+  if (renderQueued) return;
+  renderQueued = true;
+  requestAnimationFrame(() => { renderQueued = false; renderNow(); });
+}
+function renderNow() {
+  try {
+    renderHeader();
+    renderCorrelations();
+    let dailyA = null, conf = null;
+    if (S.hist && S.hist.length > 30) {
+      dailyA = analyse(S.hist, S.spot ? S.spot.price : null);
+      dailyA.marketLabel = 'Gold';
+      conf = confluenceOf(dailyA, dxyChangeAt(S.others.dxy, new Date().toISOString().slice(0, 10)));
+      S.dir = dirFromNet(conf.net, S.dir);
+      renderTechnical(dailyA);
+      renderVerdict(dailyA, conf, S.dir);
+      renderConfluence(conf);
+      renderLevels(dailyA);
+      renderPerformance(S.bt, S.spot ? S.spot.price : null, 'gold');
+      renderVolatility(S.hist);
+      renderSeasonality(S.hist);
+      renderDailyOutlook(dailyA, conf);
+    }
+    renderTfSignals(dailyA, conf);
+    renderSessions();
+    drawASLChart();
+  } catch (e) { console.warn('ASL dashboard: render failed', e); }
 }
 
-/* ---------------- refresh loop ---------------- */
+/* ---------------- refresh loop (parallel, progressive) ---------------- */
 let secondsLeft = REFRESH_SECONDS, busy = false;
 
 async function refresh() {
   if (busy) return;
   busy = true;
-  try {
-    await loadSpot();
-    S.feedOk = true; S.lastOk = new Date();
-  } catch (e) { console.warn("ASL dashboard: spot refresh failed", e); S.feedOk = false; }
-  try {
-    if (!S.hist || Date.now() - S.lastSlow > SLOW_REFRESH_SECONDS * 1000) await loadSlow();
-  } catch (e) { console.warn("ASL dashboard: candle refresh failed", e); }
-  try {
-    if (!S.intraday || !S.intraday.length || Date.now() - S.hourlyLoadedAt > HOURLY_REFRESH_SECONDS * 1000) { await loadIntraday(); }
-    if (!S.hourly || !S.hourly.length || Date.now() - S.hourlyLoadedAt > HOURLY_REFRESH_SECONDS * 1000) { await loadHourly(); }
-  } catch (e) { console.warn("ASL dashboard: intraday refresh failed", e); }
-  try {
-    if (!S.fundLoadedAt || Date.now() - S.fundLoadedAt > 300000) await loadFundamentals();
-  } catch (e) { console.warn("ASL dashboard: fundamentals refresh failed", e); }
-  try {
-    if (!S.cot || Date.now() - S.cotLoadedAt > COT_REFRESH_SECONDS * 1000) { await loadCOT(); renderCOT(); }
-  } catch (e) {
-    console.warn("ASL dashboard: COT refresh failed", e);
-    const note = $('cot-note');
-    if (note && !S.cot) note.textContent = 'Could not load CFTC COT data (' + e.message + '). The public CFTC API may be temporarily unavailable — this panel will retry automatically.';
-  }
-  renderAll();
+  const now = Date.now(), jobs = [];
+  jobs.push(loadSpot()
+    .then(() => { S.feedOk = true; S.lastOk = new Date(); })
+    .catch(e => { console.warn('ASL dashboard: spot failed', e); S.feedOk = false; })
+    .then(renderAll));
+  if (!S.hist || now - S.lastSlow > SLOW_REFRESH_SECONDS * 1000)
+    jobs.push(loadSlow().catch(e => { console.warn('ASL dashboard: daily history failed', e); }));
+  if (!S.hourly || now - S.hourlyLoadedAt > HOURLY_REFRESH_SECONDS * 1000)
+    jobs.push(loadHourly().then(renderAll).catch(e => console.warn('ASL dashboard: hourly failed', e)));
+  if (!S.fundLoadedAt || now - S.fundLoadedAt > 300000)
+    jobs.push(loadFundamentals().catch(e => console.warn('ASL dashboard: fundamentals failed', e)));
+  if (!S.cot || now - S.cotLoadedAt > COT_REFRESH_SECONDS * 1000)
+    jobs.push(loadCOT().then(renderCOT).catch(e => {
+      console.warn('ASL dashboard: COT failed', e);
+      const note = $('cot-note');
+      if (note && !S.cot) note.textContent = 'CFTC data temporarily unavailable — retrying automatically.';
+    }));
+  await Promise.allSettled(jobs);
   busy = false;
 }
 
@@ -2246,7 +2331,16 @@ function tick() {
 document.addEventListener('visibilitychange', () => {
   if (!document.hidden && secondsLeft < REFRESH_SECONDS - 20) { secondsLeft = REFRESH_SECONDS; refresh(); }
 });
+
+/* instant paint from cache on repeat visits, fresh data replaces it a moment later */
+try {
+  const c = JSON.parse(localStorage.getItem('asl-hist-v2') || 'null');
+  if (Array.isArray(c) && c.length > 230 && c[0].o != null) { S.hist = c; }
+  const k = JSON.parse(localStorage.getItem('asl-cot-v1') || 'null');
+  if (Array.isArray(k) && k.length) { S.cot = k; renderCOT(); }
+} catch (e) {}
 renderSessions();
+renderNow();
 refresh();
 setInterval(tick, 1000);
 
