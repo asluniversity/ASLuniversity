@@ -329,7 +329,10 @@
   .tf-btn:hover{color:var(--white); border-color:rgba(11,177,210,0.4);}
   .tf-btn.active{color:var(--blue); border-color:var(--blue); background:rgba(11,177,210,0.08);}
   .chart-canvas-wrap{position:relative; flex:1; min-height:0;}
-  #candle-chart-canvas{width:100%; height:100%;}
+  #candle-chart-canvas{width:100%; height:100%; touch-action:none; cursor:crosshair; display:block;}
+  .chart-intervals{flex-wrap:wrap; justify-content:flex-end;}
+  .zoom-btn{min-width:32px; padding:5px 9px; font-size:14px; line-height:1;}
+  .zoom-btn:first-of-type{margin-left:8px;}
   .chart-error{
     position:absolute; inset:0; display:flex; align-items:center; justify-content:center;
     text-align:center; padding:30px; font-size:13.5px; color:var(--muted);
@@ -744,10 +747,16 @@
           <div class="chart-source">ASL MARKET ENGINE · <span id="chart-data-state">CONNECTING</span></div>
         </div>
         <div class="chart-intervals" role="group" aria-label="Chart timeframe">
+          <button class="tf-btn" data-chart-tf="1M">1M</button>
+          <button class="tf-btn" data-chart-tf="5M">5M</button>
+          <button class="tf-btn" data-chart-tf="15M">15M</button>
           <button class="tf-btn active" data-chart-tf="1H">1H</button>
           <button class="tf-btn" data-chart-tf="4H">4H</button>
           <button class="tf-btn" data-chart-tf="1D">1D</button>
           <button class="tf-btn" data-chart-tf="1W">1W</button>
+          <button class="tf-btn zoom-btn" data-zoom="out" title="Zoom out" aria-label="Zoom out">&minus;</button>
+          <button class="tf-btn zoom-btn" data-zoom="in" title="Zoom in" aria-label="Zoom in">+</button>
+          <button class="tf-btn zoom-btn" data-zoom="reset" title="Reset view" aria-label="Reset view">&#8634;</button>
         </div>
       </div>
       <div class="chart-canvas-wrap">
@@ -1577,41 +1586,140 @@ function weeklyBars(bars) {
   return out;
 }
 
-/* ---------------- ASL custom chart ---------------- */
+/* ---------------- ASL custom chart (live ticks, 7 timeframes, zoom + pan) ---------------- */
+const TFS = {
+  '1M':  { ms: 60000,   q: 'range=1d&interval=1m',  keep: 900, feed: true, n: 90 },
+  '5M':  { ms: 300000,  q: 'range=5d&interval=5m',  keep: 700, feed: true, n: 90 },
+  '15M': { ms: 900000,  q: 'range=5d&interval=15m', keep: 600, feed: true, n: 80 },
+  '1H':  { ms: 3600000, n: 80 }, '4H': { ms: 14400000, n: 70 }, '1D': { n: 90 }, '1W': { n: 60 }
+};
+const MAX_VISIBLE = 600, MIN_VISIBLE = 10;
+S.tfData = {}; S.tfLoading = {}; S.ticks = []; S.rawTicks = null;
+S.view = { n: TFS['1H'].n, off: 0 }; S.mouse = null;
+S.lastLen = 0; S.lastN = 80; S.lastOff = 0; S.lastCw = 8; S.lastL = 58; S.lastPW = 600;
+const isoOf = ms => new Date(ms).toISOString();
+
+/* put a live price into an intraday candle series (updates the last candle or opens a new one) */
+function applyTickTo(arr, ms, price, ts) {
+  if (!arr || !isFinite(price)) return;
+  const start = Math.floor(ts / ms) * ms;
+  if (!arr.length) { if (marketOpen(new Date(ts))) arr.push({ date: isoOf(start), o: price, h: price, l: price, c: price }); return; }
+  const L = arr[arr.length - 1], ls = Date.parse(L.date);
+  if (start > ls) {
+    if (!marketOpen(new Date(ts))) return;
+    arr.push({ date: isoOf(start), o: L.c, h: Math.max(L.c, price), l: Math.min(L.c, price), c: price });
+    if (arr.length > 1600) arr.splice(0, arr.length - 1300);
+  } else {
+    L.c = price; if (price > L.h) L.h = price; if (price < L.l) L.l = price;
+  }
+}
+function onTick(price, ts) {
+  S.ticks.push({ t: ts, p: price });
+  if (S.ticks.length > 20000) S.ticks.splice(0, 5000);
+  if (S.hourly) applyTickTo(S.hourly, 3600000, price, ts);
+  for (const k in S.tfData) applyTickTo(S.tfData[k].bars, TFS[k].ms, price, ts);
+}
+
+/* fallback: build candles from raw price ticks when the feed has no 1m/5m/15m candles */
+function bucketTicks(pts, ms) {
+  const out = []; let cur = null, key = null;
+  for (const q of pts) {
+    const k = Math.floor(q.t / ms);
+    if (k !== key) { if (cur) out.push(cur); key = k; cur = { date: isoOf(k * ms), o: q.p, h: q.p, l: q.p, c: q.p }; }
+    else { if (q.p > cur.h) cur.h = q.p; if (q.p < cur.l) cur.l = q.p; cur.c = q.p; }
+  }
+  if (cur) out.push(cur);
+  return out;
+}
+async function loadRawTicks() {
+  const j = await getJSON(API_BASE + '/intraday?symbol=xau&hours=48&fresh=' + Date.now(), 9000);
+  S.rawTicks = findArray(j).map(p => {
+    const t = p.t ?? p.time ?? p.timestamp;
+    const ms = typeof t === 'number' ? (t > 2e10 ? t : t * 1000) : Date.parse(t);
+    return { t: ms, p: num(p.p ?? p.price ?? p.close ?? p.c) };
+  }).filter(x => isFinite(x.t) && isFinite(x.p)).sort((a, b) => a.t - b.t);
+}
+async function loadTF(tf) {
+  const cfg = TFS[tf];
+  if (!cfg || !cfg.feed || S.tfLoading[tf]) return;
+  S.tfLoading[tf] = true;
+  try {
+    let bars = [], src = 'FEED';
+    try { bars = extractIntraday(await getJSON(API_BASE + '/chart?symbol=xau&' + cfg.q, 9000)); } catch (e) {}
+    if (bars.length < 5) {
+      src = 'TICKS';
+      if (!S.rawTicks) { try { await loadRawTicks(); } catch (e) { S.rawTicks = []; } }
+      const lastRaw = S.rawTicks.length ? S.rawTicks[S.rawTicks.length - 1].t : 0;
+      bars = bucketTicks(S.rawTicks.concat(S.ticks.filter(t => t.t > lastRaw)), cfg.ms);
+    }
+    bars = bars.slice(-cfg.keep);
+    if (S.spot) applyTickTo(bars, cfg.ms, S.spot.price, Date.now());
+    S.tfData[tf] = { bars, at: Date.now(), src };
+  } finally { S.tfLoading[tf] = false; }
+  if (S.chartTF === tf) requestChart();
+}
+
 function chartBars(tf) {
   let bars;
-  if (tf === '1H') bars = (S.hourly || []).slice(-80);
-  else if (tf === '4H') bars = resampleBars(S.hourly || [], 4).slice(-70);
-  else if (tf === '1D') bars = (S.hist || []).slice(-90);
-  else bars = weeklyBars(S.hist || []).slice(-60);
-  bars = bars.map(b => ({ ...b }));
-  if (bars.length && S.spot && marketOpen(new Date())) {
-    const L = last(bars);
-    L.c = S.spot.price; L.h = Math.max(L.h, L.c); L.l = Math.min(L.l, L.c);
+  if (tf === '1H') return S.hourly || [];
+  if (tf === '4H') return resampleBars(S.hourly || [], 4);
+  if (tf === '1D' || tf === '1W') {
+    bars = (tf === '1D' ? (S.hist || []) : weeklyBars(S.hist || [])).slice(-500).map(b => ({ ...b }));
+    if (bars.length && S.spot && marketOpen(new Date())) {
+      const now = new Date(), today = now.toISOString().slice(0, 10);
+      const key = tf === '1D' ? today : new Date(now.getTime() - ((now.getUTCDay() + 6) % 7) * 86400000).toISOString().slice(0, 10);
+      const p = S.spot.price;
+      if (last(bars).date < key) bars.push({ date: key, o: last(bars).c, h: p, l: p, c: p });
+      else { const L = last(bars); L.c = p; L.h = Math.max(L.h, p); L.l = Math.min(L.l, p); }
+    }
+    return bars;
   }
-  return bars;
+  return (S.tfData[tf] && S.tfData[tf].bars) || [];
+}
+
+let chartQ = false;
+function requestChart() { if (chartQ) return; chartQ = true; requestAnimationFrame(() => { chartQ = false; drawASLChart(); }); }
+
+function tLabel(b) {
+  const d = new Date(b.date), tf = S.chartTF;
+  if (tf === '1M' || tf === '5M' || tf === '15M') return d.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit', timeZone: 'UTC', hour12: false });
+  if (tf === '1H' || tf === '4H') return d.toLocaleString('en-GB', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit', timeZone: 'UTC', hour12: false });
+  return d.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: tf === '1W' ? '2-digit' : undefined, timeZone: 'UTC' });
 }
 
 function drawASLChart() {
   const canvas = $('candle-chart-canvas'); if (!canvas) return;
   const box = canvas.parentElement, dpr = Math.max(1, window.devicePixelRatio || 1);
   const w = Math.max(320, box.clientWidth), h = Math.max(300, box.clientHeight);
-  canvas.width = Math.round(w * dpr); canvas.height = Math.round(h * dpr);
-  canvas.style.width = w + 'px'; canvas.style.height = h + 'px';
+  if (canvas.width !== Math.round(w * dpr) || canvas.height !== Math.round(h * dpr)) {
+    canvas.width = Math.round(w * dpr); canvas.height = Math.round(h * dpr);
+    canvas.style.width = w + 'px'; canvas.style.height = h + 'px';
+  }
   const ctx = canvas.getContext('2d'); ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
   const light = currentTheme() === 'light';
   const bg = light ? '#ffffff' : '#101416', grid = light ? 'rgba(6,135,162,.12)' : 'rgba(11,177,210,.09)', text = light ? '#586A73' : '#8A9096';
   const up = light ? '#0687A2' : '#0BB1D2', down = light ? '#FFFFFF' : '#F5F7F8', downEdge = light ? '#203038' : '#F5F7F8';
   ctx.fillStyle = bg; ctx.fillRect(0, 0, w, h);
-  const bars = chartBars(S.chartTF);
-  if (!bars.length) {
+  const tf = S.chartTF, all = chartBars(tf), len = all.length;
+  if (len < 1) {
     ctx.fillStyle = text; ctx.font = '12px JetBrains Mono, monospace'; ctx.textAlign = 'center';
-    ctx.fillText('Loading candles…', w / 2, h / 2); ctx.textAlign = 'left';
-    return;
+    ctx.fillText('Loading ' + tf + ' candles…', w / 2, h / 2); ctx.textAlign = 'left';
+    S.lastLen = 0; return;
   }
-  const L = 58, R = 82, T = 22, B = 34, cw = (w - L - R) / bars.length;
-  const hi = Math.max(...bars.map(b => b.h)), lo = Math.min(...bars.map(b => b.l)), pad = (hi - lo) * .08 || 1;
-  const ymax = hi + pad, ymin = lo - pad;
+  /* keep the view anchored when new candles are appended while panned back */
+  if (S.prevTf === tf && S.prevLen && len > S.prevLen && S.view.off > 0) S.view.off += len - S.prevLen;
+  S.prevTf = tf; S.prevLen = len;
+  const n = len < MIN_VISIBLE ? len : Math.max(MIN_VISIBLE, Math.min(S.view.n, len, MAX_VISIBLE));
+  const off = Math.max(0, Math.min(S.view.off, len - n));
+  S.view.off = off;
+  const bars = all.slice(len - off - n, len - off);
+  S.lastLen = len; S.lastN = n; S.lastOff = off;
+
+  const L = 58, R = 82, T = 22, B = 34, PW = w - L - R, cw = PW / n;
+  S.lastCw = cw; S.lastL = L; S.lastPW = PW;
+  let hi = -Infinity, lo = Infinity;
+  for (const b of bars) { if (b.h > hi) hi = b.h; if (b.l < lo) lo = b.l; }
+  const pad = (hi - lo) * .08 || 1, ymax = hi + pad, ymin = lo - pad;
   const y = v => T + (h - T - B) * (1 - (v - ymin) / (ymax - ymin));
   ctx.font = '11px JetBrains Mono, monospace'; ctx.lineWidth = 1;
   for (let i = 0; i < 5; i++) {
@@ -1619,47 +1727,150 @@ function drawASLChart() {
     ctx.strokeStyle = grid; ctx.beginPath(); ctx.moveTo(L, yy); ctx.lineTo(w - R, yy); ctx.stroke();
     ctx.fillStyle = text; ctx.fillText(fmt(v, 2), w - R + 8, yy + 4);
   }
-  const bodyW = Math.max(2, Math.min(18, cw * 0.62));
-  bars.forEach((b, i) => {
-    const x = Math.round(L + cw * i + cw / 2) + .5, o = b.o ?? b.c;
-    const bull = b.c >= o, edge = bull ? up : downEdge;
-    ctx.strokeStyle = edge; ctx.fillStyle = bull ? up : down; ctx.lineWidth = 1.2;
+  const bodyW = Math.max(1.5, Math.min(40, cw * 0.68));
+  for (let i = 0; i < bars.length; i++) {
+    const b = bars[i], x = Math.round(L + cw * i + cw / 2) + .5, o = b.o ?? b.c, bull = b.c >= o;
+    ctx.strokeStyle = bull ? up : downEdge; ctx.fillStyle = bull ? up : down; ctx.lineWidth = 1.2;
     ctx.beginPath(); ctx.moveTo(x, y(b.h)); ctx.lineTo(x, y(b.l)); ctx.stroke();
     const yo = y(o), yc = y(b.c), top = Math.min(yo, yc), body = Math.max(1.5, Math.abs(yc - yo));
-    const bx = Math.round(x - bodyW / 2), bw = Math.round(bodyW);
+    const bx = Math.round(x - bodyW / 2), bw = Math.max(1, Math.round(bodyW));
     ctx.fillRect(bx, top, bw, body);
-    if (!bull && light) { ctx.strokeRect(bx + .5, top + .5, Math.max(1, bw - 1), Math.max(1, body - 1)); }
-  });
+    if (!bull && light && bw > 3) ctx.strokeRect(bx + .5, top + .5, Math.max(1, bw - 1), Math.max(1, body - 1));
+  }
   ctx.lineWidth = 1;
-  const lb = last(bars), ly = y(lb.c), lbull = lb.c >= (lb.o ?? lb.c), lc = lbull ? up : (light ? '#203038' : '#F5F7F8');
-  ctx.strokeStyle = lc; ctx.globalAlpha = .7; ctx.setLineDash([4, 4]);
-  ctx.beginPath(); ctx.moveTo(L, ly); ctx.lineTo(w - R, ly); ctx.stroke();
-  ctx.setLineDash([]); ctx.globalAlpha = 1;
-  ctx.fillStyle = lc; ctx.fillRect(w - R + 2, ly - 9, R - 4, 18);
-  ctx.fillStyle = (lbull || light) ? '#fff' : '#0A0A0B'; ctx.font = '600 11px JetBrains Mono, monospace'; ctx.fillText(fmt(lb.c), w - R + 6, ly + 4);
-  ctx.fillStyle = text; ctx.font = '10px JetBrains Mono, monospace';
-  const intra = S.chartTF === '1H' || S.chartTF === '4H';
-  [bars[0], bars[Math.floor(bars.length / 2)], lb].forEach((b, i) => {
-    const dt = new Date(b.date);
-    const s = intra
-      ? dt.toLocaleString('en-GB', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit', timeZone: 'UTC', hour12: false })
-      : dt.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', timeZone: 'UTC' });
-    ctx.fillText(s, i === 0 ? L : i === 1 ? w / 2 - 30 : w - R - 80, h - 10);
-  });
-  setText('chart-last-price', '$' + fmt(lb.c));
-  const first = bars[0].o ?? bars[0].c, ch = first ? ((lb.c / first) - 1) * 100 : 0;
+  /* live price line + tag (only when the live edge is visible) */
+  const lb = last(all);
+  if (off === 0) {
+    const ly = y(lb.c), lbull = lb.c >= (lb.o ?? lb.c), lc = lbull ? up : (light ? '#203038' : '#F5F7F8');
+    ctx.strokeStyle = lc; ctx.globalAlpha = .7; ctx.setLineDash([4, 4]);
+    ctx.beginPath(); ctx.moveTo(L, ly); ctx.lineTo(w - R, ly); ctx.stroke();
+    ctx.setLineDash([]); ctx.globalAlpha = 1;
+    ctx.fillStyle = lc; ctx.fillRect(w - R + 2, ly - 9, R - 4, 18);
+    ctx.fillStyle = (lbull || light) ? '#fff' : '#0A0A0B'; ctx.font = '600 11px JetBrains Mono, monospace'; ctx.fillText(fmt(lb.c), w - R + 6, ly + 4);
+  }
+  /* time axis */
+  ctx.fillStyle = text; ctx.font = '10px JetBrains Mono, monospace'; ctx.textAlign = 'center';
+  const nl = Math.min(5, bars.length);
+  for (let k = 0; k < nl; k++) {
+    const idx = nl === 1 ? 0 : Math.round(k * (bars.length - 1) / (nl - 1));
+    const x = Math.max(L + 34, Math.min(w - R - 34, L + cw * idx + cw / 2));
+    ctx.fillText(tLabel(bars[idx]), x, h - 10);
+  }
+  ctx.textAlign = 'left';
+  /* crosshair + OHLC readout */
+  const m = S.mouse;
+  if (m && m.x >= L && m.x <= w - R && m.y >= T && m.y <= h - B) {
+    const idx = Math.max(0, Math.min(bars.length - 1, Math.floor((m.x - L) / cw))), b = bars[idx];
+    const cx = Math.round(L + cw * idx + cw / 2) + .5;
+    ctx.strokeStyle = text; ctx.globalAlpha = .55; ctx.setLineDash([3, 4]);
+    ctx.beginPath(); ctx.moveTo(cx, T); ctx.lineTo(cx, h - B); ctx.moveTo(L, m.y); ctx.lineTo(w - R, m.y); ctx.stroke();
+    ctx.setLineDash([]); ctx.globalAlpha = 1;
+    const pv = ymax - (m.y - T) / (h - T - B) * (ymax - ymin);
+    ctx.fillStyle = light ? '#203038' : '#2a3036'; ctx.fillRect(w - R + 2, m.y - 9, R - 4, 18);
+    ctx.fillStyle = '#fff'; ctx.font = '11px JetBrains Mono, monospace'; ctx.fillText(fmt(pv), w - R + 6, m.y + 4);
+    const o = b.o ?? b.c, chg = o ? (b.c / o - 1) * 100 : 0;
+    ctx.fillStyle = text; ctx.font = '11px JetBrains Mono, monospace';
+    ctx.fillText(tLabel(b) + '  O ' + fmt(o) + '  H ' + fmt(b.h) + '  L ' + fmt(b.l) + '  C ' + fmt(b.c) + '  ' + (chg >= 0 ? '+' : '') + chg.toFixed(2) + '%', L + 6, 14);
+  }
+  setText('chart-last-price', '$' + fmt(S.spot ? S.spot.price : lb.c));
+  const first = bars[0].o ?? bars[0].c, ch = first ? ((last(bars).c / first) - 1) * 100 : 0;
   const chEl = $('chart-change');
   if (chEl) { chEl.textContent = (ch >= 0 ? '+' : '') + ch.toFixed(2) + '%'; chEl.style.color = ch >= 0 ? 'var(--blue)' : 'var(--white)'; }
-  setText('chart-data-state', (S.feedOk ? 'LIVE' : 'RECONNECTING') + ' · ' + S.chartTF + ' · UTC');
+  const d = S.tfData[tf];
+  setText('chart-data-state', (S.feedOk ? 'LIVE' : 'RECONNECTING') + ' · ' + tf + (d && d.src === 'TICKS' ? ' · TICK-BUILT' : '') + ' · ' + n + ' CANDLES · UTC');
 }
 window.ASL_REDRAW_CHART = drawASLChart;
+
+/* ---- zoom / pan / timeframe controls ---- */
+function setView(nn, anchor, f, len) {
+  nn = Math.max(MIN_VISIBLE, Math.min(Math.round(nn), len, MAX_VISIBLE));
+  const ns = anchor - f * nn;
+  S.view.n = nn;
+  S.view.off = Math.max(0, Math.min(Math.round(len - nn - ns), len - nn));
+  requestChart();
+}
+function zoomAt(factor, f) {
+  const len = S.lastLen; if (len < MIN_VISIBLE) return;
+  const n = S.lastN, anchor = (len - S.lastOff - n) + f * n;
+  let nn = n * factor;
+  if (Math.round(nn) === n) nn = n + (factor < 1 ? -1 : 1);
+  setView(nn, anchor, f, len);
+}
+function resetView() { S.view = { n: (TFS[S.chartTF] || {}).n || 80, off: 0 }; requestChart(); }
 
 document.querySelectorAll('[data-chart-tf]').forEach(btn => btn.addEventListener('click', () => {
   S.chartTF = btn.dataset.chartTf;
   document.querySelectorAll('[data-chart-tf]').forEach(b => b.classList.toggle('active', b === btn));
+  S.mouse = null; S.prevLen = 0; S.view = { n: (TFS[S.chartTF] || {}).n || 80, off: 0 };
+  if (TFS[S.chartTF].feed && !S.tfData[S.chartTF]) loadTF(S.chartTF);
   drawASLChart();
 }));
+document.querySelectorAll('[data-zoom]').forEach(btn => btn.addEventListener('click', () => {
+  const z = btn.dataset.zoom;
+  if (z === 'reset') resetView(); else zoomAt(z === 'in' ? 0.78 : 1.28, 1);
+}));
+(function wireChartInput() {
+  const cv = $('candle-chart-canvas'); if (!cv) return;
+  const ptrs = new Map(); let drag = null, pinch = null;
+  const frac = x => Math.max(0, Math.min(1, (x - S.lastL) / S.lastPW));
+  cv.addEventListener('wheel', e => { e.preventDefault(); zoomAt(e.deltaY > 0 ? 1.14 : 0.88, frac(e.offsetX)); }, { passive: false });
+  cv.addEventListener('dblclick', resetView);
+  cv.addEventListener('pointerdown', e => {
+    try { cv.setPointerCapture(e.pointerId); } catch (_) {}
+    ptrs.set(e.pointerId, { x: e.offsetX, y: e.offsetY });
+    if (ptrs.size === 1) drag = { x: e.offsetX, off: S.lastOff, n: S.lastN };
+    else if (ptrs.size === 2) {
+      const [a, b] = [...ptrs.values()];
+      pinch = { d0: Math.hypot(a.x - b.x, a.y - b.y) || 1, n0: S.lastN, len: S.lastLen, f: frac((a.x + b.x) / 2), off0: S.lastOff };
+      drag = null;
+    }
+  });
+  cv.addEventListener('pointermove', e => {
+    if (ptrs.has(e.pointerId)) ptrs.set(e.pointerId, { x: e.offsetX, y: e.offsetY });
+    if (pinch && ptrs.size >= 2) {
+      const [a, b] = [...ptrs.values()], d = Math.hypot(a.x - b.x, a.y - b.y) || 1;
+      setView(pinch.n0 * pinch.d0 / d, (pinch.len - pinch.off0 - pinch.n0) + pinch.f * pinch.n0, pinch.f, pinch.len);
+      return;
+    }
+    if (drag && ptrs.size === 1) {
+      const len = S.lastLen, n = drag.n;
+      S.view.n = n;
+      S.view.off = Math.max(0, Math.min(Math.round(drag.off + (e.offsetX - drag.x) / S.lastCw), len - n));
+      S.mouse = e.pointerType === 'mouse' ? { x: e.offsetX, y: e.offsetY } : null;
+    } else S.mouse = { x: e.offsetX, y: e.offsetY };
+    requestChart();
+  });
+  const end = e => {
+    ptrs.delete(e.pointerId);
+    if (ptrs.size < 2) pinch = null;
+    if (ptrs.size === 1) { const p = [...ptrs.values()][0]; drag = { x: p.x, off: S.lastOff, n: S.lastN }; }
+    else if (ptrs.size === 0) { drag = null; if (e.pointerType !== 'mouse') { S.mouse = null; requestChart(); } }
+  };
+  cv.addEventListener('pointerup', end); cv.addEventListener('pointercancel', end);
+  cv.addEventListener('pointerleave', e => { if (e.pointerType === 'mouse' && !ptrs.size) { S.mouse = null; requestChart(); } });
+})();
 window.addEventListener('resize', () => { clearTimeout(window.__aslChartResize); window.__aslChartResize = setTimeout(drawASLChart, 120); });
+
+/* ---- real-time price: lightweight spot poll every 3s, independent of the 60s full refresh ---- */
+let tickBusy = false;
+async function quickTick() {
+  if (tickBusy || document.hidden) return;
+  tickBusy = true;
+  try {
+    const j = await getJSON(API_BASE + '/spot?compact=1&_=' + Date.now(), 5000);
+    const p = num(j.spot_usd_oz ?? (j.xau && j.xau.price));
+    if (!isFinite(p)) throw new Error('bad spot');
+    S.spot = { price: p, silver: num(j.silver_usd_oz), gsr: num(j.gold_silver_ratio), at: j.updated_at };
+    S.feedOk = true; S.lastOk = new Date();
+    onTick(p, Date.now());
+    renderHeader(); requestChart();
+    const cfg = TFS[S.chartTF], d = S.tfData[S.chartTF];
+    if (cfg && cfg.feed && (!d || Date.now() - d.at > 45000)) loadTF(S.chartTF);
+  } catch (e) { S.feedOk = false; renderHeader(); }
+  finally { tickBusy = false; }
+}
+setTimeout(() => { quickTick(); setInterval(quickTick, 3000); }, 1500);
+document.addEventListener('visibilitychange', () => { if (!document.hidden) quickTick(); });
 
 /* ---------------- ASL fundamental intelligence ---------------- */
 function cleanTitle(v){return String(v||'').toLowerCase().replace(/https?:\/\/\S+/g,'').replace(/[^a-z0-9]+/g,' ').trim().replace(/\s+/g,' ');}
