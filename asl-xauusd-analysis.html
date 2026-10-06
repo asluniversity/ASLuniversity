@@ -1,9 +1,10 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ASL University — XAU/USD Daily Analysis</title>
+<title>ASL University — XAU/USD Market Intelligence</title>
 <meta name="color-scheme" content="dark light">
 <script>
   /* apply saved theme before first paint (default = dark) */
@@ -375,7 +376,6 @@
     font-family:var(--mono); font-size:11px; letter-spacing:0.08em; color:var(--blue);
     padding:14px 16px 0;
   }
-  .tf-card .tv-embed{height:190px; margin-top:6px;}
   .tf-fallback{display:flex; padding:16px; text-align:center; height:190px; margin-top:6px; flex-direction:column; justify-content:center;}
   .tf-fallback .sig{font-size:19px; display:block; margin-bottom:8px;}
   .tf-fallback .fb-meta{font-family:var(--mono); font-size:11px; color:var(--muted);}
@@ -644,10 +644,16 @@
   .calc-results{display:grid; grid-template-columns:repeat(3,1fr); gap:1px; background:var(--hairline); border:1px solid var(--hairline); margin:18px 0;}
   .calc-stat{background:var(--panel-2); padding:14px 10px; text-align:center;}
 
+  /* ===== ASL native chart ===== */
+  .chart-source{font-family:var(--mono);font-size:9px;color:var(--muted);letter-spacing:.08em;margin-top:5px}.asl-chart-frame{overflow:hidden}.chart-toolbar{min-height:66px}.chart-error[hidden]{display:none}.chart-error{z-index:3}.tf-btn{border-radius:4px}
+  /* ===== ASL Fundamental Intelligence ===== */
+  .fund-grid{display:grid;grid-template-columns:1.1fr .9fr;gap:14px}.fund-panel{background:linear-gradient(165deg,var(--surface),var(--panel));border:1px solid rgba(11,177,210,.18);box-shadow:0 0 35px rgba(11,177,210,.06);min-width:0}.fund-panel-head{display:flex;justify-content:space-between;gap:16px;align-items:flex-start;padding:18px 20px;border-bottom:1px solid var(--hairline)}.fund-panel-head h3{font-family:var(--mono);font-size:12px;letter-spacing:.06em;margin-top:5px}.panel-kicker{font-family:var(--mono);font-size:9px;color:var(--blue);letter-spacing:.12em}.asl-badge{font-family:var(--mono);font-size:9px;color:var(--blue);border:1px solid rgba(11,177,210,.4);padding:5px 8px}.macro-list,.asl-news-list{max-height:620px;overflow:auto}.macro-row{display:grid;grid-template-columns:78px 1fr 170px 62px;gap:12px;padding:15px 18px;border-bottom:1px solid var(--hairline);align-items:center}.macro-row:last-child{border-bottom:0}.macro-time,.news-time2{font-family:var(--mono);font-size:10px;color:var(--muted);line-height:1.5}.macro-main b{display:block;font-size:13px}.macro-main span{display:block;font-family:var(--mono);font-size:9px;color:var(--muted);margin-top:3px}.macro-values{display:flex;flex-wrap:wrap;gap:5px}.macro-values span{font-family:var(--mono);font-size:8.5px;color:var(--muted);border:1px solid var(--hairline);padding:4px 5px}.macro-values b{color:var(--white);font-weight:500}.macro-impact{font-family:var(--mono);font-size:8px;text-align:center;padding:5px 4px;border:1px solid currentColor}.macro-impact.high{color:var(--sell)}.macro-impact.medium{color:var(--blue)}.macro-impact.low{color:var(--muted)}.macro-effect{grid-column:2/-1;font-family:var(--mono);font-size:9px;margin-top:-5px}.macro-effect.buy,.news-effect.buy{color:var(--buy)}.macro-effect.sell,.news-effect.sell{color:var(--sell)}.macro-effect.neutral,.news-effect.neutral{color:var(--muted)}.asl-news-row{display:grid;grid-template-columns:46px 1fr;gap:12px;padding:15px 18px;border-bottom:1px solid var(--hairline);text-decoration:none;color:inherit}.asl-news-row:hover{background:rgba(11,177,210,.04)}.news-meta{display:flex;gap:8px;align-items:center;font-family:var(--mono);font-size:9px;color:var(--muted)}.news-impact{font-style:normal;font-size:8px;border:1px solid currentColor;padding:2px 5px}.news-impact.high{color:var(--sell)}.news-impact.medium{color:var(--blue)}.news-impact.low{color:var(--muted)}.asl-news-body h4{font-size:13px;line-height:1.45;margin:5px 0}.news-effect{font-family:var(--mono);font-size:9px}.fund-loading,.fund-empty{padding:30px 20px;font-family:var(--mono);font-size:11px;color:var(--muted)}.fund-foot{font-family:var(--mono);font-size:10px;color:var(--muted);margin-top:12px;line-height:1.7}
+  /* ===== ASL technical matrix ===== */
+  .asl-tech-grid{align-items:stretch}.structure-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:1px;background:var(--hairline);border:1px solid var(--hairline)}.structure-card{background:var(--panel-2);padding:16px}.structure-card span{display:block;font-family:var(--mono);font-size:9px;color:var(--muted);letter-spacing:.05em}.structure-card b{display:block;font-family:var(--mono);font-size:12px;color:var(--white);margin-top:8px}.structure-meter{margin-top:14px;padding:16px;background:rgba(11,177,210,.05);border:1px solid rgba(11,177,210,.18);display:flex;justify-content:space-between;align-items:center;font-family:var(--mono);font-size:10px;color:var(--muted)}.structure-meter strong{font-size:16px}.structure-meter strong.buy{color:var(--buy)}.structure-meter strong.sell{color:var(--sell)}.structure-meter strong.neutral{color:var(--muted)}
   @media (max-width:760px){
     .verdict-box{flex-direction:column; align-items:stretch;}
     .verdict-sub{border-left:none; padding-left:0; border-top:1px solid var(--hairline); padding-top:10px;}
-    .tech-grid, .levels, .two-col, .two-col.conf-grid, .tf-grid{grid-template-columns:1fr;}
+    .tech-grid, .levels, .two-col, .two-col.conf-grid, .tf-grid, .fund-grid{grid-template-columns:1fr;}
     .perf-stats{grid-template-columns:repeat(2,1fr);}
     .news-item{grid-template-columns:1fr;}
     .idbar{flex-direction:column; align-items:flex-start; gap:10px;}
@@ -656,6 +662,7 @@
     .calc-row input{width:100%;}
     .mtf-box{flex-direction:column;}
     .mtf-row{grid-template-columns:70px 1fr auto; gap:8px; padding:10px;}
+    .macro-row{grid-template-columns:70px 1fr;}.macro-values,.macro-impact,.macro-effect{grid-column:2}.macro-impact{text-align:left;width:max-content}.chart-toolbar{align-items:flex-start;flex-direction:column}.chart-intervals{width:100%;overflow:auto}.tf-btn{flex:1}.structure-grid{grid-template-columns:1fr 1fr;}
   }
 </style>
 </head>
@@ -717,15 +724,28 @@
   <section>
     <div class="section-head">
       <span class="num">01</span>
-      <h2>Live Chart</h2>
+      <h2>ASL Live Market</h2>
       <span class="rule"></span>
     </div>
-    <div class="chart-frame">
+    <div class="section-note" id="chart-note">ASL market engine · first-party XAUS gold feed · custom-rendered price action · no external chart widget</div>
+    <div class="chart-frame asl-chart-frame">
+      <div class="chart-toolbar">
+        <div>
+          <div class="chart-symbol">XAU/USD <span id="chart-last-price">—</span> <span id="chart-change">—</span></div>
+          <div class="chart-source">ASL MARKET ENGINE · <span id="chart-data-state">CONNECTING</span></div>
+        </div>
+        <div class="chart-intervals" role="group" aria-label="Chart timeframe">
+          <button class="tf-btn active" data-chart-tf="1H">1H</button>
+          <button class="tf-btn" data-chart-tf="4H">4H</button>
+          <button class="tf-btn" data-chart-tf="1D">1D</button>
+          <button class="tf-btn" data-chart-tf="1W">1W</button>
+        </div>
+      </div>
       <div class="chart-canvas-wrap">
-        <div id="tv_chart_container" style="position:absolute; inset:0;"></div>
+        <canvas id="candle-chart-canvas" aria-label="ASL XAU/USD price chart"></canvas>
+        <div id="chart-error" class="chart-error" hidden></div>
       </div>
     </div>
-    <div class="section-note" id="chart-note" style="margin-top:14px;">Live XAU/USD chart · OANDA feed via TradingView · streams prices in real time, no refresh needed</div>
   </section>
 
   <section>
@@ -768,56 +788,58 @@
   <section>
     <div class="section-head">
       <span class="num">03</span>
-      <h2>Fundamental Drivers</h2>
+      <h2>ASL Fundamental Intelligence</h2>
       <span class="rule"></span>
     </div>
-    <div class="section-note">Live economic calendar and market headlines · both feeds update on their own in real time</div>
-    <div class="tech-grid">
-      <div class="tech-cell">
-        <h3>ECONOMIC CALENDAR · US · MEDIUM &amp; HIGH IMPACT</h3>
-        <div class="tech-embed" style="height:520px;">
-          <div class="tv-embed" style="height:100%;width:100%" data-src="https://s3.tradingview.com/external-embedding/embed-widget-events.js" data-config='{"isTransparent":true,"width":"100%","height":"100%","locale":"en","importanceFilter":"0,1","countryFilter":"us"}'></div>
+    <div class="section-note" id="fund-note">US macro releases + global gold intelligence · deduplicated by ASL · refreshed automatically</div>
+    <div class="fund-grid">
+      <div class="fund-panel">
+        <div class="fund-panel-head">
+          <div><span class="panel-kicker">MACRO WATCH</span><h3>US HIGH-IMPACT EVENTS</h3></div>
+          <span class="asl-badge">ASL ENGINE</span>
         </div>
+        <div id="macro-list" class="macro-list"><div class="fund-loading">Loading official release schedule…</div></div>
       </div>
-      <div class="tech-cell">
-        <h3 id="news-title">LIVE GOLD NEWS · XAU/USD</h3>
-        <div class="tech-embed" style="height:520px;">
-          <div class="tv-embed" id="tv-news" style="height:100%;width:100%" data-src="https://s3.tradingview.com/external-embedding/embed-widget-timeline.js" data-config='{"feedMode":"symbol","symbol":"OANDA:XAUUSD","isTransparent":true,"displayMode":"regular","width":"100%","height":"100%","locale":"en"}'></div>
+      <div class="fund-panel">
+        <div class="fund-panel-head">
+          <div><span class="panel-kicker">NEWS INTELLIGENCE</span><h3>GOLD · FED · USD · RATES</h3></div>
+          <span class="asl-badge">DEDUPED</span>
         </div>
+        <div id="asl-news-list" class="asl-news-list"><div class="fund-loading">Scanning fresh market coverage…</div></div>
       </div>
     </div>
+    <div class="fund-foot" id="fund-status">Sources are displayed with their own timestamps. ASL impact labels describe potential XAU/USD sensitivity, not a guaranteed price reaction.</div>
   </section>
 
   <section>
     <div class="section-head">
       <span class="num">04</span>
-      <h2 id="tech-section-title">Technical Analysis</h2>
+      <h2>ASL Technical Matrix</h2>
       <span class="rule"></span>
     </div>
-    <div class="tech-grid">
+    <div class="section-note" id="tech-note-live">ASL indicator engine · daily structure with live price · recalculated automatically</div>
+    <div class="tech-grid asl-tech-grid">
       <div class="tech-cell">
-        <h3>MOVING AVERAGES + OSCILLATORS + SUMMARY</h3>
-        <div class="tech-embed">
-          <div class="tv-embed" id="tv-tech-main" style="height:100%;width:100%" data-src="https://s3.tradingview.com/external-embedding/embed-widget-technical-analysis.js" data-config='{"interval":"1h","width":"100%","isTransparent":true,"height":"100%","symbol":"OANDA:XAUUSD","showIntervalTabs":true,"displayMode":"multiple","locale":"en"}'></div>
-        </div>
-        <div class="tech-note">Combined read across moving averages and oscillators, with tabs for 15M, 1H, 4H and 1D. Green = Buy, red = Sell, grey = Neutral.</div>
+        <h3>TECHNICAL MATRIX · DAILY</h3>
+        <table class="indicator-table">
+          <thead><tr><th>Indicator</th><th>Value</th><th>ASL Read</th></tr></thead>
+          <tbody id="ind-body"><tr><td colspan="3">Loading live indicators…</td></tr></tbody>
+        </table>
       </div>
       <div class="tech-cell">
-        <h3>SYMBOL OVERVIEW</h3>
-        <div class="tech-embed">
-          <div class="tv-embed" id="tv-overview" style="height:100%;width:100%" data-src="https://s3.tradingview.com/external-embedding/embed-widget-symbol-overview.js" data-config='{"symbols":[["OANDA:XAUUSD|1D"]],"chartOnly":false,"width":"100%","height":"100%","locale":"en","autosize":true,"showVolume":false,"lineWidth":2,"lineType":0,"dateRanges":["1d|1","1m|30","3m|60","12m|1D"]}'></div>
+        <h3>MARKET STRUCTURE</h3>
+        <div class="structure-grid">
+          <div class="structure-card"><span>PRICE vs 200D</span><b id="struct-200">—</b></div>
+          <div class="structure-card"><span>20D / 50D</span><b id="struct-2050">—</b></div>
+          <div class="structure-card"><span>MACD MOMENTUM</span><b id="struct-macd">—</b></div>
+          <div class="structure-card"><span>ADX TREND</span><b id="struct-adx">—</b></div>
+          <div class="structure-card"><span>VOLATILITY</span><b id="struct-vol">—</b></div>
+          <div class="structure-card"><span>RSI STATE</span><b id="struct-rsi">—</b></div>
         </div>
-        <div class="tech-note">Price action across five ranges — 1 day to 12 months — for quick context on where the current move sits inside the broader trend.</div>
+        <div class="structure-meter"><span>ASL TECHNICAL SCORE</span><strong id="asl-tech-score">—</strong></div>
       </div>
     </div>
-
-    <div id="tech-note-live" style="margin-top:32px;" class="section-note">Indicator breakdown (Daily timeframe) · loading live data…</div>
-    <table class="indicator-table">
-      <thead><tr><th>Indicator</th><th>Value</th><th>Signal</th></tr></thead>
-      <tbody id="ind-body"><tr><td colspan="3">Loading live indicators…</td></tr></tbody>
-    </table>
-
-    <div class="section-note" style="margin-top:32px;">Technical commentary · generated automatically from the live indicators above</div>
+    <div class="section-note" style="margin-top:32px;">Technical commentary · generated automatically from the same ASL indicator set</div>
     <div id="tech-commentary"><p>Loading live commentary…</p></div>
   </section>
 
@@ -1009,115 +1031,21 @@
     <div class="disclaimer">
       Market data on this page (spot price, pivot levels, indicators, correlations, session status) is calculated automatically from third-party feeds and is indicative only — it may be delayed, incomplete or differ from your broker's prices. The trade plan (entry, stop-loss, take-profit), the confluence score and the 30-day strategy chart are generated automatically by fixed rules for educational illustration; the strategy chart is a hypothetical simulation, not actual trading results. The 1H/4H/Daily Signal Snapshot shows ASL's own RSI/MACD/moving-average rating computed from xaus.com's candles. The Daily Outlook is generated automatically from the same live indicators shown above, not written by a person, and regenerates every minute. This page is for educational purposes only and does not constitute investment advice or a recommendation to buy or sell any financial instrument; trading gold and other leveraged instruments carries a high level of risk, and you should consult an independent financial advisor before making trading decisions.
     </div>
-    <div class="foot-brand"><b>ASL UNIVERSITY</b> — Market Research Desk · Market data refreshes every 60 seconds · Spot &amp; candles via XAUS.com · Chart, news &amp; calendar via TradingView</div>
+    <div class="foot-brand"><b>ASL UNIVERSITY</b> — Market Research Desk · Market data refreshes every 60 seconds · Spot &amp; candles via XAUS.com · ASL custom chart, macro calendar &amp; market intelligence</div>
   </footer>
 
 </div>
 
-<!-- tv.js is loaded here, right before the scripts that need it, instead of in <head>.
-     This lets the whole page (fonts, layout, text) paint immediately; only the
-     TradingView-powered widgets below wait the extra moment for this file. -->
-<script src="https://s3.tradingview.com/tv.js"></script>
 <script>
-  /* =========================================================
-     THEME + TRADINGVIEW WIDGETS (chart, technicals, news, calendar)
-     Dark / light toggle: page colors switch through CSS variables,
-     the TradingView widgets are rebuilt in the matching theme.
-     Bullish candles = ASL blue, bearish candles = white.
-     Gold (XAU/USD) only.
-     ========================================================= */
-  const UP_COLOR = '#0BB1D2';
-  const TV_SYMBOL = 'OANDA:XAUUSD';
-
-  function mountChart(theme) {
-    const light = theme === 'light';
-    const BG   = light ? '#FFFFFF' : '#0A0A0B';
-    const GRID = light ? 'rgba(11,177,210,0.12)' : 'rgba(11,177,210,0.07)';
-    const AXIS = light ? 'rgba(11,177,210,0.35)' : 'rgba(11,177,210,0.18)';
-    const DOWN_EDGE = light ? '#1B2A31' : '#FFFFFF';   // white candle needs a dark outline on a light background
-    const host = document.getElementById('tv_chart_container');
-    if (!host || typeof TradingView === 'undefined') return;
-    host.innerHTML = '';
-    new TradingView.widget({
-      container_id: 'tv_chart_container',
-      autosize: true,
-      symbol: TV_SYMBOL,
-      interval: '60',
-      style: '1',
-      theme: light ? 'light' : 'dark',
-      locale: 'en',
-      toolbar_bg: BG,
-      backgroundColor: BG,
-      gridColor: GRID,
-      enable_publishing: false,
-      allow_symbol_change: false,
-      hide_side_toolbar: true,
-      withdateranges: true,
-      save_image: false,
-      studies: [],
-      overrides: {
-        'paneProperties.background': BG,
-        'paneProperties.backgroundType': 'solid',
-        'paneProperties.vertGridProperties.color': GRID,
-        'paneProperties.horzGridProperties.color': GRID,
-        'scalesProperties.backgroundColor': BG,
-        'scalesProperties.textColor': light ? '#586A73' : '#8A9096',
-        'scalesProperties.lineColor': AXIS,
-        'mainSeriesProperties.candleStyle.upColor': UP_COLOR,
-        'mainSeriesProperties.candleStyle.downColor': '#FFFFFF',
-        'mainSeriesProperties.candleStyle.borderUpColor': UP_COLOR,
-        'mainSeriesProperties.candleStyle.borderDownColor': DOWN_EDGE,
-        'mainSeriesProperties.candleStyle.wickUpColor': UP_COLOR,
-        'mainSeriesProperties.candleStyle.wickDownColor': DOWN_EDGE
-      }
-    });
-  }
-
-  function mountEmbeds(theme) {
-    const light = theme === 'light';
-    const BG = light ? '#FFFFFF' : '#0A0A0B';
-    document.querySelectorAll('.tv-embed').forEach(host => {
-      host.innerHTML = '';
-      const cfg = JSON.parse(host.dataset.config);
-      cfg.colorTheme = theme;
-      cfg.isTransparent = false;
-      cfg.backgroundColor = BG;
-      const wrap = document.createElement('div');
-      wrap.className = 'tradingview-widget-container';
-      wrap.style.cssText = 'height:100%;width:100%;background:' + BG;
-      const inner = document.createElement('div');
-      inner.className = 'tradingview-widget-container__widget';
-      inner.style.cssText = 'height:100%;width:100%';
-      const sc = document.createElement('script');
-      sc.type = 'text/javascript';
-      sc.src = host.dataset.src;
-      sc.async = true;
-      sc.text = JSON.stringify(cfg);
-      wrap.appendChild(inner);
-      wrap.appendChild(sc);
-      host.appendChild(wrap);
-    });
-  }
-
-  function currentTheme() {
-    return document.documentElement.getAttribute('data-theme') === 'light' ? 'light' : 'dark';
-  }
-
-  function applyTheme(theme, persist) {
+  function currentTheme(){ return document.documentElement.getAttribute('data-theme') === 'light' ? 'light' : 'dark'; }
+  function applyTheme(theme, persist){
     document.documentElement.setAttribute('data-theme', theme);
-    document.querySelectorAll('[data-theme-btn]').forEach(b =>
-      b.setAttribute('aria-pressed', String(b.dataset.themeBtn === theme)));
-    if (persist) { try { localStorage.setItem('asl-theme', theme); } catch (e) { /* storage blocked */ } }
-    try { mountChart(theme); } catch (e) { console.warn('ASL dashboard: chart failed', e); }
-    try { mountEmbeds(theme); } catch (e) { console.warn('ASL dashboard: widgets failed', e); }
+    document.querySelectorAll('[data-theme-btn]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.themeBtn === theme)));
+    if(persist){ try{ localStorage.setItem('asl-theme', theme); }catch(e){} }
+    if(typeof window.ASL_REDRAW_CHART === 'function') window.ASL_REDRAW_CHART();
   }
-
-  document.querySelectorAll('[data-theme-btn]').forEach(btn =>
-    btn.addEventListener('click', () => {
-      if (document.documentElement.getAttribute('data-theme') !== btn.dataset.themeBtn) applyTheme(btn.dataset.themeBtn, true);
-    }));
-
-  applyTheme(document.documentElement.getAttribute('data-theme') === 'light' ? 'light' : 'dark', false);
+  document.querySelectorAll('[data-theme-btn]').forEach(btn => btn.addEventListener('click', () => applyTheme(btn.dataset.themeBtn, true)));
+  applyTheme(currentTheme(), false);
 </script>
 
 <script>
@@ -1128,10 +1056,9 @@
      /spot     -> live XAU/USD, silver, gold/silver ratio
      /history  -> daily XAU/USD candles (up to 5y, h/l/c)
      /chart    -> daily candles for DXY, S&P 500, silver, oil
-   This engine only covers gold, because it's the only market
-   with a matching daily-bar feed; NASDAQ, oil and Dow Jones use
-   TradingView's own rating widget above each card, kept in sync with ASL's own
-   RSI/MACD/MA-based rating computed from xaus.com's hourly and daily candles.
+   ASL owns the calculation layer. Gold spot, intraday and daily candles
+   are read from XAUS; indicators, chart rendering, timeframe scoring,
+   macro impact tags and news deduplication are calculated by this page.
    Everything below recomputes automatically every minute.
    ========================================================= */
 const API_BASE = 'https://xaus.com/api/v1';
@@ -1531,13 +1458,20 @@ function equityCurves(bt, live, now = new Date()) {
 }
 
 /* ---------------- state ---------------- */
-const S = { spot: null, hist: null, hourly: null, hourlyLoadedAt: 0, others: {}, corr: {}, lastSlow: 0, lastOk: null, feedOk: false, dir: 0, bt: null, cot: null, cotLoadedAt: 0 };
+const S = { spot: null, hist: null, hourly: null, hourlyLoadedAt: 0, others: {}, corr: {}, lastSlow: 0, lastOk: null, feedOk: false, dir: 0, bt: null, cot: null, cotLoadedAt: 0, fund: {macro:[], news:[]}, fundLoadedAt:0, chartTF:'1H', intraday:[] };
 
 async function loadSpot() {
   const j = await getJSON(API_BASE + '/spot?compact=1');
   const p = num(j.spot_usd_oz ?? (j.xau && j.xau.price));
   if (!isFinite(p)) throw new Error('bad spot');
   S.spot = { price: p, silver: num(j.silver_usd_oz), gsr: num(j.gold_silver_ratio), at: j.updated_at };
+}
+
+async function loadIntraday(){
+  const j=await getJSON(API_BASE + '/intraday?symbol=xau&hours=48&fresh='+Date.now());
+  const pts=Array.isArray(j.points)?j.points:[];
+  S.intraday=pts.map(p=>{const t=p.t??p.time??p.timestamp;return {date:new Date(t>2e10?t:t*1000).toISOString(),c:num(p.p??p.price??p.close),h:num(p.p??p.price??p.close),l:num(p.p??p.price??p.close),o:num(p.p??p.price??p.close)}}).filter(p=>isFinite(p.c)).sort((a,b)=>a.date.localeCompare(b.date));
+  S.hourlyLoadedAt=Date.now();
 }
 
 async function loadSlow() {
@@ -1562,6 +1496,63 @@ async function loadSlow() {
     } catch (e) { console.warn('ASL dashboard: backtest failed', e); S.bt = null; }
   }
   S.lastSlow = Date.now();
+}
+
+/* ---------------- ASL custom chart ---------------- */
+function chartBars(tf){
+  if(tf==='1H') return (S.intraday||[]).slice(-48).map(x=>({date:x.date,c:x.c,h:x.h,l:x.l}));
+  if(tf==='4H') return resampleBars((S.intraday||[]),4).slice(-60);
+  if(tf==='1D') return (S.hist||[]).slice(-90);
+  return resampleBars((S.hist||[]),5).slice(-60);
+}
+function drawASLChart(){
+  const canvas=$('candle-chart-canvas'); if(!canvas) return;
+  const box=canvas.parentElement, dpr=Math.max(1,window.devicePixelRatio||1);
+  const w=Math.max(320,box.clientWidth), h=Math.max(300,box.clientHeight);
+  canvas.width=Math.round(w*dpr); canvas.height=Math.round(h*dpr); canvas.style.width=w+'px'; canvas.style.height=h+'px';
+  const ctx=canvas.getContext('2d'); ctx.setTransform(dpr,0,0,dpr,0,0);
+  const light=currentTheme()==='light', bg=light?'#ffffff':'#101416', grid=light?'rgba(6,135,162,.10)':'rgba(11,177,210,.08)', text=light?'#586A73':'#8A9096', up='#0BB1D2', down=light?'#203038':'#F5F7F8';
+  ctx.fillStyle=bg; ctx.fillRect(0,0,w,h);
+  const bars=chartBars(S.chartTF); if(!bars.length){return;}
+  const L=58,R=76,T=22,B=34, cw=(w-L-R)/bars.length;
+  const hi=Math.max(...bars.map(b=>b.h)), lo=Math.min(...bars.map(b=>b.l)), pad=(hi-lo)*.08||1; const ymax=hi+pad,ymin=lo-pad;
+  const y=v=>T+(h-T-B)*(1-(v-ymin)/(ymax-ymin));
+  ctx.font='11px JetBrains Mono, monospace'; ctx.lineWidth=1;
+  for(let i=0;i<5;i++){const v=ymin+(ymax-ymin)*i/4, yy=y(v);ctx.strokeStyle=grid;ctx.beginPath();ctx.moveTo(L,yy);ctx.lineTo(w-R,yy);ctx.stroke();ctx.fillStyle=text;ctx.fillText(fmt(v,2),w-R+8,yy+4);}
+  bars.forEach((b,i)=>{const x=L+cw*i+cw/2, yo=y(b.h), yl=y(b.l), yc=y(b.c), op=y(b.o??b.c), color=b.c>=(b.o??b.c)?up:down;ctx.strokeStyle=color;ctx.fillStyle=color;ctx.beginPath();ctx.moveTo(x,yo);ctx.lineTo(x,yl);ctx.stroke();const body=Math.max(1.5,Math.abs(yc-op)), top=Math.min(yc,op);ctx.fillRect(x-Math.max(1.5,cw*.28),top,Math.max(2,cw*.56),body);});
+  const lastBar=bars[bars.length-1]; ctx.strokeStyle='rgba(11,177,210,.55)';ctx.setLineDash([4,4]);ctx.beginPath();ctx.moveTo(L,y(lastBar.c));ctx.lineTo(w-R,y(lastBar.c));ctx.stroke();ctx.setLineDash([]);
+  ctx.fillStyle=up;ctx.font='600 12px JetBrains Mono, monospace';ctx.fillText('$'+fmt(lastBar.c),w-R+8,y(lastBar.c)-7);
+  ctx.fillStyle=text;ctx.font='10px JetBrains Mono, monospace'; const labels=[bars[0],bars[Math.floor(bars.length/2)],bars[bars.length-1]]; labels.forEach((b,i)=>ctx.fillText(new Date(b.date).toLocaleDateString('en-GB',{day:'2-digit',month:'short',timeZone:'UTC'}), i===0?L:i===1?w/2:w-R-20,h-10));
+  setText('chart-last-price','$'+fmt(lastBar.c));
+  const first=bars[0].c, ch=first?((lastBar.c/first)-1)*100:0; setText('chart-change',(ch>=0?'+':'')+ch.toFixed(2)+'%');
+  setText('chart-data-state',S.feedOk?'LIVE':'RECONNECTING');
+}
+window.ASL_REDRAW_CHART=drawASLChart;
+
+document.querySelectorAll('[data-chart-tf]').forEach(btn=>btn.addEventListener('click',()=>{S.chartTF=btn.dataset.chartTf;document.querySelectorAll('[data-chart-tf]').forEach(b=>b.classList.toggle('active',b===btn));drawASLChart();}));
+window.addEventListener('resize',()=>{clearTimeout(window.__aslChartResize);window.__aslChartResize=setTimeout(drawASLChart,120);});
+
+/* ---------------- ASL fundamental intelligence ---------------- */
+function cleanTitle(v){return String(v||'').toLowerCase().replace(/https?:\/\/\S+/g,'').replace(/[^a-z0-9]+/g,' ').trim().replace(/\s+/g,' ');}
+function newsImpact(title){const t=String(title||'').toLowerCase();const high=['fed','fomc','rate decision','interest rate','cpi','inflation','pce','payroll','nfp','jobs report','treasury yield','yield','dollar','usd','central bank','war','ceasefire','sanction'];const med=['gold','xau','silver','oil','geopolit','tariff','trade','economy','recession'];if(high.some(k=>t.includes(k)))return 'HIGH';if(med.some(k=>t.includes(k)))return 'MEDIUM';return 'LOW';}
+function goldEffect(title){const t=String(title||'').toLowerCase(); if(/rate hike|hawkish|higher for longer|strong jobs|hot cpi|higher inflation|strong dollar|rising yields/.test(t))return {label:'Potential XAU/USD ↓',cls:'sell'}; if(/rate cut|dovish|weak jobs|cooling inflation|lower cpi|falling yields|weaker dollar|safe haven|geopolitical risk/.test(t))return {label:'Potential XAU/USD ↑',cls:'buy'}; return {label:'Context dependent',cls:'neutral'};}
+function dedupeNews(rows){const seen=new Set();return rows.filter(x=>{const k=cleanTitle(x.title);if(!k||seen.has(k))return false;seen.add(k);return true;}).slice(0,10);}
+function renderFundamentals(){
+  const ml=$('macro-list'), nl=$('asl-news-list');
+  if(ml){const rows=S.fund.macro||[];ml.innerHTML=rows.length?rows.slice(0,12).map(e=>{const dt=e.scheduledAt?new Date(e.scheduledAt):null;const impact=(e.importance||'medium').toUpperCase();const eff=goldEffect(e.eventName);return '<div class="macro-row"><div class="macro-time">'+(dt?dt.toLocaleDateString('en-GB',{day:'2-digit',month:'short',timeZone:'UTC'})+'<br>'+dt.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit',timeZone:'UTC'})+' UTC':'—')+'</div><div class="macro-main"><b>'+escapeHTML(e.eventName||'US release')+'</b><span>'+escapeHTML(e.periodLabel||'')+'</span></div><div class="macro-values"><span>ACT <b>'+escapeHTML(e.actual??'—')+'</b></span><span>PREV <b>'+escapeHTML(e.previous??'—')+'</b></span><span>FCST <b>'+escapeHTML(e.forecast??'—')+'</b></span></div><div class="macro-impact '+impact.toLowerCase()+'">'+impact+'</div><div class="macro-effect '+eff.cls+'">'+eff.label+'</div></div>';}).join(''):'<div class="fund-empty">No verified US releases returned by the calendar source.</div>';}
+  if(nl){const rows=S.fund.news||[];nl.innerHTML=rows.length?rows.map(n=>{const eff=goldEffect(n.title),imp=newsImpact(n.title),dt=n.seendate?parseGDELTDate(n.seendate):null;return '<a class="asl-news-row" href="'+escapeAttr(n.url||'#')+'" target="_blank" rel="noopener"><div class="news-time2">'+(dt?relativeTime(dt):'—')+'</div><div class="asl-news-body"><div class="news-meta"><span>'+escapeHTML(n.domain||'Market source')+'</span><i class="news-impact '+imp.toLowerCase()+'">'+imp+'</i></div><h4>'+escapeHTML(n.title||'Untitled')+'</h4><div class="news-effect '+eff.cls+'">'+eff.label+'</div></div></a>';}).join(''):'<div class="fund-empty">No fresh market headlines available right now.</div>';}
+  setText('fund-note','US macro releases + global gold intelligence · ASL deduplication active · last sync '+utcClock(new Date()));
+}
+function escapeHTML(v){return String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));}
+function escapeAttr(v){return escapeHTML(v).replace(/`/g,'&#96;');}
+function parseGDELTDate(s){if(!s)return null;const m=String(s).match(/^(\d{4})(\d{2})(\d{2})T?(\d{2})(\d{2})(\d{2})?/);return m ? new Date(Date.UTC(+m[1],+m[2]-1,+m[3],+(m[4]||0),+(m[5]||0),+(m[6]||0))) : new Date(s);}
+function relativeTime(d){const sec=Math.max(0,(Date.now()-d.getTime())/1000);if(sec<60)return 'now';if(sec<3600)return Math.floor(sec/60)+'m';if(sec<86400)return Math.floor(sec/3600)+'h';return Math.floor(sec/86400)+'d';}
+async function loadFundamentals(){
+  const jobs=[];
+  jobs.push(fetch('https://xoomar.com/api/markets/calendar?importance=high').then(r=>{if(!r.ok)throw Error('calendar HTTP '+r.status);return r.json();}).then(j=>Array.isArray(j.data)?j.data:[]).catch(()=>[]));
+  const q='("gold" OR "XAU" OR "Federal Reserve" OR "Fed" OR "US dollar" OR "Treasury yield" OR "inflation" OR "interest rates")';
+  jobs.push(fetch('https://api.gdeltproject.org/api/v2/doc/doc?query='+encodeURIComponent(q)+'&mode=artlist&maxrecords=40&timespan=24h&sort=datedesc&format=json').then(r=>{if(!r.ok)throw Error('news HTTP '+r.status);return r.json();}).then(j=>j.articles||j.data||[]).catch(()=>[]));
+  const [macro,news]=await Promise.all(jobs);S.fund.macro=macro.filter(e=>String(e.country||'US').toUpperCase()==='US').sort((a,b)=>new Date(a.scheduledAt)-new Date(b.scheduledAt)).slice(0,12);S.fund.news=dedupeNews(news.map(a=>({title:a.title,url:a.url,domain:a.domain||a.sourcecountry,seendate:a.seendate})).filter(a=>a.title));S.fundLoadedAt=Date.now();renderFundamentals();
 }
 
 /* ---------------- renderers ---------------- */
@@ -1610,6 +1601,15 @@ function renderTechnical(A) {
   setText('tech-note-live', 'Indicator breakdown (Daily timeframe) · computed from daily candles plus the live price · updated ' +
     utcClock(new Date()));
   renderCommentary(A);
+  const st20=A.smaOf(20),st50=A.smaOf(50),st200=A.smaOf(200);
+  setText('struct-200',st200==null?'—':(A.price>st200?'ABOVE 200D':'BELOW 200D'));
+  setText('struct-2050',st20==null||st50==null?'—':(st20>st50?'BULLISH CROSS':'BEARISH CROSS'));
+  setText('struct-macd',A.macd?(A.macd.macd>A.macd.signal?'POSITIVE':'NEGATIVE'):'—');
+  setText('struct-adx',A.adx?(A.adx.adx>25?'STRONG':A.adx.adx>20?'DEVELOPING':'WEAK'):'—');
+  setText('struct-vol',A.atr?'ATR '+fmt(A.atr,2):'—');
+  setText('struct-rsi',A.rsi==null?'—':A.rsi>70?'OVERBOUGHT':A.rsi<30?'OVERSOLD':A.rsi>=55?'BULLISH RANGE':A.rsi<=45?'BEARISH RANGE':'NEUTRAL');
+  const score=Math.round(((A.maBuy-A.maSell)/Math.max(1,A.maTotal))*50 + (A.rsi>55?15:A.rsi<45?-15:0) + (A.macd&&A.macd.macd>A.macd.signal?15:-15));
+  const sc=Math.max(-100,Math.min(100,score)); const se=$('asl-tech-score'); if(se){se.textContent=(sc>15?'BULLISH':sc<-15?'BEARISH':'NEUTRAL')+' · '+(sc>0?'+':'')+sc;se.className=sc>15?'buy':sc<-15?'sell':'neutral';}
 }
 
 function renderCommentary(A) {
@@ -2196,6 +2196,7 @@ function renderAll() {
   }
   renderTfSignals(dailyA);
   renderSessions();
+  drawASLChart();
 }
 
 /* ---------------- refresh loop ---------------- */
@@ -2212,8 +2213,12 @@ async function refresh() {
     if (!S.hist || Date.now() - S.lastSlow > SLOW_REFRESH_SECONDS * 1000) await loadSlow();
   } catch (e) { console.warn("ASL dashboard: candle refresh failed", e); }
   try {
-    if (!S.hourly || Date.now() - S.hourlyLoadedAt > HOURLY_REFRESH_SECONDS * 1000) await loadHourly();
-  } catch (e) { console.warn("ASL dashboard: hourly refresh failed", e); }
+    if (!S.intraday || !S.intraday.length || Date.now() - S.hourlyLoadedAt > HOURLY_REFRESH_SECONDS * 1000) { await loadIntraday(); }
+    if (!S.hourly || !S.hourly.length || Date.now() - S.hourlyLoadedAt > HOURLY_REFRESH_SECONDS * 1000) { await loadHourly(); }
+  } catch (e) { console.warn("ASL dashboard: intraday refresh failed", e); }
+  try {
+    if (!S.fundLoadedAt || Date.now() - S.fundLoadedAt > 300000) await loadFundamentals();
+  } catch (e) { console.warn("ASL dashboard: fundamentals refresh failed", e); }
   try {
     if (!S.cot || Date.now() - S.cotLoadedAt > COT_REFRESH_SECONDS * 1000) { await loadCOT(); renderCOT(); }
   } catch (e) {
