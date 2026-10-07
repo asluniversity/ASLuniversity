@@ -1,7 +1,6 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
+<html lang="en" data-theme="dark"><head><meta charset="UTF-8">
+
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>ASL University — XAU/USD Market Intelligence</title>
 <meta name="color-scheme" content="dark light">
@@ -681,379 +680,353 @@
 <body>
 
 <div class="wrap">
-
-  <div class="brand-banner">
-    <div class="theme-toggle" role="group" aria-label="Color theme">
-      <button type="button" data-theme-btn="dark" aria-pressed="true" title="Dark mode">
-        <svg viewBox="0 0 24 24"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>DARK
+<div class="brand-banner">
+<div aria-label="Color theme" class="theme-toggle" role="group">
+<button aria-pressed="true" data-theme-btn="dark" title="Dark mode" type="button">
+<svg viewbox="0 0 24 24"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"></path></svg>DARK
       </button>
-      <button type="button" data-theme-btn="light" aria-pressed="false" title="Light mode">
-        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>LIGHT
+<button aria-pressed="false" data-theme-btn="light" title="Light mode" type="button">
+<svg viewbox="0 0 24 24"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"></path></svg>LIGHT
       </button>
-    </div>
-    <div class="logo-wrap">
-      <img src="asl-logo-transparent.png" alt="ASL University logo" width="64" height="64" decoding="async" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
-      <span class="logo-fallback">ASL</span>
-    </div>
-    <div class="brand-title"><span class="mark"></span>ASL UNIVERSITY</div>
-    <div class="brand-sub">MARKET RESEARCH DESK</div>
-  </div>
-
-  <div class="idbar">
-    <div class="wordmark"><span class="mark"></span><span id="asset-name">XAU/USD</span> <span class="sub" id="asset-sub">/ GOLD DESK</span></div>
-    <div class="live-row">
-      <span class="live-dot" id="feed-status"><span class="dot"></span><span id="feed-text">LIVE</span></span>
-      <span class="live-dot" id="last-update">UPDATED —</span>
-      <span class="live-dot">NEXT UPDATE <span id="refresh-clock">60s</span></span>
-    </div>
-  </div>
-
-  <header>
-    <div class="hero">
-      <span class="pair" id="hero-pair">XAU/USD · SPOT GOLD<span class="hero-price" id="hero-price"></span></span>
-      <h1 id="hero-title">Daily Analysis &amp; Technical Outlook</h1>
-      <p class="dek" id="hero-dek">Fundamental drivers, moving averages, oscillators and key levels for gold — rebuilt from the economic calendar and live indicator data, refreshed automatically every minute.</p>
-    </div>
-    <div class="verdict-box">
-      <div class="verdict-main">
-        <div class="verdict-label">TODAY'S BIAS</div>
-        <div class="verdict-value neutral" id="verdict-value">…</div>
-      </div>
-      <div class="verdict-sub" id="verdict-sub">Calculating live indicators…</div>
-      <div class="trade-plan" id="trade-plan">
-        <div class="tp-head"><span>TRADE PLAN</span><b id="tp-side">—</b></div>
-        <div class="tp-items">
-          <div class="tp-row"><span class="tp-k">ENTRY</span><span class="tp-v" id="tp-entry">—</span><span class="tp-x" id="tp-entry-x"></span></div>
-          <div class="tp-row sl"><span class="tp-k">STOP LOSS</span><span class="tp-v" id="tp-sl">—</span><span class="tp-x" id="tp-sl-x"></span></div>
-          <div class="tp-row tp"><span class="tp-k">TAKE PROFIT 1</span><span class="tp-v" id="tp-tp1">—</span><span class="tp-x" id="tp-tp1-x"></span></div>
-          <div class="tp-row tp"><span class="tp-k">TAKE PROFIT 2</span><span class="tp-v" id="tp-tp2">—</span><span class="tp-x" id="tp-tp2-x"></span></div>
-        </div>
-        <div class="tp-note" id="tp-note"></div>
-      </div>
-    </div>
-  </header>
-
-  <section>
-    <div class="section-head">
-      <span class="num">01</span>
-      <h2>ASL Live Market</h2>
-      <span class="rule"></span>
-    </div>
-    <div class="section-note" id="chart-note">ASL market engine · first-party XAUS gold feed · custom-rendered price action · no external chart widget</div>
-    <div class="chart-frame asl-chart-frame">
-      <div class="chart-toolbar">
-        <div>
-          <div class="chart-symbol">XAU/USD <span id="chart-last-price">—</span> <span id="chart-change">—</span></div>
-          <div class="chart-source">ASL MARKET ENGINE · <span id="chart-data-state">CONNECTING</span></div>
-        </div>
-        <div class="chart-intervals" role="group" aria-label="Chart timeframe">
-          <button class="tf-btn" data-chart-tf="1M">1M</button>
-          <button class="tf-btn" data-chart-tf="5M">5M</button>
-          <button class="tf-btn" data-chart-tf="15M">15M</button>
-          <button class="tf-btn active" data-chart-tf="1H">1H</button>
-          <button class="tf-btn" data-chart-tf="4H">4H</button>
-          <button class="tf-btn" data-chart-tf="1D">1D</button>
-          <button class="tf-btn" data-chart-tf="1W">1W</button>
-          <button class="tf-btn zoom-btn" data-zoom="out" title="Zoom out" aria-label="Zoom out">&minus;</button>
-          <button class="tf-btn zoom-btn" data-zoom="in" title="Zoom in" aria-label="Zoom in">+</button>
-          <button class="tf-btn zoom-btn" data-zoom="reset" title="Reset view" aria-label="Reset view">&#8634;</button>
-        </div>
-      </div>
-      <div class="chart-canvas-wrap">
-        <canvas id="candle-chart-canvas" aria-label="ASL XAU/USD price chart"></canvas>
-        <div id="chart-error" class="chart-error" hidden></div>
-      </div>
-    </div>
-  </section>
-
-  <section>
-    <div class="section-head">
-      <span class="num">02</span>
-      <h2>Signal Snapshot — 3 Timeframes</h2>
-      <span class="rule"></span>
-    </div>
-    <div class="section-note" id="tf-grid-note">ASL live ratings for 1H, 4H and Daily, computed from xaus.com's gold candles using RSI, MACD and moving-average rules and recalculated automatically</div>
-    <div class="master-score" id="master-score">
-      <div class="ms-head">
-        <div class="ms-label">MASTER SIGNAL</div>
-        <div class="ms-value neutral" id="ms-value">Calculating…</div>
-      </div>
-      <div class="ms-chips" id="ms-chips"></div>
-      <div class="ms-note" id="ms-note">Combines ASL's own 1H, 4H and Daily ratings with the Daily Confluence Breakdown below into one score.</div>
-    </div>
-    <div class="tf-grid">
-      <div class="tf-card">
-        <h4>1H</h4>
-        <div class="tf-fallback" id="tf-fb-1h">
-          <span class="fb-meta">Building live signal…</span>
-        </div>
-      </div>
-      <div class="tf-card">
-        <h4>4H</h4>
-        <div class="tf-fallback" id="tf-fb-4h">
-          <span class="fb-meta">Building live signal…</span>
-        </div>
-      </div>
-      <div class="tf-card">
-        <h4>DAILY</h4>
-        <div class="tf-fallback" id="tf-fb-1d">
-          <span class="fb-meta">Building live signal…</span>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <section>
-    <div class="section-head">
-      <span class="num">03</span>
-      <h2>ASL Fundamental Intelligence</h2>
-      <span class="rule"></span>
-    </div>
-    <div class="section-note" id="fund-note">US macro releases + global gold intelligence · deduplicated by ASL · refreshed automatically</div>
-    <div class="fund-grid">
-      <div class="fund-panel">
-        <div class="fund-panel-head">
-          <div><span class="panel-kicker">MACRO WATCH</span><h3>US HIGH-IMPACT EVENTS</h3></div>
-          <span class="asl-badge">ASL ENGINE</span>
-        </div>
-        <div id="macro-list" class="macro-list"><div class="fund-loading">Loading official release schedule…</div></div>
-      </div>
-      <div class="fund-panel">
-        <div class="fund-panel-head">
-          <div><span class="panel-kicker">NEWS INTELLIGENCE</span><h3>GOLD · FED · USD · RATES</h3></div>
-          <span class="asl-badge">DEDUPED</span>
-        </div>
-        <div id="asl-news-list" class="asl-news-list"><div class="fund-loading">Scanning fresh market coverage…</div></div>
-      </div>
-    </div>
-    <div class="fund-foot" id="fund-status">Sources are displayed with their own timestamps. ASL impact labels describe potential XAU/USD sensitivity, not a guaranteed price reaction.</div>
-  </section>
-
-  <section>
-    <div class="section-head">
-      <span class="num">04</span>
-      <h2>ASL Technical Matrix</h2>
-      <span class="rule"></span>
-    </div>
-    <div class="section-note" id="tech-note-live">ASL indicator engine · daily structure with live price · recalculated automatically</div>
-    <div class="tech-grid asl-tech-grid">
-      <div class="tech-cell">
-        <h3>TECHNICAL MATRIX · DAILY</h3>
-        <table class="indicator-table">
-          <thead><tr><th>Indicator</th><th>Value</th><th>ASL Read</th></tr></thead>
-          <tbody id="ind-body"><tr><td colspan="3">Loading live indicators…</td></tr></tbody>
-        </table>
-      </div>
-      <div class="tech-cell">
-        <h3>MARKET STRUCTURE</h3>
-        <div class="structure-grid">
-          <div class="structure-card"><span>PRICE vs 200D</span><b id="struct-200">—</b></div>
-          <div class="structure-card"><span>20D / 50D</span><b id="struct-2050">—</b></div>
-          <div class="structure-card"><span>MACD MOMENTUM</span><b id="struct-macd">—</b></div>
-          <div class="structure-card"><span>ADX TREND</span><b id="struct-adx">—</b></div>
-          <div class="structure-card"><span>VOLATILITY</span><b id="struct-vol">—</b></div>
-          <div class="structure-card"><span>RSI STATE</span><b id="struct-rsi">—</b></div>
-        </div>
-        <div class="structure-meter"><span>ASL TECHNICAL SCORE</span><strong id="asl-tech-score">—</strong></div>
-      </div>
-    </div>
-    <div class="section-note" style="margin-top:32px;">Technical commentary · generated automatically from the same ASL indicator set</div>
-    <div id="tech-commentary"><p>Loading live commentary…</p></div>
-  </section>
-
-  <section>
-    <div class="section-head">
-      <span class="num">05</span>
-      <h2>Key Levels &amp; Pivots</h2>
-      <span class="rule"></span>
-    </div>
-    <div class="section-note" id="levels-note">Classic pivot points from the last completed daily candle · loading…</div>
-    <div class="levels">
-      <div class="level-cell res">
-        <div class="l-label">RESISTANCE 2</div>
-        <div class="l-value" id="lvl-r2">—</div>
-      </div>
-      <div class="level-cell res">
-        <div class="l-label">RESISTANCE 1</div>
-        <div class="l-value" id="lvl-r1">—</div>
-      </div>
-      <div class="level-cell pivot">
-        <div class="l-label">DAILY PIVOT</div>
-        <div class="l-value" id="lvl-p">—</div>
-      </div>
-      <div class="level-cell sup">
-        <div class="l-label">SUPPORT 1</div>
-        <div class="l-value" id="lvl-s1">—</div>
-      </div>
-      <div class="level-cell sup">
-        <div class="l-label">SUPPORT 2</div>
-        <div class="l-value" id="lvl-s2">—</div>
-      </div>
-    </div>
-    <div class="level-price" id="level-price"></div>
-  </section>
-
-  <section>
-    <div class="section-head">
-      <span class="num">06</span>
-      <h2>Correlations &amp; Session Watch</h2>
-      <span class="rule"></span>
-    </div>
-    <div class="two-col">
-      <div class="cell">
-        <h4>CROSS-ASSET CORRELATION (30D) · GOLD</h4>
-        <div class="corr-row"><span>DXY (Dollar Index)</span><span id="corr-dxy" class="corr-na">—</span></div>
-        <div class="corr-row"><span>S&amp;P 500</span><span id="corr-sp500" class="corr-na">—</span></div>
-        <div class="corr-row"><span>Silver (XAG/USD)</span><span id="corr-silver" class="corr-na">—</span></div>
-        <div class="corr-row"><span>WTI Crude Oil</span><span id="corr-oil" class="corr-na">—</span></div>
-        <div class="corr-row"><span>Gold / Silver ratio (live)</span><span id="corr-gsr" style="color:var(--white)">—</span></div>
-        <div class="corr-note">Correlation of the last 30 daily returns vs gold · recalculated automatically</div>
-      </div>
-      <div class="cell">
-        <h4>SESSION OVERLAP</h4>
-        <div class="session-row"><span>Asian Session</span><span class="session-tag" id="sess-asia">00:00–09:00 GMT</span></div>
-        <div class="session-row"><span>London Session</span><span class="session-tag" id="sess-london">08:00–17:00 GMT</span></div>
-        <div class="session-row"><span>New York Session</span><span class="session-tag" id="sess-ny">13:00–22:00 GMT</span></div>
-        <div class="session-row"><span>London/NY Overlap</span><span class="session-tag" id="sess-overlap">13:00–17:00 GMT</span></div>
-        <div class="session-status" id="session-status"></div>
-      </div>
-    </div>
-  </section>
-
-  <section>
-    <div class="section-head">
-      <span class="num">07</span>
-      <h2>Confluence &amp; Strategy</h2>
-      <span class="rule"></span>
-    </div>
-    <div class="section-note" id="conf-section-note">Confluence breakdown · how many independent factors agree · recalculated every minute</div>
-    <div class="two-col conf-grid">
-      <div class="cell">
-        <h4>CONFLUENCE BREAKDOWN</h4>
-        <div class="conf-meter" id="conf-meter"></div>
-        <div class="conf-score" id="conf-score">Calculating…</div>
-        <div id="conf-rows"></div>
-      </div>
-      <div class="cell">
-        <h4>STRATEGY PERFORMANCE · 30D</h4>
-        <div class="perf-legend"><span><i></i>Strategy (follow the signal)</span><span><i class="bh"></i><span id="perf-bh-label">Buy &amp; hold gold</span></span></div>
-        <div id="perf-chart"><div class="perf-empty">Building the 30-day simulation…</div></div>
-        <div class="perf-stats" id="perf-stats"></div>
-        <div class="corr-note" id="perf-note">Hypothetical simulation of this page's confluence rules on daily gold closes: one position per signal, held close-to-close, with no spread, slippage or fees. Dots under the chart show each day's position (green long, red short, grey flat). These are simulated results, not a record of real trading, and past performance does not guarantee future results.</div>
-      </div>
-    </div>
-  </section>
-
-  <section>
-    <div class="section-head">
-      <span class="num">08</span>
-      <h2>Multi-Timeframe Confluence</h2>
-      <span class="rule"></span>
-    </div>
-    <div class="section-note">Combines ASL's own 1H, 4H and Daily ratings into one master score · recalculated every minute</div>
-    <div class="mtf-box">
-      <div class="mtf-gauge">
-        <div class="mtf-arc-wrap"><svg id="mtf-arc" viewBox="0 0 200 110"></svg><div class="mtf-arc-label" id="mtf-arc-label">—</div></div>
-        <div class="mtf-verdict" id="mtf-verdict">Waiting for all three timeframes…</div>
-      </div>
-      <div class="mtf-rows" id="mtf-rows"></div>
-    </div>
-  </section>
-
-  <section>
-    <div class="section-head">
-      <span class="num">09</span>
-      <h2>Volatility &amp; Seasonality</h2>
-      <span class="rule"></span>
-    </div>
-    <div class="two-col">
-      <div class="cell">
-        <h4>VOLATILITY REGIME</h4>
-        <div class="vol-meter"><div class="vol-fill" id="vol-fill"></div><div class="vol-needle" id="vol-needle"></div></div>
-        <div class="vol-scale"><span>Quiet</span><span>Normal</span><span>Elevated</span><span>Extreme</span></div>
-        <div class="conf-score" id="vol-score" style="margin-top:14px;">Calculating…</div>
-        <div class="corr-note" id="vol-note">ATR(14) compared with its own distribution over the available daily history · a high percentile means gold is moving more than usual right now, which argues for wider stops and smaller size</div>
-      </div>
-      <div class="cell">
-        <h4>SEASONALITY · AVG MONTHLY RETURN</h4>
-        <div id="seasonality-chart"><div class="perf-empty">Building seasonality from daily history…</div></div>
-        <div class="corr-note" id="seasonality-note">Average of all historical daily-close-to-close returns compounded within each calendar month, across every year in the available history · past seasonal patterns are not a forecast</div>
-      </div>
-    </div>
-  </section>
-
-  <section>
-    <div class="section-head">
-      <span class="num">10</span>
-      <h2>COT Positioning · CFTC</h2>
-      <span class="rule"></span>
-    </div>
-    <div class="section-note" id="cot-note">Weekly Commitment of Traders report for COMEX gold futures · US CFTC public data · loading…</div>
-    <div class="two-col">
-      <div class="cell">
-        <h4>MANAGED MONEY NET POSITION</h4>
-        <div class="cot-meter"><div class="cot-fill" id="cot-fill"></div><div class="cot-zero"></div></div>
-        <div class="cot-scale"><span>Max short (2y)</span><span>Flat</span><span>Max long (2y)</span></div>
-        <div class="conf-score" id="cot-score" style="margin-top:14px;">Loading…</div>
-      </div>
-      <div class="cell">
-        <h4>POSITIONING HISTORY · NET CONTRACTS</h4>
-        <div id="cot-chart"><div class="perf-empty">Loading CFTC data…</div></div>
-        <div class="corr-note">Non-commercial (large speculator) long contracts minus short contracts, each Tuesday, as reported by the CFTC · a stretched net-long often precedes a pullback and vice versa, but positioning can stay extreme for a long time</div>
-      </div>
-    </div>
-  </section>
-
-  <section>
-    <div class="section-head">
-      <span class="num">11</span>
-      <h2>Position Size Calculator</h2>
-      <span class="rule"></span>
-    </div>
-    <div class="section-note">Uses the live trade plan's stop-loss distance above · figures update automatically as the plan changes</div>
-    <div class="calc-box">
-      <div class="calc-row">
-        <label for="calc-balance">Account balance (USD)</label>
-        <input type="number" id="calc-balance" value="10000" min="0" step="100">
-      </div>
-      <div class="calc-row">
-        <label for="calc-risk">Risk per trade (%)</label>
-        <input type="number" id="calc-risk" value="1" min="0.1" max="10" step="0.1">
-      </div>
-      <div class="calc-row">
-        <label for="calc-sl-pts">Stop distance (price points)</label>
-        <input type="number" id="calc-sl-pts" value="0" min="0" step="0.1">
-      </div>
-      <div class="calc-results" id="calc-results">
-        <div class="calc-stat"><div class="ps-label">RISK AMOUNT</div><div class="ps-val" id="calc-risk-usd">$—</div></div>
-        <div class="calc-stat"><div class="ps-label">POSITION SIZE (OZ)</div><div class="ps-val" id="calc-oz">—</div></div>
-        <div class="calc-stat"><div class="ps-label">≈ MICRO LOTS (0.01)</div><div class="ps-val" id="calc-lots">—</div></div>
-      </div>
-      <div class="corr-note">Educational calculator only, not a broker-specific quote: 1 standard gold lot = 100 oz, 1 micro lot = 0.01 lot = 1 oz. Confirm your broker's actual contract size before sizing a real position.</div>
-    </div>
-  </section>
-
-  <section class="summary">
-    <div class="section-head">
-      <span class="num">12</span>
-      <h2>Daily Outlook</h2>
-      <span class="rule"></span>
-    </div>
-    <div class="section-note" id="outlook-note">Generated automatically from live indicators · recalculated every minute · gold only</div>
-    <div class="outlook-panel" id="outlook-panel">
-    <p>Building the live outlook from today's indicators…</p>
-    </div>
-  </section>
-
-  <footer>
-    <div class="disclaimer">
+</div>
+<div class="logo-wrap">
+<img alt="ASL University logo" fetchpriority="high" decoding="async" height="64" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';" src="asl-logo-transparent.png" width="64"/>
+<span class="logo-fallback">ASL</span>
+</div>
+<div class="brand-title"><span class="mark"></span>ASL UNIVERSITY</div>
+<div class="brand-sub">MARKET RESEARCH DESK</div>
+</div>
+<div class="idbar">
+<div class="wordmark"><span class="mark"></span><span id="asset-name">XAU/USD</span> <span class="sub" id="asset-sub">/ GOLD DESK</span></div>
+<div class="live-row">
+<span class="live-dot" id="feed-status"><span class="dot"></span><span id="feed-text">LIVE</span></span>
+<span class="live-dot" id="last-update">UPDATED —</span>
+<span class="live-dot">NEXT UPDATE <span id="refresh-clock">60s</span></span>
+</div>
+</div>
+<header>
+<div class="hero">
+<span class="pair" id="hero-pair">XAU/USD · SPOT GOLD<span class="hero-price" id="hero-price"></span></span>
+<h1 id="hero-title">Daily Analysis &amp; Technical Outlook</h1>
+<p class="dek" id="hero-dek">Fundamental drivers, moving averages, oscillators and key levels for gold — rebuilt from the economic calendar and live indicator data, refreshed automatically every minute.</p>
+</div>
+<div class="verdict-box">
+<div class="verdict-main">
+<div class="verdict-label">TODAY'S BIAS</div>
+<div class="verdict-value neutral" id="verdict-value">…</div>
+</div>
+<div class="verdict-sub" id="verdict-sub">Calculating live indicators…</div>
+<div class="trade-plan" id="trade-plan">
+<div class="tp-head"><span>TRADE PLAN</span><b id="tp-side">—</b></div>
+<div class="tp-items">
+<div class="tp-row"><span class="tp-k">ENTRY</span><span class="tp-v" id="tp-entry">—</span><span class="tp-x" id="tp-entry-x"></span></div>
+<div class="tp-row sl"><span class="tp-k">STOP LOSS</span><span class="tp-v" id="tp-sl">—</span><span class="tp-x" id="tp-sl-x"></span></div>
+<div class="tp-row tp"><span class="tp-k">TAKE PROFIT 1</span><span class="tp-v" id="tp-tp1">—</span><span class="tp-x" id="tp-tp1-x"></span></div>
+<div class="tp-row tp"><span class="tp-k">TAKE PROFIT 2</span><span class="tp-v" id="tp-tp2">—</span><span class="tp-x" id="tp-tp2-x"></span></div>
+</div>
+<div class="tp-note" id="tp-note"></div>
+</div>
+</div>
+</header>
+<section>
+<div class="section-head">
+<span class="num">01</span>
+<h2>ASL Live Market</h2>
+<span class="rule"></span>
+</div>
+<div class="section-note" id="chart-note">ASL market engine · first-party XAUS gold feed · custom-rendered price action · no external chart widget</div>
+<div class="chart-frame asl-chart-frame">
+<div class="chart-toolbar">
+<div>
+<div class="chart-symbol">XAU/USD <span id="chart-last-price">—</span> <span id="chart-change">—</span></div>
+<div class="chart-source">ASL MARKET ENGINE · <span id="chart-data-state">CONNECTING</span></div>
+</div>
+<div aria-label="Chart timeframe" class="chart-intervals" role="group">
+<button class="tf-btn" data-chart-tf="1M">1M</button>
+<button class="tf-btn" data-chart-tf="5M">5M</button>
+<button class="tf-btn" data-chart-tf="15M">15M</button>
+<button class="tf-btn active" data-chart-tf="1H">1H</button>
+<button class="tf-btn" data-chart-tf="4H">4H</button>
+<button class="tf-btn" data-chart-tf="1D">1D</button>
+<button class="tf-btn" data-chart-tf="1W">1W</button>
+<button aria-label="Zoom out" class="tf-btn zoom-btn" data-zoom="out" title="Zoom out">−</button>
+<button aria-label="Zoom in" class="tf-btn zoom-btn" data-zoom="in" title="Zoom in">+</button>
+<button aria-label="Reset view" class="tf-btn zoom-btn" data-zoom="reset" title="Reset view">↺</button>
+</div>
+</div>
+<div class="chart-canvas-wrap">
+<canvas aria-label="ASL XAU/USD price chart" id="candle-chart-canvas"></canvas>
+<div class="chart-error" hidden="" id="chart-error"></div>
+</div>
+</div>
+</section>
+<section>
+<div class="section-head">
+<span class="num">02</span>
+<h2>Signal Snapshot — 3 Timeframes</h2>
+<span class="rule"></span>
+</div>
+<div class="section-note" id="tf-grid-note">ASL live ratings for 1H, 4H and Daily, computed from xaus.com's gold candles using RSI, MACD and moving-average rules and recalculated automatically</div>
+<div class="master-score" id="master-score">
+<div class="ms-head">
+<div class="ms-label">MASTER SIGNAL</div>
+<div class="ms-value neutral" id="ms-value">Calculating…</div>
+</div>
+<div class="ms-chips" id="ms-chips"></div>
+<div class="ms-note" id="ms-note">Combines ASL's own 1H, 4H and Daily ratings with the Daily Confluence Breakdown below into one score.</div>
+</div>
+<div class="tf-grid">
+<div class="tf-card">
+<h4>1H</h4>
+<div class="tf-fallback" id="tf-fb-1h"><span class="fb-meta">Building live signal…</span></div>
+</div>
+<div class="tf-card">
+<h4>4H</h4>
+<div class="tf-fallback" id="tf-fb-4h"><span class="fb-meta">Building live signal…</span></div>
+</div>
+<div class="tf-card">
+<h4>DAILY</h4>
+<div class="tf-fallback" id="tf-fb-1d"><span class="fb-meta">Building live signal…</span></div>
+</div>
+</div>
+</section>
+<section>
+<div class="section-head">
+<span class="num">03</span>
+<h2>ASL Fundamental Intelligence</h2>
+<span class="rule"></span>
+</div>
+<div class="section-note" id="fund-note">US macro releases + global gold intelligence · deduplicated by ASL · refreshed automatically</div>
+<div class="fund-grid">
+<div class="fund-panel">
+<div class="fund-panel-head">
+<div><span class="panel-kicker">MACRO WATCH</span><h3>US HIGH-IMPACT EVENTS</h3></div>
+<span class="asl-badge">ASL ENGINE</span>
+</div>
+<div class="macro-list" id="macro-list"><div class="fund-loading">Loading official release schedule…</div></div>
+</div>
+<div class="fund-panel">
+<div class="fund-panel-head">
+<div><span class="panel-kicker">NEWS INTELLIGENCE</span><h3>GOLD · FED · USD · RATES</h3></div>
+<span class="asl-badge">DEDUPED</span>
+</div>
+<div class="asl-news-list" id="asl-news-list"><div class="fund-loading">Scanning fresh market coverage…</div></div>
+</div>
+</div>
+<div class="fund-foot" id="fund-status">Sources are displayed with their own timestamps. ASL impact labels describe potential XAU/USD sensitivity, not a guaranteed price reaction.</div>
+</section>
+<section>
+<div class="section-head">
+<span class="num">04</span>
+<h2>ASL Technical Matrix</h2>
+<span class="rule"></span>
+</div>
+<div class="section-note" id="tech-note-live">ASL indicator engine · daily structure with live price · recalculated automatically</div>
+<div class="tech-grid asl-tech-grid">
+<div class="tech-cell">
+<h3>TECHNICAL MATRIX · DAILY</h3>
+<table class="indicator-table">
+<thead><tr><th>Indicator</th><th>Value</th><th>ASL Read</th></tr></thead>
+<tbody id="ind-body"><tr><td colspan="3">Loading live indicators…</td></tr></tbody>
+</table>
+</div>
+<div class="tech-cell">
+<h3>MARKET STRUCTURE</h3>
+<div class="structure-grid">
+<div class="structure-card"><span>PRICE vs 200D</span><b id="struct-200">—</b></div>
+<div class="structure-card"><span>20D / 50D</span><b id="struct-2050">—</b></div>
+<div class="structure-card"><span>MACD MOMENTUM</span><b id="struct-macd">—</b></div>
+<div class="structure-card"><span>ADX TREND</span><b id="struct-adx">—</b></div>
+<div class="structure-card"><span>VOLATILITY</span><b id="struct-vol">—</b></div>
+<div class="structure-card"><span>RSI STATE</span><b id="struct-rsi">—</b></div>
+</div>
+<div class="structure-meter"><span>ASL TECHNICAL SCORE</span><strong id="asl-tech-score">—</strong></div>
+</div>
+</div>
+<div class="section-note" style="margin-top:32px;">Technical commentary · generated automatically from the same ASL indicator set</div>
+<div id="tech-commentary"><p>Loading live commentary…</p></div>
+</section>
+<section>
+<div class="section-head">
+<span class="num">05</span>
+<h2>Key Levels &amp; Pivots</h2>
+<span class="rule"></span>
+</div>
+<div class="section-note" id="levels-note">Classic pivot points from the last completed daily candle · loading…</div>
+<div class="levels">
+<div class="level-cell res">
+<div class="l-label">RESISTANCE 2</div>
+<div class="l-value" id="lvl-r2">—</div>
+</div>
+<div class="level-cell res">
+<div class="l-label">RESISTANCE 1</div>
+<div class="l-value" id="lvl-r1">—</div>
+</div>
+<div class="level-cell pivot">
+<div class="l-label">DAILY PIVOT</div>
+<div class="l-value" id="lvl-p">—</div>
+</div>
+<div class="level-cell sup">
+<div class="l-label">SUPPORT 1</div>
+<div class="l-value" id="lvl-s1">—</div>
+</div>
+<div class="level-cell sup">
+<div class="l-label">SUPPORT 2</div>
+<div class="l-value" id="lvl-s2">—</div>
+</div>
+</div>
+<div class="level-price" id="level-price"></div>
+</section>
+<section>
+<div class="section-head">
+<span class="num">06</span>
+<h2>Correlations &amp; Session Watch</h2>
+<span class="rule"></span>
+</div>
+<div class="two-col">
+<div class="cell">
+<h4>CROSS-ASSET CORRELATION (30D) · GOLD</h4>
+<div class="corr-row"><span>DXY (Dollar Index)</span><span class="corr-na" id="corr-dxy">—</span></div>
+<div class="corr-row"><span>S&amp;P 500</span><span class="corr-na" id="corr-sp500">—</span></div>
+<div class="corr-row"><span>Silver (XAG/USD)</span><span class="corr-na" id="corr-silver">—</span></div>
+<div class="corr-row"><span>WTI Crude Oil</span><span class="corr-na" id="corr-oil">—</span></div>
+<div class="corr-row"><span>Gold / Silver ratio (live)</span><span id="corr-gsr">—</span></div>
+<div class="corr-note">Correlation of the last 30 daily returns vs gold · recalculated automatically</div>
+</div>
+<div class="cell">
+<h4>SESSION OVERLAP</h4>
+<div class="session-row"><span>Asian Session</span><span class="session-tag" id="sess-asia">00:00–09:00 GMT</span></div>
+<div class="session-row"><span>London Session</span><span class="session-tag" id="sess-london">08:00–17:00 GMT</span></div>
+<div class="session-row"><span>New York Session</span><span class="session-tag" id="sess-ny">13:00–22:00 GMT</span></div>
+<div class="session-row"><span>London/NY Overlap</span><span class="session-tag" id="sess-overlap">13:00–17:00 GMT</span></div>
+<div class="session-status" id="session-status"></div>
+</div>
+</div>
+</section>
+<section>
+<div class="section-head">
+<span class="num">07</span>
+<h2>Confluence &amp; Strategy</h2>
+<span class="rule"></span>
+</div>
+<div class="section-note" id="conf-section-note">Confluence breakdown · how many independent factors agree · recalculated every minute</div>
+<div class="two-col conf-grid">
+<div class="cell">
+<h4>CONFLUENCE BREAKDOWN</h4>
+<div class="conf-meter" id="conf-meter"></div>
+<div class="conf-score" id="conf-score">Calculating…</div>
+<div id="conf-rows"></div>
+</div>
+<div class="cell">
+<h4>STRATEGY PERFORMANCE · 30D</h4>
+<div class="perf-legend"><span><i></i>Strategy (follow the signal)</span><span><i class="bh"></i><span id="perf-bh-label">Buy &amp; hold gold</span></span></div>
+<div id="perf-chart"><div class="perf-empty">Building the 30-day simulation…</div></div>
+<div class="perf-stats" id="perf-stats"></div>
+<div class="corr-note" id="perf-note">Hypothetical simulation of this page's confluence rules on daily gold closes: one position per signal, held close-to-close, with no spread, slippage or fees. Dots under the chart show each day's position (green long, red short, grey flat). These are simulated results, not a record of real trading, and past performance does not guarantee future results.</div>
+</div>
+</div>
+</section>
+<section>
+<div class="section-head">
+<span class="num">08</span>
+<h2>Multi-Timeframe Confluence</h2>
+<span class="rule"></span>
+</div>
+<div class="section-note">Combines ASL's own 1H, 4H and Daily ratings into one master score · recalculated every minute</div>
+<div class="mtf-box">
+<div class="mtf-gauge">
+<div class="mtf-arc-wrap"><svg id="mtf-arc" viewbox="0 0 200 110"></svg><div class="mtf-arc-label" id="mtf-arc-label">—</div></div>
+<div class="mtf-verdict" id="mtf-verdict">Waiting for all three timeframes…</div>
+</div>
+<div class="mtf-rows" id="mtf-rows"></div>
+</div>
+</section>
+<section>
+<div class="section-head">
+<span class="num">09</span>
+<h2>Volatility &amp; Seasonality</h2>
+<span class="rule"></span>
+</div>
+<div class="two-col">
+<div class="cell">
+<h4>VOLATILITY REGIME</h4>
+<div class="vol-meter"><div class="vol-fill" id="vol-fill"></div><div class="vol-needle" id="vol-needle"></div></div>
+<div class="vol-scale"><span>Quiet</span><span>Normal</span><span>Elevated</span><span>Extreme</span></div>
+<div class="conf-score" id="vol-score">Calculating…</div>
+<div class="corr-note" id="vol-note">ATR(14) compared with its own distribution over the available daily history · a high percentile means gold is moving more than usual right now, which argues for wider stops and smaller size</div>
+</div>
+<div class="cell">
+<h4>SEASONALITY · AVG MONTHLY RETURN</h4>
+<div id="seasonality-chart"><div class="perf-empty">Building seasonality from daily history…</div></div>
+<div class="corr-note" id="seasonality-note">Average of all historical daily-close-to-close returns compounded within each calendar month, across every year in the available history · past seasonal patterns are not a forecast</div>
+</div>
+</div>
+</section>
+<section>
+<div class="section-head">
+<span class="num">10</span>
+<h2>COT Positioning · CFTC</h2>
+<span class="rule"></span>
+</div>
+<div class="section-note" id="cot-note">Weekly Commitment of Traders report for COMEX gold futures · US CFTC public data · loading…</div>
+<div class="two-col">
+<div class="cell">
+<h4>MANAGED MONEY NET POSITION</h4>
+<div class="cot-meter"><div class="cot-fill" id="cot-fill"></div><div class="cot-zero"></div></div>
+<div class="cot-scale"><span>Max short (2y)</span><span>Flat</span><span>Max long (2y)</span></div>
+<div class="conf-score" id="cot-score">Loading…</div>
+</div>
+<div class="cell">
+<h4>POSITIONING HISTORY · NET CONTRACTS</h4>
+<div id="cot-chart"><div class="perf-empty">Loading CFTC data…</div></div>
+<div class="corr-note">Non-commercial (large speculator) long contracts minus short contracts, each Tuesday, as reported by the CFTC · a stretched net-long often precedes a pullback and vice versa, but positioning can stay extreme for a long time</div>
+</div>
+</div>
+</section>
+<section>
+<div class="section-head">
+<span class="num">11</span>
+<h2>Position Size Calculator</h2>
+<span class="rule"></span>
+</div>
+<div class="section-note">Uses the live trade plan's stop-loss distance above · figures update automatically as the plan changes</div>
+<div class="calc-box">
+<div class="calc-row">
+<label for="calc-balance">Account balance (USD)</label>
+<input id="calc-balance" min="0" step="100" type="number" value="10000"/>
+</div>
+<div class="calc-row">
+<label for="calc-risk">Risk per trade (%)</label>
+<input id="calc-risk" max="10" min="0.1" step="0.1" type="number" value="1"/>
+</div>
+<div class="calc-row">
+<label for="calc-sl-pts">Stop distance (price points)</label>
+<input id="calc-sl-pts" min="0" step="0.1" type="number" value="0"/>
+</div>
+<div class="calc-results" id="calc-results">
+<div class="calc-stat"><div class="ps-label">RISK AMOUNT</div><div class="ps-val" id="calc-risk-usd">$—</div></div>
+<div class="calc-stat"><div class="ps-label">POSITION SIZE (OZ)</div><div class="ps-val" id="calc-oz">—</div></div>
+<div class="calc-stat"><div class="ps-label">≈ MICRO LOTS (0.01)</div><div class="ps-val" id="calc-lots">—</div></div>
+</div>
+<div class="corr-note">Educational calculator only, not a broker-specific quote: 1 standard gold lot = 100 oz, 1 micro lot = 0.01 lot = 1 oz. Confirm your broker's actual contract size before sizing a real position.</div>
+</div>
+</section>
+<section class="summary">
+<div class="section-head">
+<span class="num">12</span>
+<h2>Daily Outlook</h2>
+<span class="rule"></span>
+</div>
+<div class="section-note" id="outlook-note">Generated automatically from live indicators · recalculated every minute · gold only</div>
+<div class="outlook-panel" id="outlook-panel"><p>Building the live outlook from today’s indicators…</p></div>
+</section>
+<footer>
+<div class="disclaimer">
       Market data on this page (spot price, pivot levels, indicators, correlations, session status) is calculated automatically from third-party feeds and is indicative only — it may be delayed, incomplete or differ from your broker's prices. The trade plan (entry, stop-loss, take-profit), the confluence score and the 30-day strategy chart are generated automatically by fixed rules for educational illustration; the strategy chart is a hypothetical simulation, not actual trading results. The 1H/4H/Daily Signal Snapshot shows ASL's own RSI/MACD/moving-average rating computed from xaus.com's candles. The Daily Outlook is generated automatically from the same live indicators shown above, not written by a person, and regenerates every minute. This page is for educational purposes only and does not constitute investment advice or a recommendation to buy or sell any financial instrument; trading gold and other leveraged instruments carries a high level of risk, and you should consult an independent financial advisor before making trading decisions.
     </div>
-    <div class="foot-brand"><b>ASL UNIVERSITY</b> — Market Research Desk · Market data refreshes every 60 seconds · Spot &amp; candles via XAUS.com · ASL custom chart, macro calendar &amp; market intelligence</div>
-  </footer>
-
+<div class="foot-brand"><b>ASL UNIVERSITY</b> — Market Research Desk · Market data refreshes every 60 seconds · Spot &amp; candles via XAUS.com · ASL custom chart, macro calendar &amp; market intelligence</div>
+</footer>
 </div>
-
 <script>
   function currentTheme(){ return document.documentElement.getAttribute('data-theme') === 'light' ? 'light' : 'dark'; }
   function applyTheme(theme, persist){
@@ -1082,7 +1055,7 @@
 const API_BASE = 'https://xaus.com/api/v1';
 const REFRESH_SECONDS = 60;
 const SLOW_REFRESH_SECONDS = 600;
-const HOURLY_REFRESH_SECONDS = 120;
+const HOURLY_REFRESH_SECONDS = 30;
 const COT_REFRESH_SECONDS = 6 * 3600;
 
 /* ---------------- helpers ---------------- */
@@ -1308,7 +1281,7 @@ async function getJSON(url, ms = 9000) {
   const ctrl = new AbortController();
   const t = setTimeout(() => ctrl.abort(), ms);
   try {
-    const res = await fetch(url, { signal: ctrl.signal });
+    const res = await fetch(url, { signal: ctrl.signal, cache: url.includes('_=') ? 'no-store' : 'default' });
     if (!res.ok) throw new Error('HTTP ' + res.status);
     return await res.json();
   } finally { clearTimeout(t); }
@@ -1535,15 +1508,23 @@ async function loadSlow() {
   const res = await othersP;
   res.forEach((r, i) => { if (r.status === 'fulfilled' && r.value.length) S.others[keys[i]] = r.value; });
   for (const k of Object.keys(S.others)) S.corr[k] = correlation(S.hist, S.others[k], 30);
+  try { localStorage.setItem('asl-others-v1', JSON.stringify(S.others)); } catch (e) {}
   renderAll();
-  /* heavy backtest runs after the page is already painted */
-  setTimeout(() => {
-    try {
-      S.bt = backtest(S.hist.slice(-450), S.others.dxy, null);
-      if (S.bt) S.dir = S.bt.lastDir;
-    } catch (e) { console.warn('ASL dashboard: backtest failed', e); S.bt = null; }
-    renderAll();
-  }, 50);
+  /* heavy backtest: reuse today's cached result, otherwise compute when the browser is idle */
+  const btKey = new Date().toISOString().slice(0, 10) + '|' + last(S.hist).date + '|' + (S.others.dxy ? last(S.others.dxy).date : '');
+  let cachedBt = null;
+  try { const c = JSON.parse(localStorage.getItem('asl-bt-v1') || 'null'); if (c && c.key === btKey) cachedBt = c.bt; } catch (e) {}
+  if (cachedBt) { S.bt = cachedBt; S.dir = cachedBt.lastDir; renderAll(); }
+  else {
+    const run = () => {
+      try {
+        S.bt = backtest(S.hist.slice(-450), S.others.dxy, null);
+        if (S.bt) { S.dir = S.bt.lastDir; try { localStorage.setItem('asl-bt-v1', JSON.stringify({ key: btKey, bt: S.bt })); } catch (e) {} }
+      } catch (e) { console.warn('ASL dashboard: backtest failed', e); S.bt = null; }
+      renderAll();
+    };
+    (window.requestIdleCallback || (f => setTimeout(f, 50)))(run, { timeout: 1500 });
+  }
 }
 
 /* ---------------- candle helpers ---------------- */
@@ -1851,25 +1832,33 @@ document.querySelectorAll('[data-zoom]').forEach(btn => btn.addEventListener('cl
 })();
 window.addEventListener('resize', () => { clearTimeout(window.__aslChartResize); window.__aslChartResize = setTimeout(drawASLChart, 120); });
 
+/* every second: cheap live parts; every 5 seconds: full re-render (signals, trade plan, confluence, charts) */
+let lastFullRender = 0;
+function renderLive() {
+  if (!S.spot) return;
+  if (S.lastDaily) { S.lastDaily.price = S.spot.price; renderLevels(S.lastDaily); }
+  const t = Date.now();
+  if (t - lastFullRender >= 5000) { lastFullRender = t; renderAll(); }
+}
 /* ---- real-time price: lightweight spot poll every 3s, independent of the 60s full refresh ---- */
 let tickBusy = false;
 async function quickTick() {
   if (tickBusy || document.hidden) return;
   tickBusy = true;
   try {
-    const j = await getJSON(API_BASE + '/spot?compact=1&_=' + Date.now(), 5000);
+    const j = await getJSON(API_BASE + '/spot?compact=1&_=' + Date.now(), 2500);
     const p = num(j.spot_usd_oz ?? (j.xau && j.xau.price));
     if (!isFinite(p)) throw new Error('bad spot');
     S.spot = { price: p, silver: num(j.silver_usd_oz), gsr: num(j.gold_silver_ratio), at: j.updated_at };
     S.feedOk = true; S.lastOk = new Date();
     onTick(p, Date.now());
-    renderHeader(); requestChart();
+    renderHeader(); requestChart(); renderLive();
     const cfg = TFS[S.chartTF], d = S.tfData[S.chartTF];
     if (cfg && cfg.feed && (!d || Date.now() - d.at > 45000)) loadTF(S.chartTF);
   } catch (e) { S.feedOk = false; renderHeader(); }
   finally { tickBusy = false; }
 }
-setTimeout(() => { quickTick(); setInterval(quickTick, 3000); }, 1500);
+setTimeout(() => { quickTick(); setInterval(quickTick, 1000); }, 600);
 document.addEventListener('visibilitychange', () => { if (!document.hidden) quickTick(); });
 
 /* ---------------- ASL fundamental intelligence ---------------- */
@@ -1886,24 +1875,40 @@ function renderFundamentals(){
   const ml=$('macro-list'), nl=$('asl-news-list');
   if(ml){const rows=S.fund.macro||[];ml.innerHTML=rows.length?rows.slice(0,12).map(e=>{const dt=e.scheduledAt?new Date(e.scheduledAt):null;const impact=(e.importance||'medium').toUpperCase();const eff=goldEffect(e.eventName);return '<div class="macro-row"><div class="macro-time">'+(dt?dt.toLocaleDateString('en-GB',{day:'2-digit',month:'short',timeZone:'UTC'})+'<br>'+dt.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit',timeZone:'UTC'})+' UTC':'—')+'</div><div class="macro-main"><b>'+escapeHTML(e.eventName||'US release')+'</b><span>'+escapeHTML(e.periodLabel||'')+'</span></div><div class="macro-values"><span>ACT <b>'+escapeHTML(e.actual??'—')+'</b></span><span>PREV <b>'+escapeHTML(e.previous??'—')+'</b></span><span>FCST <b>'+escapeHTML(e.forecast??'—')+'</b></span></div><div class="macro-impact '+impact.toLowerCase()+'">'+impact+'</div><div class="macro-effect '+eff.cls+'">'+eff.label+'</div></div>';}).join(''):'<div class="fund-empty">No verified US releases returned by the calendar source.</div>';}
   if(nl){const rows=S.fund.news||[];nl.innerHTML=rows.length?rows.map(n=>{const eff=goldEffect(n.title),imp=newsImpact(n.title),dt=n.seendate?parseGDELTDate(n.seendate):null;return '<a class="asl-news-row" href="'+escapeAttr(safeUrl(n.url))+'" target="_blank" rel="noopener"><div class="news-time2">'+(dt?relativeTime(dt):'—')+'</div><div class="asl-news-body"><div class="news-meta"><span>'+escapeHTML(n.domain||'Market source')+'</span><i class="news-impact '+imp.toLowerCase()+'">'+imp+'</i></div><h4>'+escapeHTML(n.title||'Untitled')+'</h4><div class="news-effect '+eff.cls+'">'+eff.label+'</div></div></a>';}).join(''):'<div class="fund-empty">No fresh market headlines available right now.</div>';}
-  setText('fund-note','US macro releases + global gold intelligence · ASL deduplication active · last sync '+utcClock(new Date()));
+  setText('fund-note','US macro releases + global gold intelligence · ASL deduplication active · last sync '+utcClock(new Date(S.fundLoadedAt||Date.now())));
 }
-function fetchTimeout(url, ms){
+function fetchTimeout(url, ms, opt){
   const ctrl=new AbortController(); const t=setTimeout(()=>ctrl.abort(),ms);
-  return fetch(url,{signal:ctrl.signal}).finally(()=>clearTimeout(t));
+  return fetch(url,Object.assign({signal:ctrl.signal},opt||{})).finally(()=>clearTimeout(t));
 }
-/* calendar and news render independently, so one slow source never blocks the other */
+/* calendar and news render independently; on any failure the previous data stays on screen */
 async function loadFundamentals(){
   S.fundLoadedAt=Date.now();
-  const cal=fetchTimeout('https://xoomar.com/api/markets/calendar?importance=high',7000)
+  const opt={cache:'no-store'};
+  const cal=fetchTimeout('https://xoomar.com/api/markets/calendar?importance=high&_='+Date.now(),7000,opt)
     .then(r=>{if(!r.ok)throw Error('calendar HTTP '+r.status);return r.json();})
-    .then(j=>Array.isArray(j.data)?j.data:[]).catch(()=>[])
-    .then(macro=>{S.fund.macro=macro.filter(e=>String(e.country||'US').toUpperCase()==='US').sort((a,b)=>new Date(a.scheduledAt)-new Date(b.scheduledAt)).slice(0,12);renderFundamentals();});
+    .then(j=>Array.isArray(j.data)?j.data:null).catch(()=>null)
+    .then(raw=>{
+      if(!raw){renderFundamentals();return;}
+      const us=raw.filter(e=>String(e.country||'US').toUpperCase()==='US'&&e.scheduledAt)
+                  .sort((a,b)=>new Date(a.scheduledAt)-new Date(b.scheduledAt));
+      const from=Date.now()-12*3600e3;
+      let rows=us.filter(e=>new Date(e.scheduledAt).getTime()>=from).slice(0,12);
+      if(rows.length<3) rows=us.slice(-12);
+      S.fund.macro=rows; renderFundamentals();
+    });
   const q='("gold" OR "XAU" OR "Federal Reserve" OR "Fed" OR "US dollar" OR "Treasury yield" OR "inflation" OR "interest rates")';
-  const nws=fetchTimeout('https://api.gdeltproject.org/api/v2/doc/doc?query='+encodeURIComponent(q)+'&mode=artlist&maxrecords=40&timespan=24h&sort=datedesc&format=json',8000)
+  const gd=span=>fetchTimeout('https://api.gdeltproject.org/api/v2/doc/doc?query='+encodeURIComponent(q)+'&mode=artlist&maxrecords=40&timespan='+span+'&sort=datedesc&format=json',8000,opt)
     .then(r=>{if(!r.ok)throw Error('news HTTP '+r.status);return r.json();})
-    .then(j=>j.articles||j.data||[]).catch(()=>[])
-    .then(news=>{S.fund.news=dedupeNews(news.map(a=>({title:a.title,url:a.url,domain:a.domain||a.sourcecountry,seendate:a.seendate})).filter(a=>a.title));renderFundamentals();});
+    .then(j=>j.articles||j.data||[]);
+  const nws=gd('6h').catch(()=>null)
+    .then(a=>(a&&a.length)?a:gd('24h').catch(()=>null))
+    .then(arr=>{
+      if(!arr||!arr.length){renderFundamentals();return;}
+      const rows=arr.map(a=>({title:a.title,url:a.url,domain:a.domain||a.sourcecountry,seendate:a.seendate})).filter(a=>a.title)
+        .sort((a,b)=>(parseGDELTDate(b.seendate)||0)-(parseGDELTDate(a.seendate)||0));
+      S.fund.news=dedupeNews(rows); renderFundamentals();
+    });
   await Promise.allSettled([cal,nws]);
 }
 
@@ -2510,6 +2515,7 @@ function renderNow() {
     if (S.hist && S.hist.length > 30) {
       dailyA = analyse(S.hist, S.spot ? S.spot.price : null);
       dailyA.marketLabel = 'Gold';
+      S.lastDaily = dailyA;
       conf = confluenceOf(dailyA, dxyChangeAt(S.others.dxy, new Date().toISOString().slice(0, 10)));
       S.dir = dirFromNet(conf.net, S.dir);
       renderTechnical(dailyA);
@@ -2542,7 +2548,7 @@ async function refresh() {
     jobs.push(loadSlow().catch(e => { console.warn('ASL dashboard: daily history failed', e); }));
   if (!S.hourly || now - S.hourlyLoadedAt > HOURLY_REFRESH_SECONDS * 1000)
     jobs.push(loadHourly().then(renderAll).catch(e => console.warn('ASL dashboard: hourly failed', e)));
-  if (!S.fundLoadedAt || now - S.fundLoadedAt > 300000)
+  if (!S.fundLoadedAt || now - S.fundLoadedAt > 120000)
     jobs.push(loadFundamentals().catch(e => console.warn('ASL dashboard: fundamentals failed', e)));
   if (!S.cot || now - S.cotLoadedAt > COT_REFRESH_SECONDS * 1000)
     jobs.push(loadCOT().then(renderCOT).catch(e => {
@@ -2565,6 +2571,7 @@ function tick() {
   if (secondsLeft <= 0) { secondsLeft = REFRESH_SECONDS; refresh(); }
   setText('refresh-clock', secondsLeft + 's');
   renderSessions();
+  if (secondsLeft % 30 === 0) renderFundamentals();
 }
 
 document.addEventListener('visibilitychange', () => {
@@ -2577,6 +2584,8 @@ try {
   if (Array.isArray(c) && c.length > 230 && c[0].o != null) { S.hist = c; }
   const hc = JSON.parse(localStorage.getItem('asl-hourly-v1') || 'null');
   if (Array.isArray(hc) && hc.length > 40 && hc[0].o != null) S.hourly = hc;
+  const oc = JSON.parse(localStorage.getItem('asl-others-v1') || 'null');
+  if (oc && typeof oc === 'object' && S.hist) { S.others = oc; for (const k in oc) S.corr[k] = correlation(S.hist, oc[k], 30); }
   const sc = JSON.parse(localStorage.getItem('asl-spot-v1') || 'null');
   if (sc && isFinite(sc.price)) S.spot = sc;
   const k = JSON.parse(localStorage.getItem('asl-cot-v1') || 'null');
@@ -2590,5 +2599,6 @@ setInterval(tick, 1000);
 })();
 </script>
 
-</body>
-</html>
+
+
+</body></html>
