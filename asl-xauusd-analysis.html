@@ -991,7 +991,7 @@
     <div class="section-note" id="cot-note">Weekly Commitment of Traders report for COMEX gold futures · US CFTC public data · loading…</div>
     <div class="two-col">
       <div class="cell">
-        <h4>NON-COMMERCIAL NET POSITION (LARGE SPECULATORS)</h4>
+        <h4 id="cot-title">NON-COMMERCIAL NET POSITION (LARGE SPECULATORS)</h4>
         <div class="cot-meter"><div class="cot-fill" id="cot-fill"></div><div class="cot-zero"></div></div>
         <div class="cot-scale"><span id="cot-lo">Most short</span><span>Flat</span><span id="cot-hi">Most long</span></div>
         <div class="conf-score" id="cot-score" style="margin-top:14px;">Loading…</div>
@@ -1279,11 +1279,12 @@ function extractBars(json) {
 /* Intraday (60m) bars with a real OPEN */
 function extractIntraday(json) {
   const out = [];
-  for (const p of findArray(json)) {
+  for (let p of findArray(json)) {
     if (!p) continue;
-    const t = p.t ?? p.time ?? p.timestamp;
+    if (Array.isArray(p)) p = { t: p[0], o: p[1], h: p[2], l: p[3], c: p[4] };       // [t,o,h,l,c] rows
+    const t = p.t ?? p.time ?? p.timestamp ?? p.date ?? p.datetime;
     if (t == null) continue;
-    const ms = typeof t === 'number' ? (t > 2e10 ? t : t * 1000) : Date.parse(t);
+    const ms = typeof t === 'number' ? (t > 2e10 ? t : t * 1000) : Date.parse(/^\d+$/.test(t) ? +t * (t.length > 11 ? 1 : 1000) : t);
     if (!isFinite(ms)) continue;
     const c = num(p.c ?? p.close ?? p.p ?? p.price);
     if (!isFinite(c)) continue;
@@ -1639,7 +1640,7 @@ function bucketTicks(pts, ms) {
   return out;
 }
 async function loadRawTicks() {
-  const j = await getJSON(API_BASE + '/intraday?symbol=xau&hours=48&fresh=' + Date.now(), 9000);
+  const j = await getJSON(API_BASE + '/intraday?symbol=xau&hours=48&fresh=' + Date.now(), 7000);
   S.rawTicks = findArray(j).map(p => {
     const t = p.t ?? p.time ?? p.timestamp;
     const ms = typeof t === 'number' ? (t > 2e10 ? t : t * 1000) : Date.parse(t);
@@ -1651,17 +1652,24 @@ async function loadTF(tf) {
   if (!cfg || !cfg.feed || S.tfLoading[tf]) return;
   S.tfLoading[tf] = true;
   try {
+    /* 1) show something immediately: candles built from the live ticks already collected */
+    if (!S.tfData[tf]) {
+      S.tfData[tf] = { bars: bucketTicks(S.ticks, cfg.ms), at: Date.now(), src: 'TICKS' };
+      if (S.chartTF === tf) requestChart();
+    }
+    /* 2) the exchange feed's real candles; 3) fallback: the 48h price-tick history */
     let bars = [], src = 'FEED';
-    try { bars = extractIntraday(await getJSON(API_BASE + '/chart?symbol=xau&' + cfg.q, 9000)); } catch (e) {}
+    try { bars = extractIntraday(await getJSON(API_BASE + '/chart?symbol=xau&' + cfg.q, 7000)); } catch (e) { console.warn('ASL dashboard: ' + tf + ' feed failed', e); }
     if (bars.length < 5) {
       src = 'TICKS';
-      if (!S.rawTicks) { try { await loadRawTicks(); } catch (e) { S.rawTicks = []; } }
+      if (!S.rawTicks || !S.rawTicks.length) { try { await loadRawTicks(); } catch (e) { console.warn('ASL dashboard: tick history failed', e); S.rawTicks = []; } }
       const lastRaw = S.rawTicks.length ? S.rawTicks[S.rawTicks.length - 1].t : 0;
       bars = bucketTicks(S.rawTicks.concat(S.ticks.filter(t => t.t > lastRaw)), cfg.ms);
     }
     bars = bars.slice(-cfg.keep);
-    if (S.spot) applyTickTo(bars, cfg.ms, S.spot.price, Date.now());
-    S.tfData[tf] = { bars, at: Date.now(), src };
+    if (S.spot && bars.length) applyTickTo(bars, cfg.ms, S.spot.price, Date.now());
+    if (bars.length || !S.tfData[tf].bars.length) S.tfData[tf] = { bars, at: Date.now(), src };
+    else S.tfData[tf].at = Date.now();
   } finally { S.tfLoading[tf] = false; }
   if (S.chartTF === tf) requestChart();
 }
@@ -1730,7 +1738,7 @@ function drawASLChart() {
   const tf = S.chartTF, all = chartBars(tf), len = all.length;
   if (len < 1) {
     ctx.fillStyle = text; ctx.font = '12px JetBrains Mono, monospace'; ctx.textAlign = 'center';
-    ctx.fillText('Loading ' + tf + ' candles…', w / 2, h / 2); ctx.textAlign = 'left';
+    ctx.fillText(S.tfLoading[tf] ? 'Loading ' + tf + ' candles…' : marketOpen(new Date()) ? 'Collecting live ticks for ' + tf + ' candles…' : 'Market closed — no ' + tf + ' candles yet', w / 2, h / 2); ctx.textAlign = 'left';
     S.lastLen = 0; return;
   }
   /* keep the view anchored when new candles are appended while panned back */
@@ -2374,23 +2382,53 @@ function renderSeasonality(bars) {
 }
 
 /* ---------------- 10 - CFTC Commitment of Traders ---------------- */
-const COT_URL = 'https://publicreporting.cftc.gov/resource/6dca-aqww.json' +
-  '?$where=' + encodeURIComponent("market_and_exchange_names='GOLD - COMMODITY EXCHANGE INC.'") +
-  '&$order=' + encodeURIComponent('report_date_as_yyyy_mm_dd DESC') +
-  '&$limit=160' +
-  '&$select=' + encodeURIComponent('report_date_as_yyyy_mm_dd,noncomm_positions_long_all,noncomm_positions_short_all,open_interest_all');
+const COT_BASE = 'https://publicreporting.cftc.gov/resource/';
+const COT_GOLD_NAME = "market_and_exchange_names='GOLD - COMMODITY EXCHANGE INC.'";
+const COT_GOLD_CODE = "cftc_contract_market_code='088691'";
+/* several equivalent queries race each other; the first one that answers wins */
+const COT_SOURCES = [
+  { kind: 'noncomm', long: 'noncomm_positions_long_all', short: 'noncomm_positions_short_all',
+    url: COT_BASE + '6dca-aqww.json?$where=' + encodeURIComponent(COT_GOLD_NAME) + '&$order=' + encodeURIComponent('report_date_as_yyyy_mm_dd DESC') +
+      '&$limit=160&$select=' + encodeURIComponent('report_date_as_yyyy_mm_dd,noncomm_positions_long_all,noncomm_positions_short_all,open_interest_all') },
+  { kind: 'noncomm', long: 'noncomm_positions_long_all', short: 'noncomm_positions_short_all',
+    url: COT_BASE + '6dca-aqww.json?$where=' + encodeURIComponent(COT_GOLD_CODE) + '&$order=' + encodeURIComponent('report_date_as_yyyy_mm_dd DESC') + '&$limit=160' },
+  { kind: 'managed', long: 'm_money_positions_long_all', short: 'm_money_positions_short_all',
+    url: COT_BASE + '72hh-3qpy.json?$where=' + encodeURIComponent(COT_GOLD_CODE) + '&$order=' + encodeURIComponent('report_date_as_yyyy_mm_dd DESC') + '&$limit=160' }
+];
 
-async function loadCOT() {
-  const rows = await getJSON(COT_URL, 12000);
-  if (!Array.isArray(rows) || !rows.length) throw new Error('no rows returned');
+async function fetchCOTSource(src) {
+  const rows = await getJSON(src.url, 25000);
+  if (!Array.isArray(rows) || !rows.length) throw new Error('no rows');
   const parsed = rows.map(r => ({
-    date: String(r.report_date_as_yyyy_mm_dd).slice(0, 10),
-    net: (+r.noncomm_positions_long_all || 0) - (+r.noncomm_positions_short_all || 0),
+    date: String(r.report_date_as_yyyy_mm_dd || r.report_date || '').slice(0, 10),
+    net: (+r[src.long] || 0) - (+r[src.short] || 0),
     oi: +r.open_interest_all || 0
-  })).sort((a, b) => a.date < b.date ? -1 : a.date > b.date ? 1 : 0);
-  S.cot = parsed;
-  S.cotLoadedAt = Date.now();
-  try { localStorage.setItem('asl-cot-v1', JSON.stringify(parsed)); } catch (e) {}
+  })).filter(r => /^\d{4}-\d{2}-\d{2}$/.test(r.date) && (r.net !== 0 || r.oi)).sort((a, b) => a.date < b.date ? -1 : a.date > b.date ? 1 : 0);
+  if (parsed.length < 5) throw new Error('too few rows');
+  return { kind: src.kind, rows: parsed };
+}
+
+let cotBusy = false;
+async function loadCOT() {
+  if (cotBusy) return;
+  cotBusy = true;
+  try {
+    const attempts = COT_SOURCES.map(fetchCOTSource);
+    let res;
+    if (Promise.any) res = await Promise.any(attempts);
+    else res = await new Promise((ok, no) => { let f = 0; attempts.forEach(a => a.then(ok, () => { if (++f === attempts.length) no(new Error('all CFTC queries failed')); })); });
+    S.cot = res.rows; S.cotKind = res.kind; S.cotLoadedAt = Date.now();
+    try { localStorage.setItem('asl-cot-v2', JSON.stringify(res)); } catch (e) {}
+    renderCOT();
+  } catch (e) {
+    console.warn('ASL dashboard: COT failed', e);
+    if (!S.cot) {
+      const note = $('cot-note'), box = $('cot-chart');
+      if (note) note.textContent = 'CFTC server did not answer from this browser — retrying automatically every minute.';
+      if (box) box.innerHTML = '<div class="perf-empty">CFTC data unavailable right now · retrying…</div>';
+      setText('cot-score', 'Waiting for CFTC data…');
+    }
+  } finally { cotBusy = false; }
 }
 
 function renderCOT() {
@@ -2406,9 +2444,10 @@ function renderCOT() {
   const yrs = (rows.length / 52).toFixed(1);
   setText('cot-lo', 'Most short (' + yrs + 'y) ' + lo.toLocaleString('en-US'));
   setText('cot-hi', 'Most long (' + yrs + 'y) +' + hi.toLocaleString('en-US'));
-  setText('cot-score', 'Net non-commercial: ' + (latestRow.net >= 0 ? '+' : '') + latestRow.net.toLocaleString('en-US') +
+  setText('cot-score', (S.cotKind === 'managed' ? 'Net managed money: ' : 'Net non-commercial: ') + (latestRow.net >= 0 ? '+' : '') + latestRow.net.toLocaleString('en-US') +
     ' contracts (week of ' + latestRow.date + ') · ' + Math.round(pct) + 'th percentile of the last ' + rows.length + ' weekly reports');
-  if (note) note.textContent = 'Weekly Commitment of Traders report for COMEX gold futures (Legacy report, "non-commercial" = large speculators) · US CFTC public data · latest report ' + latestRow.date;
+  setText('cot-title', S.cotKind === 'managed' ? 'MANAGED MONEY NET POSITION' : 'NON-COMMERCIAL NET POSITION (LARGE SPECULATORS)');
+  if (note) note.textContent = 'Weekly Commitment of Traders report for COMEX gold futures (' + (S.cotKind === 'managed' ? 'Disaggregated report, managed money' : 'Legacy report, "non-commercial" = large speculators') + ') · US CFTC public data · latest report ' + latestRow.date;
   renderCOTChart(rows);
 }
 
@@ -2588,13 +2627,9 @@ async function refresh() {
   if (!S.hourly || now - S.hourlyLoadedAt > HOURLY_REFRESH_SECONDS * 1000)
     jobs.push(loadHourly().then(renderAll).catch(e => console.warn('ASL dashboard: hourly failed', e)));
   if (!S.fundLoadedAt || now - S.fundLoadedAt > 300000)
-    jobs.push(loadFundamentals().catch(e => console.warn('ASL dashboard: fundamentals failed', e)));
+    loadFundamentals().catch(e => console.warn('ASL dashboard: fundamentals failed', e));
   if (!S.cot || now - S.cotLoadedAt > COT_REFRESH_SECONDS * 1000)
-    jobs.push(loadCOT().then(renderCOT).catch(e => {
-      console.warn('ASL dashboard: COT failed', e);
-      const note = $('cot-note');
-      if (note && !S.cot) note.textContent = 'CFTC data temporarily unavailable — retrying automatically.';
-    }));
+    loadCOT();   // fire-and-forget: slow CFTC server must never delay the 60s refresh
   await Promise.allSettled(jobs);
   busy = false;
 }
@@ -2622,8 +2657,8 @@ try {
   if (Array.isArray(c) && c.length > 230 && c[0].o != null) { S.hist = c; }
   const hc = JSON.parse(localStorage.getItem('asl-hourly-v1') || 'null');
   if (Array.isArray(hc) && hc.length > 40 && hc[0].o != null) S.hourly = hc;
-  const k = JSON.parse(localStorage.getItem('asl-cot-v1') || 'null');
-  if (Array.isArray(k) && k.length) { S.cot = k; renderCOT(); }
+  const k = JSON.parse(localStorage.getItem('asl-cot-v2') || 'null');
+  if (k && Array.isArray(k.rows) && k.rows.length > 5) { S.cot = k.rows; S.cotKind = k.kind; renderCOT(); }
 } catch (e) {}
 renderSessions();
 renderNow();
