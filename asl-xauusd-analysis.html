@@ -332,13 +332,14 @@
   #candle-chart-canvas{width:100%; height:100%; touch-action:none; cursor:crosshair; display:block;}
   .chart-intervals{flex-wrap:wrap; justify-content:flex-end;}
   .zoom-btn{min-width:32px; padding:5px 9px; font-size:14px; line-height:1;}
-  .zoom-btn[data-zoom="out"]{margin-left:8px;}
+  .zoom-btn:first-of-type{margin-left:8px;}
   .chart-error{
     position:absolute; inset:0; display:flex; align-items:center; justify-content:center;
     text-align:center; padding:30px; font-size:13.5px; color:var(--muted);
-    background:rgba(10,10,11,0.72); line-height:1.7;
+    background:color-mix(in srgb, var(--black) 78%, transparent); line-height:1.7;
     backdrop-filter:blur(2px);
   }
+  @media (pointer:coarse){ #candle-chart-canvas{touch-action:pan-y;} }
   .demo-badge{
     display:none; margin-left:12px; padding:2px 8px;
     font-family:var(--mono); font-size:10.5px; letter-spacing:0.06em;
@@ -630,7 +631,7 @@
   .vol-scale{display:flex; justify-content:space-between; font-family:var(--mono); font-size:10px; color:var(--muted); margin-top:8px;}
 
   /* ===== Seasonality bars ===== */
-  #seasonality-chart{display:flex; align-items:flex-end; gap:6px; height:140px; margin-top:10px; padding:0 2px;}
+  #seasonality-chart{display:flex; align-items:flex-end; gap:6px; height:200px; margin-top:10px; padding:0 2px;}
   .szn-bar-wrap{flex:1; display:flex; flex-direction:column; align-items:center; justify-content:flex-end; height:100%;}
   .szn-bar{width:100%; max-width:26px; border-radius:3px 3px 0 0;}
   .szn-bar.sell{border-radius:0 0 3px 3px;}
@@ -641,7 +642,7 @@
   .cot-meter{height:14px; border-radius:7px; position:relative; margin-top:6px; overflow:visible;
     background:linear-gradient(90deg, var(--sell) 0%, var(--hairline) 50%, var(--buy) 100%);}
   .cot-fill{position:absolute; top:-6px; width:3px; height:26px; background:var(--white); box-shadow:0 0 6px rgba(0,0,0,0.4); transform:translateX(-1.5px); transition:left .4s ease;}
-  .cot-zero{position:absolute; top:-5px; bottom:-5px; left:50%; width:2px; background:var(--muted); opacity:.7; transform:translateX(-50%);}
+  .cot-zero{position:absolute; top:-5px; bottom:-5px; left:50%; width:2px; background:rgba(255,255,255,0.4); transform:translateX(-50%);}
   .cot-scale{display:flex; justify-content:space-between; font-family:var(--mono); font-size:10px; color:var(--muted); margin-top:8px;}
   #cot-chart svg{width:100%; height:auto; display:block;}
 
@@ -676,6 +677,74 @@
     .mtf-row{grid-template-columns:70px 1fr auto; gap:8px; padding:10px;}
     .macro-row{grid-template-columns:70px 1fr;}.macro-values,.macro-impact,.macro-effect{grid-column:2}.macro-impact{text-align:left;width:max-content}.chart-toolbar{align-items:flex-start;flex-direction:column}.chart-intervals{width:100%;overflow:auto}.tf-btn{flex:1}.structure-grid{grid-template-columns:1fr 1fr;}
   }
+
+/* ===== MOBILE FIXES ===== */
+html,body{overflow-x:clip}
+@media (max-width:760px){
+  .wrap{padding:0 14px}
+  .tech-grid,.two-col,.two-col.conf-grid,.tf-grid,.fund-grid{grid-template-columns:minmax(0,1fr)}
+  .tech-cell,.two-col .cell,.fund-panel{min-width:0}
+  .theme-toggle{position:static;display:flex;width:max-content;margin:0 auto 16px}
+  .brand-banner{padding:22px 0 18px}
+  .brand-title{font-size:22px;letter-spacing:.1em;gap:10px}
+  .brand-title .mark{width:10px;height:10px}
+  .brand-sub{font-size:10px;letter-spacing:.2em}
+  .hero{padding:24px 0 18px}
+  .hero h1{font-size:28px}
+  .hero p.dek{font-size:14px}
+  section{padding:34px 0}
+  .section-head{flex-wrap:wrap;gap:8px 12px;margin-bottom:20px}
+  .section-head h2{font-size:20px}
+  .section-head .rule{display:none}
+  .section-note{margin-top:-8px;margin-bottom:16px}
+  .verdict-box{padding:16px;gap:16px;margin-bottom:24px}
+  .verdict-value{font-size:24px}
+  .tp-items{display:grid;grid-template-columns:1fr 1fr;gap:14px;width:100%}
+  .chart-frame{height:auto}
+  .chart-toolbar{padding:12px;gap:10px;min-height:0}
+  .chart-intervals{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:6px;overflow:visible;width:100%}
+  .tf-btn{padding:8px 0;text-align:center;font-size:11px}
+  .zoom-btn{min-width:0;font-size:16px}
+  .zoom-btn[data-zoom="out"]{grid-column:1 / span 2;margin-left:0}
+  .zoom-btn[data-zoom="in"]{grid-column:3 / span 2}
+  .zoom-btn[data-zoom="reset"]{grid-column:5 / span 3}
+  .chart-canvas-wrap{flex:none;height:360px}
+  .chart-symbol{font-size:13px}
+  .chart-source{line-height:1.5}
+  .master-score{padding:16px}
+  .tf-fallback{height:auto;min-height:110px}
+  .fund-panel-head{padding:14px}
+  .macro-row{padding:12px;gap:8px 10px}
+  .macro-values span{font-size:10px}
+  .macro-impact{font-size:9px}
+  .macro-effect{font-size:10px;margin-top:0}
+  .asl-news-row{padding:12px}
+  .macro-list,.asl-news-list{max-height:460px}
+  .tech-cell{padding:14px;overflow-x:auto}
+  .indicator-table th,.indicator-table td{padding:9px 8px;font-size:11.5px}
+  .structure-card,.structure-meter{padding:12px}
+  #tech-commentary{padding:18px 16px}
+  #tech-commentary p{font-size:14.5px}
+  .levels{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .levels .level-cell.pivot{grid-column:1 / -1}
+  .level-cell{padding:16px 14px}
+  .level-cell .l-value{font-size:18px}
+  .two-col .cell{padding:16px}
+  .corr-row,.session-row{font-size:13px}
+  .perf-stat{padding:10px 8px}
+  .mtf-box{gap:20px}
+  .mtf-gauge{flex:none;width:100%}
+  .mtf-verdict{max-width:none}
+  .mtf-rows{flex:none;min-width:0;width:100%}
+  .calc-box{padding:16px}
+  .summary .outlook-panel{padding:20px 16px}
+  .summary p{font-size:15px}
+}
+@media (max-width:400px){
+  .brand-title{font-size:19px}
+  .hero h1{font-size:25px}
+  .tf-btn{font-size:10.5px}
+}
 </style>
 </head>
 <body>
@@ -991,9 +1060,9 @@
     <div class="section-note" id="cot-note">Weekly Commitment of Traders report for COMEX gold futures · US CFTC public data · loading…</div>
     <div class="two-col">
       <div class="cell">
-        <h4 id="cot-title">NON-COMMERCIAL NET POSITION (LARGE SPECULATORS)</h4>
+        <h4>NON-COMMERCIAL NET POSITION</h4>
         <div class="cot-meter"><div class="cot-fill" id="cot-fill"></div><div class="cot-zero"></div></div>
-        <div class="cot-scale"><span id="cot-lo">Most short</span><span>Flat</span><span id="cot-hi">Most long</span></div>
+        <div class="cot-scale"><span>Max short (~3y)</span><span>Flat</span><span>Max long (~3y)</span></div>
         <div class="conf-score" id="cot-score" style="margin-top:14px;">Loading…</div>
       </div>
       <div class="cell">
@@ -1027,9 +1096,9 @@
       <div class="calc-results" id="calc-results">
         <div class="calc-stat"><div class="ps-label">RISK AMOUNT</div><div class="ps-val" id="calc-risk-usd">$—</div></div>
         <div class="calc-stat"><div class="ps-label">POSITION SIZE (OZ)</div><div class="ps-val" id="calc-oz">—</div></div>
-        <div class="calc-stat"><div class="ps-label">≈ STANDARD LOTS (100 oz)</div><div class="ps-val" id="calc-lots">—</div></div>
+        <div class="calc-stat"><div class="ps-label">≈ LOTS (1 lot = 100 oz)</div><div class="ps-val" id="calc-lots">—</div></div>
       </div>
-      <div class="corr-note">Educational calculator only, not a broker-specific quote: 1 standard gold lot = 100 oz, so 0.01 lot = 1 oz. Confirm your broker's actual contract size before sizing a real position.</div>
+      <div class="corr-note">Educational calculator only, not a broker-specific quote: 1 standard gold lot = 100 oz, 1 micro lot = 0.01 lot = 1 oz. Confirm your broker's actual contract size before sizing a real position.</div>
     </div>
   </section>
 
@@ -1279,12 +1348,11 @@ function extractBars(json) {
 /* Intraday (60m) bars with a real OPEN */
 function extractIntraday(json) {
   const out = [];
-  for (let p of findArray(json)) {
+  for (const p of findArray(json)) {
     if (!p) continue;
-    if (Array.isArray(p)) p = { t: p[0], o: p[1], h: p[2], l: p[3], c: p[4] };       // [t,o,h,l,c] rows
-    const t = p.t ?? p.time ?? p.timestamp ?? p.date ?? p.datetime;
+    const t = p.t ?? p.time ?? p.timestamp;
     if (t == null) continue;
-    const ms = typeof t === 'number' ? (t > 2e10 ? t : t * 1000) : Date.parse(/^\d+$/.test(t) ? +t * (t.length > 11 ? 1 : 1000) : t);
+    const ms = typeof t === 'number' ? (t > 2e10 ? t : t * 1000) : Date.parse(t);
     if (!isFinite(ms)) continue;
     const c = num(p.c ?? p.close ?? p.p ?? p.price);
     if (!isFinite(c)) continue;
@@ -1512,6 +1580,7 @@ async function loadSpot() {
   const p = num(j.spot_usd_oz ?? (j.xau && j.xau.price));
   if (!isFinite(p)) throw new Error('bad spot');
   S.spot = { price: p, silver: num(j.silver_usd_oz), gsr: num(j.gold_silver_ratio), at: j.updated_at };
+  try { localStorage.setItem('asl-spot-v1', JSON.stringify({ ...S.spot, cachedAt: Date.now() })); } catch (e) {}
 }
 
 async function loadHourly() {
@@ -1568,13 +1637,7 @@ function resampleBars(bars, hours) {
 }
 
 /* Monday-based weekly candles built from daily bars */
-let _wkKey = null, _wkVal = null;
 function weeklyBars(bars) {
-  const key = bars.length + '|' + (bars.length ? bars[bars.length - 1].date + bars[bars.length - 1].c : '');
-  if (_wkKey === key && _wkVal) return _wkVal;
-  const out = weeklyBarsRaw(bars); _wkKey = key; _wkVal = out; return out;
-}
-function weeklyBarsRaw(bars) {
   const out = [];
   let cur = null, key = null;
   for (const b of bars) {
@@ -1640,7 +1703,7 @@ function bucketTicks(pts, ms) {
   return out;
 }
 async function loadRawTicks() {
-  const j = await getJSON(API_BASE + '/intraday?symbol=xau&hours=48&fresh=' + Date.now(), 7000);
+  const j = await getJSON(API_BASE + '/intraday?symbol=xau&hours=48&fresh=' + Date.now(), 9000);
   S.rawTicks = findArray(j).map(p => {
     const t = p.t ?? p.time ?? p.timestamp;
     const ms = typeof t === 'number' ? (t > 2e10 ? t : t * 1000) : Date.parse(t);
@@ -1652,24 +1715,17 @@ async function loadTF(tf) {
   if (!cfg || !cfg.feed || S.tfLoading[tf]) return;
   S.tfLoading[tf] = true;
   try {
-    /* 1) show something immediately: candles built from the live ticks already collected */
-    if (!S.tfData[tf]) {
-      S.tfData[tf] = { bars: bucketTicks(S.ticks, cfg.ms), at: Date.now(), src: 'TICKS' };
-      if (S.chartTF === tf) requestChart();
-    }
-    /* 2) the exchange feed's real candles; 3) fallback: the 48h price-tick history */
     let bars = [], src = 'FEED';
-    try { bars = extractIntraday(await getJSON(API_BASE + '/chart?symbol=xau&' + cfg.q, 7000)); } catch (e) { console.warn('ASL dashboard: ' + tf + ' feed failed', e); }
+    try { bars = extractIntraday(await getJSON(API_BASE + '/chart?symbol=xau&' + cfg.q, 9000)); } catch (e) {}
     if (bars.length < 5) {
       src = 'TICKS';
-      if (!S.rawTicks || !S.rawTicks.length) { try { await loadRawTicks(); } catch (e) { console.warn('ASL dashboard: tick history failed', e); S.rawTicks = []; } }
+      if (!S.rawTicks) { try { await loadRawTicks(); } catch (e) { S.rawTicks = []; } }
       const lastRaw = S.rawTicks.length ? S.rawTicks[S.rawTicks.length - 1].t : 0;
       bars = bucketTicks(S.rawTicks.concat(S.ticks.filter(t => t.t > lastRaw)), cfg.ms);
     }
     bars = bars.slice(-cfg.keep);
-    if (S.spot && bars.length) applyTickTo(bars, cfg.ms, S.spot.price, Date.now());
-    if (bars.length || !S.tfData[tf].bars.length) S.tfData[tf] = { bars, at: Date.now(), src };
-    else S.tfData[tf].at = Date.now();
+    if (S.spot) applyTickTo(bars, cfg.ms, S.spot.price, Date.now());
+    S.tfData[tf] = { bars, at: Date.now(), src };
   } finally { S.tfLoading[tf] = false; }
   if (S.chartTF === tf) requestChart();
 }
@@ -1725,7 +1781,7 @@ function tLabel(b) {
 function drawASLChart() {
   const canvas = $('candle-chart-canvas'); if (!canvas) return;
   const box = canvas.parentElement, dpr = Math.max(1, window.devicePixelRatio || 1);
-  const w = Math.max(320, box.clientWidth), h = Math.max(300, box.clientHeight);
+  const w = Math.max(220, box.clientWidth), h = Math.max(260, box.clientHeight);
   if (canvas.width !== Math.round(w * dpr) || canvas.height !== Math.round(h * dpr)) {
     canvas.width = Math.round(w * dpr); canvas.height = Math.round(h * dpr);
     canvas.style.width = w + 'px'; canvas.style.height = h + 'px';
@@ -1738,7 +1794,7 @@ function drawASLChart() {
   const tf = S.chartTF, all = chartBars(tf), len = all.length;
   if (len < 1) {
     ctx.fillStyle = text; ctx.font = '12px JetBrains Mono, monospace'; ctx.textAlign = 'center';
-    ctx.fillText(S.tfLoading[tf] ? 'Loading ' + tf + ' candles…' : marketOpen(new Date()) ? 'Collecting live ticks for ' + tf + ' candles…' : 'Market closed — no ' + tf + ' candles yet', w / 2, h / 2); ctx.textAlign = 'left';
+    ctx.fillText('Loading ' + tf + ' candles…', w / 2, h / 2); ctx.textAlign = 'left';
     S.lastLen = 0; return;
   }
   /* keep the view anchored when new candles are appended while panned back */
@@ -1750,7 +1806,7 @@ function drawASLChart() {
   const bars = all.slice(len - off - n, len - off);
   S.lastLen = len; S.lastN = n; S.lastOff = off;
 
-  const L = 58, R = 82, T = 22, B = 34, PW = w - L - R, cw = PW / n;
+  const narrow = w < 520, L = narrow ? 10 : 58, R = narrow ? 68 : 82, T = 22, B = 34, PW = w - L - R, cw = PW / n;
   S.lastCw = cw; S.lastL = L; S.lastPW = PW;
   let hi = -Infinity, lo = Infinity;
   for (const b of bars) { if (b.h > hi) hi = b.h; if (b.l < lo) lo = b.l; }
@@ -1788,10 +1844,10 @@ function drawASLChart() {
   }
   /* time axis */
   ctx.fillStyle = text; ctx.font = '10px JetBrains Mono, monospace'; ctx.textAlign = 'center';
-  const nl = Math.min(5, bars.length);
+  const nl = Math.min(narrow ? 3 : 5, bars.length);
   for (let k = 0; k < nl; k++) {
     const idx = nl === 1 ? 0 : Math.round(k * (bars.length - 1) / (nl - 1));
-    const x = Math.max(L + 34, Math.min(w - R - 34, L + cw * idx + cw / 2));
+    const x = Math.max(L + (narrow ? 42 : 34), Math.min(w - R - (narrow ? 42 : 34), L + cw * idx + cw / 2));
     ctx.fillText(tLabel(bars[idx]), x, h - 10);
   }
   ctx.textAlign = 'left';
@@ -1812,7 +1868,7 @@ function drawASLChart() {
   }
   const lpEl = $('chart-last-price');
   if (lpEl) {
-    lpEl.textContent = '$' + fmt(S.spot ? S.spot.price : lb.c) + (S.tickDir > 0 ? ' \u25B2' : S.tickDir < 0 ? ' \u25BC' : '');
+    lpEl.textContent = '$' + fmt(S.lastOk && S.spot ? S.spot.price : lb.c) + (S.tickDir > 0 ? ' \u25B2' : S.tickDir < 0 ? ' \u25BC' : '');
     lpEl.style.color = S.tickDir < 0 ? 'var(--white)' : 'var(--blue)';
   }
   const rmEl = $('chart-remain');
@@ -1821,7 +1877,7 @@ function drawASLChart() {
   const chEl = $('chart-change');
   if (chEl) { chEl.textContent = (ch >= 0 ? '+' : '') + ch.toFixed(2) + '%'; chEl.style.color = ch >= 0 ? 'var(--blue)' : 'var(--white)'; }
   const d = S.tfData[tf];
-  setText('chart-data-state', (S.feedOk ? 'LIVE' : S.lastOk ? 'RECONNECTING' : 'CONNECTING') + ' · ' + tf + (d && d.src === 'TICKS' ? ' · TICK-BUILT' : '') + ' · ' + n + ' CANDLES · UTC');
+  setText('chart-data-state', (S.feedOk ? 'LIVE' : 'RECONNECTING') + ' · ' + tf + (d && d.src === 'TICKS' ? ' · TICK-BUILT' : '') + ' · ' + n + ' CANDLES · UTC');
 }
 window.ASL_REDRAW_CHART = drawASLChart;
 
@@ -1896,9 +1952,9 @@ document.querySelectorAll('[data-zoom]').forEach(btn => btn.addEventListener('cl
 window.addEventListener('resize', () => { clearTimeout(window.__aslChartResize); window.__aslChartResize = setTimeout(drawASLChart, 120); });
 
 /* ---- real-time price: lightweight spot poll every 1s, independent of the 60s full refresh ---- */
-let tickBusy = false;
+let tickBusy = false, tickFails = 0, tickPause = 0;
 async function quickTick() {
-  if (tickBusy || document.hidden || Date.now() < (S.tickSkipUntil || 0)) return;
+  if (tickBusy || document.hidden || Date.now() < tickPause) return;
   tickBusy = true;
   try {
     const j = await getJSON(API_BASE + '/spot?compact=1&_=' + Date.now(), 4000);
@@ -1910,17 +1966,13 @@ async function quickTick() {
     renderHeader(); requestChart();
     const cfg = TFS[S.chartTF], d = S.tfData[S.chartTF];
     if (cfg && cfg.feed && (!d || Date.now() - d.at > 45000)) loadTF(S.chartTF);
-    S.tickFail = 0;
-  } catch (e) {
-    S.tickFail = (S.tickFail || 0) + 1;
-    S.tickSkipUntil = Date.now() + Math.min(15000, 1000 * Math.pow(2, S.tickFail));
-    if (S.tickFail >= 3) { S.feedOk = false; renderHeader(); }
-  }
+    tickFails = 0;
+  } catch (e) { S.feedOk = false; tickFails++; tickPause = Date.now() + Math.min(30000, 1000 * Math.pow(2, Math.min(tickFails, 5))); renderHeader(); }
   finally { tickBusy = false; }
 }
 setTimeout(() => { quickTick(); setInterval(quickTick, 1000); }, 1200);
 setInterval(() => { if (!document.hidden) requestChart(); }, 1000);
-document.addEventListener('visibilitychange', () => { if (!document.hidden) quickTick(); });
+document.addEventListener('visibilitychange', () => { if (!document.hidden) { tickPause = 0; quickTick(); } });
 
 /* ---------------- ASL fundamental intelligence ---------------- */
 function cleanTitle(v){return String(v||'').toLowerCase().replace(/https?:\/\/\S+/g,'').replace(/[^a-z0-9]+/g,' ').trim().replace(/\s+/g,' ');}
@@ -1947,13 +1999,13 @@ async function loadFundamentals(){
   S.fundLoadedAt=Date.now();
   const cal=fetchTimeout('https://xoomar.com/api/markets/calendar?importance=high',7000)
     .then(r=>{if(!r.ok)throw Error('calendar HTTP '+r.status);return r.json();})
-    .then(j=>Array.isArray(j.data)?j.data:[]).catch(()=>[])
-    .then(macro=>{S.fund.macro=macro.filter(e=>String(e.country||'US').toUpperCase()==='US').sort((a,b)=>new Date(a.scheduledAt)-new Date(b.scheduledAt)).slice(0,12);renderFundamentals();});
+    .then(j=>Array.isArray(j.data)?j.data:null).catch(()=>null)
+    .then(macro=>{if(macro){const from=Date.now()-6*3600e3;S.fund.macro=macro.filter(e=>String(e.country||'US').toUpperCase()==='US'&&new Date(e.scheduledAt)>=from).sort((a,b)=>new Date(a.scheduledAt)-new Date(b.scheduledAt)).slice(0,12);}renderFundamentals();});
   const q='("gold" OR "XAU" OR "Federal Reserve" OR "Fed" OR "US dollar" OR "Treasury yield" OR "inflation" OR "interest rates")';
   const nws=fetchTimeout('https://api.gdeltproject.org/api/v2/doc/doc?query='+encodeURIComponent(q)+'&mode=artlist&maxrecords=40&timespan=24h&sort=datedesc&format=json',8000)
     .then(r=>{if(!r.ok)throw Error('news HTTP '+r.status);return r.json();})
-    .then(j=>j.articles||j.data||[]).catch(()=>[])
-    .then(news=>{S.fund.news=dedupeNews(news.map(a=>({title:a.title,url:a.url,domain:a.domain||a.sourcecountry,seendate:a.seendate})).filter(a=>a.title));renderFundamentals();});
+    .then(j=>j.articles||j.data||[]).catch(()=>null)
+    .then(news=>{if(news){S.fund.news=dedupeNews(news.map(a=>({title:a.title,url:a.url,domain:a.domain||a.sourcecountry,seendate:a.seendate})).filter(a=>a.title));}renderFundamentals();});
   await Promise.allSettled([cal,nws]);
 }
 
@@ -1962,10 +2014,10 @@ const utcClock = d => d.toISOString().slice(11, 19) + ' UTC';
 
 function renderHeader() {
   const live = $('feed-status');
-  if (live) live.classList.toggle('err', !S.feedOk && !!S.lastOk);
-  setText('feed-text', S.feedOk ? 'LIVE' : S.lastOk ? 'RECONNECTING' : 'CONNECTING');
+  if (live) live.classList.toggle('err', !S.feedOk);
+  setText('feed-text', S.feedOk ? 'LIVE' : 'RECONNECTING');
   if (S.lastOk) setText('last-update', 'UPDATED ' + utcClock(S.lastOk));
-  if (S.spot) setText('hero-price', '$' + fmt(S.spot.price));
+  if (S.spot && S.lastOk) setText('hero-price', '$' + fmt(S.spot.price));
 }
 
 function renderTechnical(A) {
@@ -2372,63 +2424,35 @@ function renderSeasonality(bars) {
   const maxAbs = Math.max(0.5, ...avgReturns.map(v => v == null ? 0 : Math.abs(v)));
   box.innerHTML = names.map((nm, idx) => {
     const v = avgReturns[idx];
-    if (v == null) return '<div class="szn-bar-wrap"><div class="szn-val">—</div><div class="szn-bar" style="height:2px;background:var(--hairline)"></div><div class="szn-lbl">' + nm + '</div></div>';
-    const h = Math.max(2, Math.abs(v) / maxAbs * 70);
+    const half = (al, inner) => '<div style="height:70px;width:100%;display:flex;justify-content:center;align-items:' + al + '">' + inner + '</div>';
+    if (v == null) return '<div class="szn-bar-wrap"><div class="szn-val">—</div>' + half('flex-end', '<div class="szn-bar" style="height:2px;background:var(--hairline)"></div>') + half('flex-start', '') + '<div class="szn-lbl">' + nm + '</div></div>';
+    const h = Math.max(2, Math.abs(v) / maxAbs * 66);
     const cls = v >= 0 ? 'buy' : 'sell';
+    const bar = '<div class="szn-bar ' + cls + '" style="height:' + h + 'px;background:var(--' + cls + ')"></div>';
     return '<div class="szn-bar-wrap"><div class="szn-val">' + (v >= 0 ? '+' : '') + v.toFixed(2) + '%</div>' +
-      '<div class="szn-bar ' + cls + '" style="height:' + h + 'px;background:var(--' + cls + ')"></div>' +
+      half('flex-end', v >= 0 ? bar : '') + half('flex-start', v < 0 ? bar : '') +
       '<div class="szn-lbl">' + nm + '</div></div>';
   }).join('');
 }
 
 /* ---------------- 10 - CFTC Commitment of Traders ---------------- */
-const COT_BASE = 'https://publicreporting.cftc.gov/resource/';
-const COT_GOLD_NAME = "market_and_exchange_names='GOLD - COMMODITY EXCHANGE INC.'";
-const COT_GOLD_CODE = "cftc_contract_market_code='088691'";
-/* several equivalent queries race each other; the first one that answers wins */
-const COT_SOURCES = [
-  { kind: 'noncomm', long: 'noncomm_positions_long_all', short: 'noncomm_positions_short_all',
-    url: COT_BASE + '6dca-aqww.json?$where=' + encodeURIComponent(COT_GOLD_NAME) + '&$order=' + encodeURIComponent('report_date_as_yyyy_mm_dd DESC') +
-      '&$limit=160&$select=' + encodeURIComponent('report_date_as_yyyy_mm_dd,noncomm_positions_long_all,noncomm_positions_short_all,open_interest_all') },
-  { kind: 'noncomm', long: 'noncomm_positions_long_all', short: 'noncomm_positions_short_all',
-    url: COT_BASE + '6dca-aqww.json?$where=' + encodeURIComponent(COT_GOLD_CODE) + '&$order=' + encodeURIComponent('report_date_as_yyyy_mm_dd DESC') + '&$limit=160' },
-  { kind: 'managed', long: 'm_money_positions_long_all', short: 'm_money_positions_short_all',
-    url: COT_BASE + '72hh-3qpy.json?$where=' + encodeURIComponent(COT_GOLD_CODE) + '&$order=' + encodeURIComponent('report_date_as_yyyy_mm_dd DESC') + '&$limit=160' }
-];
+const COT_URL = 'https://publicreporting.cftc.gov/resource/6dca-aqww.json' +
+  '?$where=' + encodeURIComponent("market_and_exchange_names='GOLD - COMMODITY EXCHANGE INC.'") +
+  '&$order=' + encodeURIComponent('report_date_as_yyyy_mm_dd DESC') +
+  '&$limit=160' +
+  '&$select=' + encodeURIComponent('report_date_as_yyyy_mm_dd,noncomm_positions_long_all,noncomm_positions_short_all,open_interest_all');
 
-async function fetchCOTSource(src) {
-  const rows = await getJSON(src.url, 25000);
-  if (!Array.isArray(rows) || !rows.length) throw new Error('no rows');
-  const parsed = rows.map(r => ({
-    date: String(r.report_date_as_yyyy_mm_dd || r.report_date || '').slice(0, 10),
-    net: (+r[src.long] || 0) - (+r[src.short] || 0),
-    oi: +r.open_interest_all || 0
-  })).filter(r => /^\d{4}-\d{2}-\d{2}$/.test(r.date) && (r.net !== 0 || r.oi)).sort((a, b) => a.date < b.date ? -1 : a.date > b.date ? 1 : 0);
-  if (parsed.length < 5) throw new Error('too few rows');
-  return { kind: src.kind, rows: parsed };
-}
-
-let cotBusy = false;
 async function loadCOT() {
-  if (cotBusy) return;
-  cotBusy = true;
-  try {
-    const attempts = COT_SOURCES.map(fetchCOTSource);
-    let res;
-    if (Promise.any) res = await Promise.any(attempts);
-    else res = await new Promise((ok, no) => { let f = 0; attempts.forEach(a => a.then(ok, () => { if (++f === attempts.length) no(new Error('all CFTC queries failed')); })); });
-    S.cot = res.rows; S.cotKind = res.kind; S.cotLoadedAt = Date.now();
-    try { localStorage.setItem('asl-cot-v2', JSON.stringify(res)); } catch (e) {}
-    renderCOT();
-  } catch (e) {
-    console.warn('ASL dashboard: COT failed', e);
-    if (!S.cot) {
-      const note = $('cot-note'), box = $('cot-chart');
-      if (note) note.textContent = 'CFTC server did not answer from this browser — retrying automatically every minute.';
-      if (box) box.innerHTML = '<div class="perf-empty">CFTC data unavailable right now · retrying…</div>';
-      setText('cot-score', 'Waiting for CFTC data…');
-    }
-  } finally { cotBusy = false; }
+  const rows = await getJSON(COT_URL, 12000);
+  if (!Array.isArray(rows) || !rows.length) throw new Error('no rows returned');
+  const parsed = rows.map(r => ({
+    date: String(r.report_date_as_yyyy_mm_dd).slice(0, 10),
+    net: (+r.noncomm_positions_long_all || 0) - (+r.noncomm_positions_short_all || 0),
+    oi: +r.open_interest_all || 0
+  })).sort((a, b) => a.date < b.date ? -1 : a.date > b.date ? 1 : 0);
+  S.cot = parsed;
+  S.cotLoadedAt = Date.now();
+  try { localStorage.setItem('asl-cot-v1', JSON.stringify(parsed)); } catch (e) {}
 }
 
 function renderCOT() {
@@ -2441,13 +2465,9 @@ function renderCOT() {
   const pct = hi > lo ? (latestRow.net - lo) / (hi - lo) * 100 : 50;
   const fill = $('cot-fill');
   if (fill) fill.style.left = pct + '%';
-  const yrs = (rows.length / 52).toFixed(1);
-  setText('cot-lo', 'Most short (' + yrs + 'y) ' + lo.toLocaleString('en-US'));
-  setText('cot-hi', 'Most long (' + yrs + 'y) +' + hi.toLocaleString('en-US'));
-  setText('cot-score', (S.cotKind === 'managed' ? 'Net managed money: ' : 'Net non-commercial: ') + (latestRow.net >= 0 ? '+' : '') + latestRow.net.toLocaleString('en-US') +
-    ' contracts (week of ' + latestRow.date + ') · ' + Math.round(pct) + 'th percentile of the last ' + rows.length + ' weekly reports');
-  setText('cot-title', S.cotKind === 'managed' ? 'MANAGED MONEY NET POSITION' : 'NON-COMMERCIAL NET POSITION (LARGE SPECULATORS)');
-  if (note) note.textContent = 'Weekly Commitment of Traders report for COMEX gold futures (' + (S.cotKind === 'managed' ? 'Disaggregated report, managed money' : 'Legacy report, "non-commercial" = large speculators') + ') · US CFTC public data · latest report ' + latestRow.date;
+  setText('cot-score', 'Net non-commercial: ' + (latestRow.net >= 0 ? '+' : '') + latestRow.net.toLocaleString('en-US') +
+    ' contracts (week of ' + latestRow.date + ') · ' + Math.round(pct) + '% of the range across the last ' + rows.length + ' weekly reports (0% = max short, 100% = max long)');
+  if (note) note.textContent = 'Weekly Commitment of Traders report for COMEX gold futures (Legacy report, "non-commercial" = large speculators) · US CFTC public data · latest report ' + latestRow.date;
   renderCOTChart(rows);
 }
 
@@ -2489,7 +2509,7 @@ function updateCalc() {
   if (slPts > 0) {
     const oz = riskUsd / slPts;
     setText('calc-oz', fmt(oz, 2));
-    setText('calc-lots', fmt(oz / 100, 3));
+    setText('calc-lots', fmt(oz / 100, 2));
   } else {
     setText('calc-oz', '—');
     setText('calc-lots', '—');
@@ -2612,10 +2632,11 @@ function renderNow() {
 }
 
 /* ---------------- refresh loop (parallel, progressive) ---------------- */
-let secondsLeft = REFRESH_SECONDS, busy = false;
+let secondsLeft = REFRESH_SECONDS, busy = false, lastRefreshAt = Date.now();
 
 async function refresh() {
   if (busy) return;
+  lastRefreshAt = Date.now();
   busy = true;
   const now = Date.now(), jobs = [];
   jobs.push(loadSpot()
@@ -2627,9 +2648,13 @@ async function refresh() {
   if (!S.hourly || now - S.hourlyLoadedAt > HOURLY_REFRESH_SECONDS * 1000)
     jobs.push(loadHourly().then(renderAll).catch(e => console.warn('ASL dashboard: hourly failed', e)));
   if (!S.fundLoadedAt || now - S.fundLoadedAt > 300000)
-    loadFundamentals().catch(e => console.warn('ASL dashboard: fundamentals failed', e));
+    jobs.push(loadFundamentals().catch(e => console.warn('ASL dashboard: fundamentals failed', e)));
   if (!S.cot || now - S.cotLoadedAt > COT_REFRESH_SECONDS * 1000)
-    loadCOT();   // fire-and-forget: slow CFTC server must never delay the 60s refresh
+    jobs.push(loadCOT().then(renderCOT).catch(e => {
+      console.warn('ASL dashboard: COT failed', e);
+      const note = $('cot-note');
+      if (note && !S.cot) note.textContent = 'CFTC data temporarily unavailable — retrying automatically.';
+    }));
   await Promise.allSettled(jobs);
   busy = false;
 }
@@ -2642,13 +2667,13 @@ updateCalc();
 
 function tick() {
   secondsLeft -= 1;
-  if (secondsLeft <= 0) { secondsLeft = REFRESH_SECONDS; refresh(); }
+  if (secondsLeft <= 0) { secondsLeft = REFRESH_SECONDS; if (!document.hidden) refresh(); }
   setText('refresh-clock', secondsLeft + 's');
   renderSessions();
 }
 
 document.addEventListener('visibilitychange', () => {
-  if (!document.hidden && secondsLeft < REFRESH_SECONDS - 20) { secondsLeft = REFRESH_SECONDS; refresh(); }
+  if (!document.hidden && Date.now() - lastRefreshAt > 30000) { secondsLeft = REFRESH_SECONDS; refresh(); }
 });
 
 /* instant paint from cache on repeat visits, fresh data replaces it a moment later */
@@ -2657,8 +2682,10 @@ try {
   if (Array.isArray(c) && c.length > 230 && c[0].o != null) { S.hist = c; }
   const hc = JSON.parse(localStorage.getItem('asl-hourly-v1') || 'null');
   if (Array.isArray(hc) && hc.length > 40 && hc[0].o != null) S.hourly = hc;
-  const k = JSON.parse(localStorage.getItem('asl-cot-v2') || 'null');
-  if (k && Array.isArray(k.rows) && k.rows.length > 5) { S.cot = k.rows; S.cotKind = k.kind; renderCOT(); }
+  const sc = JSON.parse(localStorage.getItem('asl-spot-v1') || 'null');
+  if (sc && isFinite(sc.price) && Date.now() - (sc.cachedAt || 0) < 10 * 60 * 1000) S.spot = sc;
+  const k = JSON.parse(localStorage.getItem('asl-cot-v1') || 'null');
+  if (Array.isArray(k) && k.length) { S.cot = k; renderCOT(); }
 } catch (e) {}
 renderSessions();
 renderNow();
