@@ -750,6 +750,22 @@ html,body{overflow-x:clip}
   .asset-switch a{font-family:var(--mono); font-size:12px; letter-spacing:.06em; text-decoration:none; padding:7px 14px; border:1px solid var(--hairline); color:var(--muted);}
   .asset-switch a:hover{color:var(--white); border-color:var(--muted);}
   .asset-switch a.on{color:var(--blue); border-color:var(--blue); pointer-events:none;}
+
+  .comm-card{display:flex; justify-content:space-between; align-items:center; gap:18px; flex-wrap:wrap; padding:20px 22px; background:linear-gradient(165deg,var(--surface),var(--panel)); border:1px solid rgba(11,177,210,.18);}
+  .comm-card p{font-size:14px; line-height:1.6; max-width:640px; margin:0;}
+  .comm-links{display:flex; gap:8px; flex-wrap:wrap;}
+  .comm-links a{font-family:var(--mono); font-size:12px; letter-spacing:.05em; text-decoration:none; padding:10px 16px; border:1px solid var(--blue); color:var(--blue);}
+  .comm-links a:hover{background:var(--blue); color:var(--bg,#000);}
+
+  .comm-list{margin-top:14px; display:grid; gap:10px;}
+  .comm-item{display:block; text-decoration:none; color:inherit; padding:14px 18px; border:1px solid var(--hairline); background:var(--panel);}
+  .comm-item:hover{border-color:var(--blue);}
+  .comm-top{display:flex; gap:10px; align-items:center; font-family:var(--mono); font-size:10px; color:var(--muted); flex-wrap:wrap;}
+  .comm-side{border:1px solid currentColor; padding:2px 7px; font-size:9px; letter-spacing:.08em;}
+  .comm-side.long{color:var(--buy);} .comm-side.short{color:var(--sell);} .comm-side.edu{color:var(--blue);}
+  .comm-item h4{font-size:14px; line-height:1.45; margin:7px 0 4px;}
+  .comm-item p{font-size:13px; line-height:1.6; color:var(--muted); margin:0;}
+  .comm-foot{font-family:var(--mono); font-size:10px; color:var(--muted); margin-top:10px; line-height:1.7;}
 </style>
 </head>
 <body>
@@ -1119,6 +1135,20 @@ html,body{overflow-x:clip}
     <div class="outlook-panel" id="outlook-panel">
     <p>Building the live outlook from today's indicators…</p>
     </div>
+  </section>
+
+  <section>
+    <div class="section-head">
+      <span class="num">13</span>
+      <h2>Community</h2>
+      <span class="rule"></span>
+    </div>
+    <div class="section-note">Trade ideas and chart analysis from gold traders on TradingView · opens on TradingView</div>
+    <div class="comm-card">
+      <p>Browse what other traders are posting on gold: chart markups, trade setups and educational posts, each with its author, timeframe and long/short bias. Ideas are community opinions, not ASL recommendations.</p>
+      <div class="comm-links"><a href="https://www.tradingview.com/symbols/XAUUSD/ideas/?exchange=OANDA" target="_blank" rel="noopener noreferrer">Trade ideas ↗</a><a href="https://www.tradingview.com/symbols/XAUUSD/ideas/?exchange=OANDA&sort=popular" target="_blank" rel="noopener noreferrer">Most popular ↗</a></div>
+    </div>
+    <div class="comm-list" id="comm-list" data-src="community-gold.json"></div>
   </section>
 
   <footer>
@@ -2828,5 +2858,21 @@ setInterval(tick, 1000);
 })();
 </script>
 
+<script>
+/* Community: renders a hand-curated daily JSON (title, author, bias, short summary, link back to TradingView). */
+(function(){
+  var box=document.getElementById('comm-list'); if(!box) return;
+  var file=box.getAttribute('data-src');
+  var esc=function(v){return String(v==null?'':v).replace(/[&<>"']/g,function(m){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m];});};
+  var ok=function(u){return /^https:\/\/www\.tradingview\.com\//.test(String(u||''));};
+  fetch(file+'?d='+new Date().toISOString().slice(0,10),{cache:'no-cache'}).then(function(r){ if(!r.ok) throw 0; return r.json(); }).then(function(j){
+    var rows=(j.ideas||[]).filter(function(x){return x&&x.title&&ok(x.url);}).slice(0,8); if(!rows.length) return;
+    box.innerHTML=rows.map(function(x){
+      var s=String(x.side||'').toLowerCase(), cls=s==='long'?'long':s==='short'?'short':'edu';
+      return '<a class="comm-item" href="'+esc(x.url)+'" target="_blank" rel="noopener noreferrer"><div class="comm-top"><span class="comm-side '+cls+'">'+esc((x.side||'IDEA').toUpperCase())+'</span><span>by '+esc(x.author||'TradingView user')+'</span>'+(x.tf?'<span>· '+esc(x.tf)+'</span>':'')+'</div><h4>'+esc(x.title)+'</h4>'+(x.note?'<p>'+esc(x.note)+'</p>':'')+'</a>';
+    }).join('')+'<div class="comm-foot">Ideas selected by ASL from TradingView · last updated '+esc(j.updated||'—')+' · summaries are ASL\'s own words, the full idea and chart are on TradingView · community opinions, not ASL recommendations or financial advice.</div>';
+  }).catch(function(){});
+})();
+</script>
 </body>
 </html>
