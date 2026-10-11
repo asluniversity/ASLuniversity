@@ -1137,17 +1137,13 @@ html,body{overflow-x:clip}
     </div>
   </section>
 
-  <section>
+  <section id="community" hidden>
     <div class="section-head">
       <span class="num">13</span>
       <h2>Community</h2>
       <span class="rule"></span>
     </div>
-    <div class="section-note">Trade ideas and chart analysis from gold traders on TradingView · opens on TradingView</div>
-    <div class="comm-card">
-      <p>Browse what other traders are posting on gold: chart markups, trade setups and educational posts, each with its author, timeframe and long/short bias. Ideas are community opinions, not ASL recommendations.</p>
-      <div class="comm-links"><a href="https://www.tradingview.com/symbols/XAUUSD/ideas/?exchange=OANDA" target="_blank" rel="noopener noreferrer">Trade ideas ↗</a><a href="https://www.tradingview.com/symbols/XAUUSD/ideas/?exchange=OANDA&sort=popular" target="_blank" rel="noopener noreferrer">Most popular ↗</a></div>
-    </div>
+    <div class="section-note">Trade ideas and chart analysis shared by the ASL University community · updated regularly</div>
     <div class="comm-list" id="comm-list" data-src="community-gold.json"></div>
   </section>
 
@@ -2859,18 +2855,18 @@ setInterval(tick, 1000);
 </script>
 
 <script>
-/* Community: renders a hand-curated daily JSON (title, author, bias, short summary, link back to TradingView). */
+/* Community: renders a hand-curated daily JSON (title, author, bias, short summary, optional link). */
 (function(){
   var box=document.getElementById('comm-list'); if(!box) return;
   var file=box.getAttribute('data-src');
   var esc=function(v){return String(v==null?'':v).replace(/[&<>"']/g,function(m){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m];});};
-  var ok=function(u){return /^https:\/\/www\.tradingview\.com\//.test(String(u||''));};
+  var ok=function(u){return !u||/^https:\/\//.test(String(u));};
   fetch(file+'?d='+new Date().toISOString().slice(0,10),{cache:'no-cache'}).then(function(r){ if(!r.ok) throw 0; return r.json(); }).then(function(j){
-    var rows=(j.ideas||[]).filter(function(x){return x&&x.title&&ok(x.url);}).slice(0,8); if(!rows.length) return;
+    var rows=(j.ideas||[]).filter(function(x){return x&&x.title&&ok(x.url);}).slice(0,8); if(!rows.length) return; var sec=document.getElementById('community'); if(sec) sec.hidden=false;
     box.innerHTML=rows.map(function(x){
       var s=String(x.side||'').toLowerCase(), cls=s==='long'?'long':s==='short'?'short':'edu';
-      return '<a class="comm-item" href="'+esc(x.url)+'" target="_blank" rel="noopener noreferrer"><div class="comm-top"><span class="comm-side '+cls+'">'+esc((x.side||'IDEA').toUpperCase())+'</span><span>by '+esc(x.author||'TradingView user')+'</span>'+(x.tf?'<span>· '+esc(x.tf)+'</span>':'')+'</div><h4>'+esc(x.title)+'</h4>'+(x.note?'<p>'+esc(x.note)+'</p>':'')+'</a>';
-    }).join('')+'<div class="comm-foot">Ideas selected by ASL from TradingView · last updated '+esc(j.updated||'—')+' · summaries are ASL\'s own words, the full idea and chart are on TradingView · community opinions, not ASL recommendations or financial advice.</div>';
+      var tag=x.url?'a':'div', lnk=x.url?' href="'+esc(x.url)+'" target="_blank" rel="noopener noreferrer"':''; return '<'+tag+' class="comm-item"'+lnk+'><div class="comm-top"><span class="comm-side '+cls+'">'+esc((x.side||'IDEA').toUpperCase())+'</span><span>by '+esc(x.author||'ASL community')+'</span>'+(x.tf?'<span>· '+esc(x.tf)+'</span>':'')+'</div><h4>'+esc(x.title)+'</h4>'+(x.note?'<p>'+esc(x.note)+'</p>':'')+'</'+tag+'>';
+    }).join('')+'<div class=\"comm-foot\">Last updated '+esc(j.updated||'—')+' · community opinions for educational purposes, not ASL recommendations or financial advice.</div>';
   }).catch(function(){});
 })();
 </script>
