@@ -745,6 +745,11 @@ html,body{overflow-x:clip}
   .hero h1{font-size:25px}
   .tf-btn{font-size:10.5px}
 }
+
+  .asset-switch{display:flex; gap:8px; flex-wrap:wrap; padding:14px 0 10px;}
+  .asset-switch a{font-family:var(--mono); font-size:12px; letter-spacing:.06em; text-decoration:none; padding:7px 14px; border:1px solid var(--hairline); color:var(--muted);}
+  .asset-switch a:hover{color:var(--white); border-color:var(--muted);}
+  .asset-switch a.on{color:var(--blue); border-color:var(--blue); pointer-events:none;}
 </style>
 </head>
 <body>
@@ -776,6 +781,8 @@ html,body{overflow-x:clip}
       <span class="live-dot">NEXT UPDATE <span id="refresh-clock">60s</span></span>
     </div>
   </div>
+
+  <nav class="asset-switch" aria-label="Markets"><a href="asl-xauusd-analysis.html" class="on">GOLD · XAU/USD</a><a href="asl-btcusd-analysis.html">BITCOIN · BTC/USDT</a></nav>
 
   <header>
     <div class="hero">
