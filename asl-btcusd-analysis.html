@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ASL University — BTC/USDT Market Intelligence</title>
+<title>ASL University — XAU/USD Market Intelligence</title>
 <meta name="color-scheme" content="dark light">
 <script>
   /* apply saved theme before first paint (default = dark) */
@@ -12,47 +12,11 @@
 </script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="preconnect" href="https://api.binance.com" crossorigin>
-<script>
-/* Binance adapter: the engine below was written for a different feed; this maps its /spot /history /chart /intraday calls onto Binance public market data (no key). */
-(function(){
-  var BASE='https://btc.local/api/v1', HOSTS=['https://api.binance.com','https://data-api.binance.vision'], good=0, nf=window.fetch.bind(window);
-  var SYM={xau:'BTCUSDT',eth:'ETHUSDT',bitcoin:'PAXGUSDT',sol:'SOLUSDT',bnb:'BNBUSDT'}, LIM={'60m':720,'1m':1000,'5m':1000,'15m':480,'1d':180}, IV={'60m':'1h'};
-  function bn(path){
-    var order=[good].concat([0,1].filter(function(i){return i!==good})), p=Promise.reject();
-    order.forEach(function(i){ p=p.catch(function(){ return nf(HOSTS[i]+path).then(function(r){ if(!r.ok) throw 0; good=i; return r.json(); }); }); });
-    return p;
-  }
-  window.__bn=bn;
-  var live=null, wsTry=0, WS=['wss://stream.binance.com:9443/ws/btcusdt@trade','wss://data-stream.binance.vision/ws/btcusdt@trade'];
-  function ws(){ try{ var s=new WebSocket(WS[wsTry++%2]);
-    s.onmessage=function(e){ var d=JSON.parse(e.data); live={p:+d.p,t:d.T}; };
-    s.onclose=function(){ setTimeout(ws,wsTry>3?10000:3000); }; s.onerror=function(){ try{s.close();}catch(e){} };
-  }catch(e){} }
-  ws();
-  var rows=function(k){ return {data:k.map(function(c){ return {t:c[0],d:new Date(c[0]).toISOString().slice(0,10),o:+c[1],h:+c[2],l:+c[3],c:+c[4]}; })}; };
-  function route(path){
-    var q=new URL(path,'https://x'), p=q.pathname, sp=q.searchParams, sym=SYM[sp.get('symbol')||'xau'];
-    if(p==='/spot'){
-      if(live && Date.now()-live.t<5000) return Promise.resolve({spot_usd_oz:live.p,updated_at:new Date(live.t).toISOString()});
-      return bn('/api/v3/ticker/price?symbol=BTCUSDT').then(function(j){ return {spot_usd_oz:+j.price,updated_at:new Date().toISOString()}; });
-    }
-    if(p==='/history') return bn('/api/v3/klines?symbol=BTCUSDT&interval=1d&limit=1000').then(rows);
-    if(p==='/chart'&&sym){ var i=sp.get('interval'); return bn('/api/v3/klines?symbol='+sym+'&interval='+(IV[i]||i)+'&limit='+(LIM[i]||500)).then(rows); }
-    if(p==='/intraday') return bn('/api/v3/klines?symbol=BTCUSDT&interval=1m&limit=1000').then(function(k){ return {data:k.map(function(c){return {t:c[0],p:+c[4]};})}; });
-    return Promise.reject(new Error('unknown route'));
-  }
-  window.fetch=function(u,o){
-    if(typeof u==='string'&&u.indexOf(BASE)===0) return route(u.slice(BASE.length)).then(function(j){ return new Response(JSON.stringify(j),{status:200,headers:{'Content-Type':'application/json'}}); });
-    return nf(u,o);
-  };
-  window.__btcRoute=route;
-})();
-</script>
+<link rel="preconnect" href="https://xaus.com" crossorigin>
 <script>
   /* start the critical data requests immediately, before the page even finishes parsing */
   (function(){
-    var B='https://btc.local/api/v1', P=window.__pre={};
+    var B='https://xaus.com/api/v1', P=window.__pre={};
     ['/spot?compact=1','/history','/chart?symbol=xau&range=1mo&interval=60m'].forEach(function(u){
       try{ P[B+u]=fetch(B+u).then(function(r){ if(!r.ok) throw 0; return r.json(); }); P[B+u].catch(function(){}); }catch(e){}
     });
@@ -786,6 +750,39 @@ html,body{overflow-x:clip}
   .asset-switch a{font-family:var(--mono); font-size:12px; letter-spacing:.06em; text-decoration:none; padding:7px 14px; border:1px solid var(--hairline); color:var(--muted);}
   .asset-switch a:hover{color:var(--white); border-color:var(--muted);}
   .asset-switch a.on{color:var(--blue); border-color:var(--blue); pointer-events:none;}
+
+  .comm-card{display:flex; justify-content:space-between; align-items:center; gap:18px; flex-wrap:wrap; padding:20px 22px; background:linear-gradient(165deg,var(--surface),var(--panel)); border:1px solid rgba(11,177,210,.18);}
+  .comm-card p{font-size:14px; line-height:1.6; max-width:640px; margin:0;}
+  .comm-links{display:flex; gap:8px; flex-wrap:wrap;}
+  .comm-links a{font-family:var(--mono); font-size:12px; letter-spacing:.05em; text-decoration:none; padding:10px 16px; border:1px solid var(--blue); color:var(--blue);}
+  .comm-links a:hover{background:var(--blue); color:var(--bg,#000);}
+
+  .comm-list{margin-top:14px; display:grid; gap:10px;}
+  .comm-item{display:block; text-decoration:none; color:inherit; padding:14px 18px; border:1px solid var(--hairline); background:var(--panel);}
+  .comm-item:hover{border-color:var(--blue);}
+  .comm-top{display:flex; gap:10px; align-items:center; font-family:var(--mono); font-size:10px; color:var(--muted); flex-wrap:wrap;}
+  .comm-side{border:1px solid currentColor; padding:2px 7px; font-size:9px; letter-spacing:.08em;}
+  .comm-side.long{color:var(--buy);} .comm-side.short{color:var(--sell);} .comm-side.edu{color:var(--blue);}
+  .comm-item h4{font-size:14px; line-height:1.45; margin:7px 0 4px;}
+  .comm-item p{font-size:13px; line-height:1.6; color:var(--muted); margin:0;}
+  .comm-foot{font-family:var(--mono); font-size:10px; color:var(--muted); margin-top:10px; line-height:1.7;}
+
+  /* ===== Pro position calculator ===== */
+  .xc-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:14px; margin-bottom:18px;}
+  .xc-grid select,
+  .calc-field select{
+    font-family:var(--mono); font-size:14px; color:var(--white); background:var(--panel-2);
+    border:1px solid var(--hairline); border-radius:4px; padding:8px 10px; width:100%;
+  }
+  .xc-grid select:focus{outline:none; border-color:var(--blue);}
+  .xc-results{grid-template-columns:repeat(4,1fr);}
+  .xc-results .calc-stat.main{background:rgba(11,177,210,0.10);}
+  .xc-results .calc-stat.main .ps-val{color:var(--blue); font-size:22px;}
+  .xc-sub{font-family:var(--mono); font-size:10px; color:var(--muted); margin-top:5px;}
+  .xc-warn{font-family:var(--mono); font-size:11.5px; color:#E0A83A; line-height:1.7; min-height:18px; margin-bottom:6px;}
+  .xc-warn.err{color:var(--sell);}
+  @media (max-width:900px){ .xc-grid{grid-template-columns:1fr 1fr;} .xc-results{grid-template-columns:1fr 1fr;} }
+  @media (max-width:520px){ .xc-grid{grid-template-columns:1fr;} }
 </style>
 </head>
 <body>
@@ -810,7 +807,7 @@ html,body{overflow-x:clip}
   </div>
 
   <div class="idbar">
-    <div class="wordmark"><span class="mark"></span><span id="asset-name">BTC/USDT</span> <span class="sub" id="asset-sub">/ BITCOIN DESK</span></div>
+    <div class="wordmark"><span class="mark"></span><span id="asset-name">XAU/USD</span> <span class="sub" id="asset-sub">/ GOLD DESK</span></div>
     <div class="live-row">
       <span class="live-dot" id="feed-status"><span class="dot"></span><span id="feed-text">LIVE</span></span>
       <span class="live-dot" id="last-update">UPDATED —</span>
@@ -818,13 +815,13 @@ html,body{overflow-x:clip}
     </div>
   </div>
 
-  <nav class="asset-switch" aria-label="Markets"><a href="asl-xauusd-analysis.html">GOLD · XAU/USD</a><a href="asl-btcusd-analysis.html" class="on">BITCOIN · BTC/USDT</a></nav>
+  <nav class="asset-switch" aria-label="Markets"><a href="asl-xauusd-analysis.html" class="on">GOLD · XAU/USD</a><a href="asl-btcusd-analysis.html">BITCOIN · BTC/USDT</a></nav>
 
   <header>
     <div class="hero">
-      <span class="pair" id="hero-pair">BTC/USDT · SPOT BITCOIN<span class="hero-price" id="hero-price"></span></span>
+      <span class="pair" id="hero-pair">XAU/USD · SPOT GOLD<span class="hero-price" id="hero-price"></span></span>
       <h1 id="hero-title">Daily Analysis &amp; Technical Outlook</h1>
-      <p class="dek" id="hero-dek">Fundamental drivers, moving averages, oscillators, derivatives and key levels for Bitcoin — rebuilt from the economic calendar and live indicator data, refreshed automatically every minute.</p>
+      <p class="dek" id="hero-dek">Fundamental drivers, moving averages, oscillators and key levels for gold — rebuilt from the economic calendar and live indicator data, refreshed automatically every minute.</p>
     </div>
     <div class="verdict-box">
       <div class="verdict-main">
@@ -851,11 +848,11 @@ html,body{overflow-x:clip}
       <h2>ASL Live Market</h2>
       <span class="rule"></span>
     </div>
-    <div class="section-note" id="chart-note">ASL market engine · Binance BTC/USDT spot feed · custom-rendered price action · no external chart widget</div>
+    <div class="section-note" id="chart-note">ASL market engine · first-party XAUS gold feed · custom-rendered price action · no external chart widget</div>
     <div class="chart-frame asl-chart-frame">
       <div class="chart-toolbar">
         <div>
-          <div class="chart-symbol">BTC/USDT <span id="chart-last-price">—</span> <span id="chart-change">—</span></div>
+          <div class="chart-symbol">XAU/USD <span id="chart-last-price">—</span> <span id="chart-change">—</span></div>
           <div class="chart-source">ASL MARKET ENGINE · <span id="chart-data-state">CONNECTING</span> · <span id="chart-remain"></span></div>
         </div>
         <div class="chart-intervals" role="group" aria-label="Chart timeframe">
@@ -872,7 +869,7 @@ html,body{overflow-x:clip}
         </div>
       </div>
       <div class="chart-canvas-wrap">
-        <canvas id="candle-chart-canvas" aria-label="ASL BTC/USDT price chart"></canvas>
+        <canvas id="candle-chart-canvas" aria-label="ASL XAU/USD price chart"></canvas>
         <div id="chart-error" class="chart-error" hidden></div>
       </div>
     </div>
@@ -884,7 +881,7 @@ html,body{overflow-x:clip}
       <h2>Signal Snapshot — 3 Timeframes</h2>
       <span class="rule"></span>
     </div>
-    <div class="section-note" id="tf-grid-note">ASL live ratings for 1H, 4H and Daily, computed from Binance BTC/USDT candles using RSI, MACD and moving-average rules and recalculated automatically</div>
+    <div class="section-note" id="tf-grid-note">ASL live ratings for 1H, 4H and Daily, computed from xaus.com's gold candles using RSI, MACD and moving-average rules and recalculated automatically</div>
     <div class="master-score" id="master-score">
       <div class="ms-head">
         <div class="ms-label">MASTER SIGNAL</div>
@@ -921,7 +918,7 @@ html,body{overflow-x:clip}
       <h2>ASL Fundamental Intelligence</h2>
       <span class="rule"></span>
     </div>
-    <div class="section-note" id="fund-note">US macro releases + global crypto &amp; macro intelligence · deduplicated by ASL · refreshed automatically</div>
+    <div class="section-note" id="fund-note">US macro releases + global gold intelligence · deduplicated by ASL · refreshed automatically</div>
     <div class="fund-grid">
       <div class="fund-panel">
         <div class="fund-panel-head">
@@ -932,13 +929,13 @@ html,body{overflow-x:clip}
       </div>
       <div class="fund-panel">
         <div class="fund-panel-head">
-          <div><span class="panel-kicker">NEWS INTELLIGENCE</span><h3>BITCOIN · ETF · FED · REGULATION</h3></div>
+          <div><span class="panel-kicker">NEWS INTELLIGENCE</span><h3>GOLD · FED · USD · RATES</h3></div>
           <span class="asl-badge">DEDUPED</span>
         </div>
         <div id="asl-news-list" class="asl-news-list"><div class="fund-loading">Scanning fresh market coverage…</div></div>
       </div>
     </div>
-    <div class="fund-foot" id="fund-status">Sources are displayed with their own timestamps. ASL impact labels describe potential BTC/USDT sensitivity, not a guaranteed price reaction.</div>
+    <div class="fund-foot" id="fund-status">Sources are displayed with their own timestamps. ASL impact labels describe potential XAU/USD sensitivity, not a guaranteed price reaction.</div>
   </section>
 
   <section>
@@ -1008,29 +1005,25 @@ html,body{overflow-x:clip}
   <section>
     <div class="section-head">
       <span class="num">06</span>
-      <h2>Correlations &amp; Derivatives Watch</h2>
+      <h2>Correlations &amp; Session Watch</h2>
       <span class="rule"></span>
     </div>
     <div class="two-col">
       <div class="cell">
-        <h4>CROSS-ASSET CORRELATION (30D) · BITCOIN</h4>
-        <div class="corr-row"><span>Ethereum (ETH/USDT)</span><span id="corr-eth" class="corr-na">—</span></div>
-        <div class="corr-row"><span>Bitcoin (PAXG/USDT)</span><span id="corr-bitcoin" class="corr-na">—</span></div>
-        <div class="corr-row"><span>Solana (SOL/USDT)</span><span id="corr-sol" class="corr-na">—</span></div>
-        <div class="corr-row"><span>BNB (BNB/USDT)</span><span id="corr-bnb" class="corr-na">—</span></div>
-        <div class="corr-row"><span>BTC dominance (live)</span><span id="corr-gsr" style="color:var(--white)">—</span></div>
-        <div class="corr-note">Correlation of the last 30 daily returns vs bitcoin · recalculated automatically</div>
+        <h4>CROSS-ASSET CORRELATION (30D) · GOLD</h4>
+        <div class="corr-row"><span>DXY (Dollar Index)</span><span id="corr-dxy" class="corr-na">—</span></div>
+        <div class="corr-row"><span>S&amp;P 500</span><span id="corr-sp500" class="corr-na">—</span></div>
+        <div class="corr-row"><span>Silver (XAG/USD)</span><span id="corr-silver" class="corr-na">—</span></div>
+        <div class="corr-row"><span>WTI Crude Oil</span><span id="corr-oil" class="corr-na">—</span></div>
+        <div class="corr-row"><span>Gold / Silver ratio (live)</span><span id="corr-gsr" style="color:var(--white)">—</span></div>
+        <div class="corr-note">Correlation of the last 30 daily returns vs gold · recalculated automatically</div>
       </div>
       <div class="cell">
-        <h4>DERIVATIVES &amp; SENTIMENT · LIVE</h4>
-        <div class="session-row"><span>24h change</span><span class="session-tag" id="dv-chg">—</span></div>
-        <div class="session-row"><span>24h range (USDT)</span><span class="session-tag" id="dv-hl">—</span></div>
-        <div class="session-row"><span>24h volume</span><span class="session-tag" id="dv-vol">—</span></div>
-        <div class="session-row"><span>Funding rate (perp)</span><span class="session-tag" id="dv-fund">—</span></div>
-        <div class="session-row"><span>Perp basis (mark vs index)</span><span class="session-tag" id="dv-basis">—</span></div>
-        <div class="session-row"><span>Open interest</span><span class="session-tag" id="dv-oi">—</span></div>
-        <div class="session-row"><span>Long/Short accounts (1h)</span><span class="session-tag" id="dv-ls">—</span></div>
-        <div class="session-row"><span>Fear &amp; Greed index</span><span class="session-tag" id="dv-fng">—</span></div>
+        <h4>SESSION OVERLAP</h4>
+        <div class="session-row"><span>Asian Session</span><span class="session-tag" id="sess-asia">00:00–09:00 GMT</span></div>
+        <div class="session-row"><span>London Session</span><span class="session-tag" id="sess-london">08:00–17:00 GMT</span></div>
+        <div class="session-row"><span>New York Session</span><span class="session-tag" id="sess-ny">13:00–22:00 GMT</span></div>
+        <div class="session-row"><span>London/NY Overlap</span><span class="session-tag" id="sess-overlap">13:00–17:00 GMT</span></div>
         <div class="session-status" id="session-status"></div>
       </div>
     </div>
@@ -1052,10 +1045,10 @@ html,body{overflow-x:clip}
       </div>
       <div class="cell">
         <h4>STRATEGY PERFORMANCE · 30D</h4>
-        <div class="perf-legend"><span><i></i>Strategy (follow the signal)</span><span><i class="bh"></i><span id="perf-bh-label">Buy &amp; hold bitcoin</span></span></div>
+        <div class="perf-legend"><span><i></i>Strategy (follow the signal)</span><span><i class="bh"></i><span id="perf-bh-label">Buy &amp; hold gold</span></span></div>
         <div id="perf-chart"><div class="perf-empty">Building the 30-day simulation…</div></div>
         <div class="perf-stats" id="perf-stats"></div>
-        <div class="corr-note" id="perf-note">Hypothetical simulation of this page's confluence rules on daily bitcoin closes: one position per signal, held close-to-close, with no spread, slippage or fees. Dots under the chart show each day's position (green long, red short, grey flat). These are simulated results, not a record of real trading, and past performance does not guarantee future results.</div>
+        <div class="corr-note" id="perf-note">Hypothetical simulation of this page's confluence rules on daily gold closes: one position per signal, held close-to-close, with no spread, slippage or fees. Dots under the chart show each day's position (green long, red short, grey flat). These are simulated results, not a record of real trading, and past performance does not guarantee future results.</div>
       </div>
     </div>
   </section>
@@ -1088,7 +1081,7 @@ html,body{overflow-x:clip}
         <div class="vol-meter"><div class="vol-fill" id="vol-fill"></div><div class="vol-needle" id="vol-needle"></div></div>
         <div class="vol-scale"><span>Quiet</span><span>Normal</span><span>Elevated</span><span>Extreme</span></div>
         <div class="conf-score" id="vol-score" style="margin-top:14px;">Calculating…</div>
-        <div class="corr-note" id="vol-note">ATR(14) compared with its own distribution over the available daily history · a high percentile means bitcoin is moving more than usual right now, which argues for wider stops and smaller size</div>
+        <div class="corr-note" id="vol-note">ATR(14) compared with its own distribution over the available daily history · a high percentile means gold is moving more than usual right now, which argues for wider stops and smaller size</div>
       </div>
       <div class="cell">
         <h4>SEASONALITY · AVG MONTHLY RETURN</h4>
@@ -1104,7 +1097,7 @@ html,body{overflow-x:clip}
       <h2>COT Positioning · CFTC</h2>
       <span class="rule"></span>
     </div>
-    <div class="section-note" id="cot-note">Weekly Commitment of Traders report for CME Bitcoin futures · US CFTC public data · loading…</div>
+    <div class="section-note" id="cot-note">Weekly Commitment of Traders report for COMEX gold futures · US CFTC public data · loading…</div>
     <div class="two-col">
       <div class="cell">
         <h4 id="cot-title">NON-COMMERCIAL NET POSITION (LARGE SPECULATORS)</h4>
@@ -1126,26 +1119,32 @@ html,body{overflow-x:clip}
       <h2>Position Size Calculator</h2>
       <span class="rule"></span>
     </div>
-    <div class="section-note">Uses the live trade plan's stop-loss distance above · figures update automatically as the plan changes</div>
+    <div class="section-note">Pick your instrument, account size and risk · lot size is calculated from your stop-loss distance · for gold the live trade plan fills the prices automatically</div>
     <div class="calc-box">
-      <div class="calc-row">
-        <label for="calc-balance">Account balance (USD)</label>
-        <input type="number" id="calc-balance" value="10000" min="0" step="100">
+      <div class="xc-grid">
+        <div class="calc-field"><label for="xc-symbol">Instrument</label><select id="xc-symbol"></select></div>
+        <div class="calc-field"><label for="xc-balance">Account balance (USD)</label><input type="number" id="xc-balance" value="10000" min="0" step="100"></div>
+        <div class="calc-field"><label for="xc-lev">Leverage (1:x)</label><input type="number" id="xc-lev" value="100" min="1" step="1"></div>
+        <div class="calc-field"><label for="xc-risk-mode">Risk mode</label>
+          <select id="xc-risk-mode"><option value="pct">Percent of balance (%)</option><option value="usd">Fixed amount (USD)</option></select></div>
+        <div class="calc-field"><label for="xc-risk" id="xc-risk-label">Risk per trade (%)</label><input type="number" id="xc-risk" value="1" min="0" step="0.1"></div>
+        <div class="calc-field"><label for="xc-entry">Entry price</label><input type="number" id="xc-entry" step="any" placeholder="0.00"></div>
+        <div class="calc-field"><label for="xc-sl">Stop loss price</label><input type="number" id="xc-sl" step="any" placeholder="0.00"></div>
+        <div class="calc-field"><label for="xc-tp">Take profit price (optional)</label><input type="number" id="xc-tp" step="any" placeholder="0.00"></div>
+        <div class="calc-field"><label>Direction (auto)</label><input type="text" id="xc-dir" value="—" readonly></div>
       </div>
-      <div class="calc-row">
-        <label for="calc-risk">Risk per trade (%)</label>
-        <input type="number" id="calc-risk" value="1" min="0.1" max="10" step="0.1">
+      <div class="xc-warn" id="xc-warn"></div>
+      <div class="calc-results xc-results">
+        <div class="calc-stat main"><div class="ps-label">LOT SIZE</div><div class="ps-val" id="xc-lots">—</div><div class="xc-sub" id="xc-lots-sub"></div></div>
+        <div class="calc-stat"><div class="ps-label">RISK AMOUNT (TARGET)</div><div class="ps-val" id="xc-risk-usd">$—</div></div>
+        <div class="calc-stat"><div class="ps-label">ACTUAL RISK (AFTER ROUNDING)</div><div class="ps-val" id="xc-real-risk">$—</div></div>
+        <div class="calc-stat"><div class="ps-label">POSITION SIZE</div><div class="ps-val" id="xc-units">—</div></div>
+        <div class="calc-stat"><div class="ps-label">STOP DISTANCE</div><div class="ps-val" id="xc-dist">—</div><div class="xc-sub" id="xc-dist-sub"></div></div>
+        <div class="calc-stat"><div class="ps-label">VALUE PER PIP (1 LOT)</div><div class="ps-val" id="xc-pipval">—</div></div>
+        <div class="calc-stat"><div class="ps-label">POTENTIAL PROFIT · R:R</div><div class="ps-val" id="xc-reward">—</div></div>
+        <div class="calc-stat"><div class="ps-label">MARGIN REQUIRED</div><div class="ps-val" id="xc-margin">—</div><div class="xc-sub" id="xc-margin-sub"></div></div>
       </div>
-      <div class="calc-row">
-        <label for="calc-sl-pts">Stop distance (price points)</label>
-        <input type="number" id="calc-sl-pts" value="0" min="0" step="0.1">
-      </div>
-      <div class="calc-results" id="calc-results">
-        <div class="calc-stat"><div class="ps-label">RISK AMOUNT</div><div class="ps-val" id="calc-risk-usd">$—</div></div>
-        <div class="calc-stat"><div class="ps-label">POSITION SIZE (BTC)</div><div class="ps-val" id="calc-oz">—</div></div>
-        <div class="calc-stat"><div class="ps-label">≈ POSITION VALUE (USD)</div><div class="ps-val" id="calc-lots">—</div></div>
-      </div>
-      <div class="corr-note">Educational calculator only: position size = risk amount ÷ stop distance in USD per BTC. Spot size shown — leverage, fees and exchange contract specs are not included.</div>
+      <div class="corr-note">Educational calculator, not a broker-specific quote. Contract sizes follow common broker conventions (gold 100 oz, silver 5,000 oz, forex 100,000 units, indices $1 per point, WTI 1,000 bbl, BTC 1 coin) and differ between brokers. Pairs quoted in JPY/CHF/CAD are converted to USD at the entry price. Always confirm your broker's contract specs and your account currency before sizing a real position.</div>
     </div>
   </section>
 
@@ -1155,17 +1154,27 @@ html,body{overflow-x:clip}
       <h2>Daily Outlook</h2>
       <span class="rule"></span>
     </div>
-    <div class="section-note" id="outlook-note">Generated automatically from live indicators · recalculated every minute · bitcoin only</div>
+    <div class="section-note" id="outlook-note">Generated automatically from live indicators · recalculated every minute · gold only</div>
     <div class="outlook-panel" id="outlook-panel">
     <p>Building the live outlook from today's indicators…</p>
     </div>
   </section>
 
+  <section id="community" hidden>
+    <div class="section-head">
+      <span class="num">13</span>
+      <h2>Community</h2>
+      <span class="rule"></span>
+    </div>
+    <div class="section-note">Trade ideas and chart analysis shared by the ASL University community · updated regularly</div>
+    <div class="comm-list" id="comm-list" data-src="community-gold.json"></div>
+  </section>
+
   <footer>
     <div class="disclaimer">
-      Market data on this page (spot price, pivot levels, indicators, correlations, session status) is calculated automatically from third-party feeds and is indicative only — it may be delayed, incomplete or differ from your broker's prices. The trade plan (entry, stop-loss, take-profit), the confluence score and the 30-day strategy chart are generated automatically by fixed rules for educational illustration; the strategy chart is a hypothetical simulation, not actual trading results. The 1H/4H/Daily Signal Snapshot shows ASL's own RSI/MACD/moving-average rating computed from Binance BTC/USDT candles. The Daily Outlook is generated automatically from the same live indicators shown above, not written by a person, and regenerates every minute. This page is for educational purposes only and does not constitute investment advice or a recommendation to buy or sell any financial instrument; trading bitcoin and other crypto assets and leveraged instruments carries a high level of risk, and you should consult an independent financial advisor before making trading decisions.
+      Market data on this page (spot price, pivot levels, indicators, correlations, session status) is calculated automatically from third-party feeds and is indicative only — it may be delayed, incomplete or differ from your broker's prices. The trade plan (entry, stop-loss, take-profit), the confluence score and the 30-day strategy chart are generated automatically by fixed rules for educational illustration; the strategy chart is a hypothetical simulation, not actual trading results. The 1H/4H/Daily Signal Snapshot shows ASL's own RSI/MACD/moving-average rating computed from xaus.com's candles. The Daily Outlook is generated automatically from the same live indicators shown above, not written by a person, and regenerates every minute. This page is for educational purposes only and does not constitute investment advice or a recommendation to buy or sell any financial instrument; trading gold and other leveraged instruments carries a high level of risk, and you should consult an independent financial advisor before making trading decisions.
     </div>
-    <div class="foot-brand"><b>ASL UNIVERSITY</b> — Market Research Desk · Market data refreshes every 60 seconds · Spot &amp; candles via Binance · ASL custom chart, macro calendar &amp; market intelligence</div>
+    <div class="foot-brand"><b>ASL UNIVERSITY</b> — Market Research Desk · Market data refreshes every 60 seconds · Spot &amp; candles via XAUS.com · ASL custom chart, macro calendar &amp; market intelligence</div>
   </footer>
 
 </div>
@@ -1185,17 +1194,17 @@ html,body{overflow-x:clip}
 <script>
 (function(){
 /* =========================================================
-   ASL LIVE DASHBOARD ENGINE — BITCOIN (BTC/USDT) ONLY
-   Data feed : Binance public market data via the adapter at the top of the page
-     /spot     -> live BTC/USDT (WebSocket trade stream, REST fallback)
-     /history  -> daily BTC/USDT candles
-     /chart    -> candles for BTC (1m-1d), ETH, PAXG (gold), SOL, BNB
+   ASL LIVE DASHBOARD ENGINE — GOLD (XAU/USD) ONLY
+   Data feed : xaus.com public API (no key, CORS open)
+     /spot     -> live XAU/USD, silver, gold/silver ratio
+     /history  -> daily XAU/USD candles
+     /chart    -> candles for XAU (60m), DXY, S&P 500, silver, oil
    Performance notes:
      - all network jobs run in parallel and each one renders as soon as it lands
-     - bitcoin daily history is cached in localStorage so repeat visits paint instantly
+     - gold daily history is cached in localStorage so repeat visits paint instantly
      - heavy backtest only uses the last ~450 daily bars
    ========================================================= */
-const API_BASE = 'https://btc.local/api/v1';
+const API_BASE = 'https://xaus.com/api/v1';
 const REFRESH_SECONDS = 60;
 const SLOW_REFRESH_SECONDS = 600;
 const HOURLY_REFRESH_SECONDS = 120;
@@ -1530,7 +1539,7 @@ function confluenceOf(A, dxyChg) {
   if (dxyChg != null && isFinite(dxyChg)) {
     const d = dxyChg < -0.003 ? 1 : dxyChg > 0.003 ? -1 : 0;
     add('dxy', 'US dollar (DXY, 5-day)', d, 'DXY ' + (dxyChg >= 0 ? '+' : '−') + Math.abs(dxyChg * 100).toFixed(2) + '%' +
-      (d > 0 ? ' · weaker dollar supports bitcoin' : d < 0 ? ' · stronger dollar pressures bitcoin' : ' · flat'));
+      (d > 0 ? ' · weaker dollar supports gold' : d < 0 ? ' · stronger dollar pressures gold' : ' · flat'));
   }
   const bull = f.filter(x => x.dir > 0).length, bear = f.filter(x => x.dir < 0).length;
   return { factors: f, bull, bear, neutral: f.length - bull - bear, n: f.length, net: bull - bear };
@@ -1628,7 +1637,7 @@ async function loadSpot() {
   const p = num(j.spot_usd_oz ?? (j.xau && j.xau.price));
   if (!isFinite(p)) throw new Error('bad spot');
   S.spot = { price: p, silver: num(j.silver_usd_oz), gsr: num(j.gold_silver_ratio), at: j.updated_at };
-  try { localStorage.setItem('aslbtc-spot-v1', JSON.stringify({ ...S.spot, cachedAt: Date.now() })); } catch (e) {}
+  try { localStorage.setItem('asl-spot-v1', JSON.stringify({ ...S.spot, cachedAt: Date.now() })); } catch (e) {}
 }
 
 async function loadHourly() {
@@ -1636,18 +1645,18 @@ async function loadHourly() {
   const bars = normalizeBars(extractIntraday(j), 3600000);
   if (bars.length) {
     S.hourly = bars; S.hourlyLoadedAt = Date.now();
-    try { localStorage.setItem('aslbtc-hourly-v1', JSON.stringify(bars.slice(-400))); } catch (e) {}
+    try { localStorage.setItem('asl-hourly-v1', JSON.stringify(bars.slice(-400))); } catch (e) {}
   }
 }
 
-/* Bitcoin history first (page becomes usable), other assets + backtest after */
+/* Gold history first (page becomes usable), other assets + backtest after */
 async function loadSlow() {
-  const keys = ['eth', 'bitcoin', 'sol', 'bnb'];
+  const keys = ['dxy', 'sp500', 'silver', 'oil'];
   const othersP = Promise.allSettled(keys.map(k =>
     getJSON(API_BASE + '/chart?symbol=' + k + '&range=6mo&interval=1d', 9000).then(extractBars)));
   S.hist = extractBars(await getJSON(API_BASE + '/history', 10000));
   S.lastSlow = Date.now();
-  try { localStorage.setItem('aslbtc-hist-v2', JSON.stringify(S.hist.slice(-1300))); } catch (e) {}
+  try { localStorage.setItem('asl-hist-v2', JSON.stringify(S.hist.slice(-1300))); } catch (e) {}
   renderAll();
   const res = await othersP;
   res.forEach((r, i) => { if (r.status === 'fulfilled' && r.value.length) S.others[keys[i]] = r.value; });
@@ -2056,8 +2065,8 @@ document.addEventListener('visibilitychange', () => { if (!document.hidden) { ti
 
 /* ---------------- ASL fundamental intelligence ---------------- */
 function cleanTitle(v){return String(v||'').toLowerCase().replace(/https?:\/\/\S+/g,'').replace(/[^a-z0-9]+/g,' ').trim().replace(/\s+/g,' ');}
-function newsImpact(title){const t=String(title||'').toLowerCase();const high=['bitcoin','btc','etf','sec ','fed','fomc','rate decision','interest rate','cpi','inflation','payroll','nfp','binance','coinbase','hack','exploit','crackdown','liquidation','treasury yield'];const med=['crypto','ethereum','stablecoin','mining','halving','regulation','tariff','dollar','economy','recession','whale'];if(high.some(k=>t.includes(k)))return 'HIGH';if(med.some(k=>t.includes(k)))return 'MEDIUM';return 'LOW';}
-function goldEffect(title){const t=String(title||'').toLowerCase(); if(/hack|exploit|\bban\b|crackdown|lawsuit|sues|rate hike|hawkish|higher for longer|outflow|liquidation|sell-?off|crash|plunge|strong dollar|rising yields|hot cpi/.test(t))return {label:'Potential BTC ↓',cls:'sell'}; if(/inflow|approv|rate cut|dovish|adoption|institutional|record high|all-time high|accumulat|halving|weaker dollar|cooling inflation|rally|surge/.test(t))return {label:'Potential BTC ↑',cls:'buy'}; return {label:'Context dependent',cls:'neutral'};}
+function newsImpact(title){const t=String(title||'').toLowerCase();const high=['fed','fomc','rate decision','interest rate','cpi','inflation','pce','payroll','nfp','jobs report','treasury yield','yield','dollar','usd','central bank','war','ceasefire','sanction'];const med=['gold','xau','silver','oil','geopolit','tariff','trade','economy','recession'];if(high.some(k=>t.includes(k)))return 'HIGH';if(med.some(k=>t.includes(k)))return 'MEDIUM';return 'LOW';}
+function goldEffect(title){const t=String(title||'').toLowerCase(); if(/rate hike|hawkish|higher for longer|strong jobs|hot cpi|higher inflation|strong dollar|rising yields/.test(t))return {label:'Potential XAU/USD ↓',cls:'sell'}; if(/rate cut|dovish|weak jobs|cooling inflation|lower cpi|falling yields|weaker dollar|safe haven|geopolitical risk/.test(t))return {label:'Potential XAU/USD ↑',cls:'buy'}; return {label:'Context dependent',cls:'neutral'};}
 function dedupeNews(rows){const seen=new Set();return rows.filter(x=>{const k=cleanTitle(x.title).slice(0,90);if(!k||seen.has(k))return false;seen.add(k);return true;}).sort((a,b)=>(b.time||0)-(a.time||0)).slice(0,14);}
 function escapeHTML(v){return String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));}
 function escapeAttr(v){return escapeHTML(v).replace(/`/g,'&#96;');}
@@ -2065,12 +2074,12 @@ function safeUrl(u){return /^https?:\/\//i.test(String(u||''))?u:'#';}
 function parseGDELTDate(s){if(!s)return null;const m=String(s).match(/^(\d{4})(\d{2})(\d{2})T?(\d{2})(\d{2})(\d{2})?/);return m ? new Date(Date.UTC(+m[1],+m[2]-1,+m[3],+(m[4]||0),+(m[5]||0),+(m[6]||0))) : new Date(s);}
 function relativeTime(d){const sec=Math.max(0,(Date.now()-d.getTime())/1000);if(sec<60)return 'now';if(sec<3600)return Math.floor(sec/60)+'m';if(sec<86400)return Math.floor(sec/3600)+'h';return Math.floor(sec/86400)+'d';}
 function renderFundamentals(){
-  const ml=$('macro-list'), nl=$('aslbtc-news-list');
+  const ml=$('macro-list'), nl=$('asl-news-list');
   if(ml){const rows=S.fund.macro||[];ml.innerHTML=rows.length?rows.slice(0,12).map(e=>{const dt=e.scheduledAt?new Date(e.scheduledAt):null;const impact=(e.importance||'medium').toUpperCase();const eff=goldEffect(e.eventName);return '<div class="macro-row"><div class="macro-time">'+(dt?dt.toLocaleDateString('en-GB',{day:'2-digit',month:'short',timeZone:'UTC'})+'<br>'+dt.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit',timeZone:'UTC'})+' UTC':'—')+'</div><div class="macro-main"><b>'+escapeHTML(e.eventName||'US release')+'</b><span>'+escapeHTML(e.periodLabel||'')+'</span></div><div class="macro-values"><span>ACT <b>'+escapeHTML(e.actual??'—')+'</b></span><span>PREV <b>'+escapeHTML(e.previous??'—')+'</b></span><span>FCST <b>'+escapeHTML(e.forecast??'—')+'</b></span></div><div class="macro-impact '+impact.toLowerCase()+'">'+impact+'</div><div class="macro-effect '+eff.cls+'">'+eff.label+'</div></div>';}).join(''):'<div class="fund-empty">'+(S.calFailed?'Economic calendar source is not answering from this connection — retrying automatically.':'No verified US releases returned by the calendar source.')+'</div>';}
   if(nl){const rows=S.fund.news||[];
     nl.innerHTML=rows.length?rows.map(n=>{const eff=goldEffect(n.title),imp=newsImpact(n.title),dt=n.time?new Date(n.time):null;return '<a class="asl-news-row" href="'+escapeAttr(safeUrl(n.url))+'" target="_blank" rel="noopener"><div class="news-time2">'+(dt?relativeTime(dt):'—')+'</div><div class="asl-news-body"><div class="news-meta"><span>'+escapeHTML(n.domain||'Market source')+'</span><i class="news-impact '+imp.toLowerCase()+'">'+imp+'</i></div><h4>'+escapeHTML(n.title||'Untitled')+'</h4><div class="news-effect '+eff.cls+'">'+eff.label+'</div></div></a>';}).join('')
       : '<div class="fund-empty">'+(S.newsTried?'No headline source answered yet ('+escapeHTML((S.newsErr||[]).join(' · ').slice(0,160))+'). Retrying every 45 seconds…':'Scanning fresh market coverage…')+'</div>';}
-  setText('fund-note','US macro releases + global crypto &amp; macro intelligence · ASL deduplication active · last sync '+utcClock(new Date()));
+  setText('fund-note','US macro releases + global gold intelligence · ASL deduplication active · last sync '+utcClock(new Date()));
 }
 function fetchTimeout(url, ms){
   const ctrl=new AbortController(); const t=setTimeout(()=>ctrl.abort(),ms);
@@ -2079,7 +2088,7 @@ function fetchTimeout(url, ms){
 
 /* several independent headline sources race; every one that answers is merged, so the panel is never empty */
 async function newsGDELT(){
-  const q='(bitcoin OR BTC OR "bitcoin ETF" OR crypto OR "Federal Reserve" OR "SEC crypto" OR "interest rates") sourcelang:english';
+  const q='(gold OR XAU OR "Federal Reserve" OR Fed OR "US dollar" OR "Treasury yields" OR inflation OR "interest rates") sourcelang:english';
   const r=await fetchTimeout('https://api.gdeltproject.org/api/v2/doc/doc?query='+encodeURIComponent(q)+'&mode=ArtList&maxrecords=60&timespan=24h&sort=DateDesc&format=json',9000);
   if(!r.ok) throw new Error('HTTP '+r.status);
   const t=await r.text(); let j;
@@ -2099,8 +2108,8 @@ async function newsRSS(feed){
 }
 const NEWS_FEEDS=[
   {name:'GDELT', run:newsGDELT},
-  {name:'Google News', run:()=>newsRSS('https://news.google.com/rss/search?q='+encodeURIComponent('bitcoin OR BTC OR bitcoin ETF OR crypto regulation OR Federal Reserve when:1d')+'&hl=en-US&gl=US&ceid=US:en')},
-  {name:'Yahoo Finance', run:()=>newsRSS('https://feeds.finance.yahoo.com/rss/2.0/headline?s=BTC-USD&region=US&lang=en-US')}
+  {name:'Google News', run:()=>newsRSS('https://news.google.com/rss/search?q='+encodeURIComponent('gold price OR Federal Reserve OR US dollar OR Treasury yields OR inflation when:1d')+'&hl=en-US&gl=US&ceid=US:en')},
+  {name:'Yahoo Finance', run:()=>newsRSS('https://feeds.finance.yahoo.com/rss/2.0/headline?s=GC=F&region=US&lang=en-US')}
 ];
 S.newsPool=[]; S.newsErr=[]; S.newsTried=false;
 let newsBusy=false;
@@ -2112,7 +2121,7 @@ async function loadNews(){
       if(!fresh.length) throw new Error('no articles');
       S.newsPool=S.newsPool.filter(x=>x.src!==f.name).concat(fresh.map(a=>({...a,src:f.name})));
       S.fund.news=dedupeNews(S.newsPool);
-      try{ localStorage.setItem('aslbtc-news-v1',JSON.stringify(S.fund.news)); }catch(e){}
+      try{ localStorage.setItem('asl-news-v1',JSON.stringify(S.fund.news)); }catch(e){}
       renderFundamentals();
     }).catch(e=>{ S.newsErr.push(f.name+': '+(e&&e.message||e)); })));
   } finally { S.newsTried=true; newsBusy=false; renderFundamentals(); }
@@ -2196,7 +2205,7 @@ function renderCommentary(A) {
   const s50 = A.smaOf(50), s200 = A.smaOf(200), s20 = A.smaOf(20);
   const bias = A.maBuy >= 9 ? 'bullish' : A.maBuy <= 3 ? 'bearish' : 'mixed';
   const p = [];
-  p.push((A.marketLabel || 'Bitcoin') + ' is trading at ' + fmt(A.price) +
+  p.push((A.marketLabel || 'Gold') + ' is trading at ' + fmt(A.price) +
     (s200 != null ? ', ' + (A.price > s200 ? 'above' : 'below') + ' its 200-day average (' + fmt(s200) + ')' : '') +
     (s50 != null ? ' and ' + (A.price > s50 ? 'above' : 'below') + ' its 50-day (' + fmt(s50) + ')' : '') +
     '. ' + A.maBuy + ' of the ' + A.maTotal + ' moving averages sit below price and ' + A.maSell + ' above it' +
@@ -2263,10 +2272,7 @@ function renderVerdict(A, conf, dir) {
   setText('tp-note', (closed ? 'Market is closed — levels use Friday\u2019s close and are re-checked at the open. ' : '') +
     'Swing plan from the daily chart (stop = ' + (plan.risk / plan.atr).toFixed(1) + '× ATR of ' + fmt(plan.atr, 1) +
     ', placed beyond the nearest pivot level when one is close). Educational example, not advice — risk no more than 1–2% of your account per trade.');
-  if (!calcSlUserEdited) {
-    const slInput = $('calc-sl-pts');
-    if (slInput) { slInput.value = plan.risk.toFixed(2); updateCalc(); }
-  }
+  if (window.ASL_CALC) window.ASL_CALC.setPlan(plan);
 }
 
 function renderConfluence(conf) {
@@ -2285,7 +2291,7 @@ function renderPerformance(bt, livePrice, label) {
   const box = $('perf-chart');
   if (!box) return;
   const eq = equityCurves(bt, livePrice);
-  setText('perf-bh-label', 'Buy & hold ' + (label || 'bitcoin'));
+  setText('perf-bh-label', 'Buy & hold ' + (label || 'gold'));
   if (!eq || eq.pts.length < 3) {
     box.innerHTML = '<div class="perf-empty">Building the 30-day simulation…</div>';
     setText('perf-stats', ''); return;
@@ -2370,7 +2376,7 @@ function renderLevels(A) {
 }
 
 function renderCorrelations() {
-  const rows = { eth: 'corr-eth', bitcoin: 'corr-bitcoin', sol: 'corr-sol', bnb: 'corr-bnb' };
+  const rows = { dxy: 'corr-dxy', sp500: 'corr-sp500', silver: 'corr-silver', oil: 'corr-oil' };
   for (const k in rows) {
     const el = $(rows[k]);
     if (!el) continue;
@@ -2391,12 +2397,43 @@ const EVENTS = [
   [0, 'Asian session opens'], [8, 'London session opens'], [9, 'Asian session closes'],
   [13, 'New York opens · London/NY overlap begins'], [17, 'London closes · overlap ends'], [22, 'New York session closes']
 ];
-function marketOpen(d) { return true; }
+function marketOpen(d) {
+  const day = d.getUTCDay(), h = d.getUTCHours();
+  if (day === 6) return false;
+  if (day === 5 && h >= 22) return false;
+  if (day === 0 && h < 22) return false;
+  return true;
+}
 const dur = ms => {
   const m = Math.max(0, Math.floor(ms / 60000)), d = Math.floor(m / 1440), h = Math.floor((m % 1440) / 60), mm = m % 60;
   return (d ? d + 'd ' : '') + (h || d ? h + 'h ' : '') + mm + 'm';
 };
-function renderSessions(now = new Date()) { const e = $('session-status'); if (e) e.innerHTML = '<b>Market open 24/7</b> · ' + now.toISOString().slice(11,16) + ' GMT · crypto has no sessions and no weekend gap'; }
+function renderSessions(now = new Date()) {
+  const open = marketOpen(now), hr = now.getUTCHours() + now.getUTCMinutes() / 60;
+  for (const s of SESSIONS) {
+    const el = $(s.id);
+    if (el) el.classList.toggle('active', open && hr >= s.start && hr < s.end);
+  }
+  const status = $('session-status');
+  if (!status) return;
+  const clock = now.toISOString().slice(11, 16) + ' GMT';
+  if (!open) {
+    const t = new Date(now); t.setUTCHours(22, 0, 0, 0);
+    while (t.getUTCDay() !== 0 || t <= now) t.setUTCDate(t.getUTCDate() + 1);
+    status.innerHTML = '<b>Market closed</b> · ' + clock + ' · reopens Sunday 22:00 GMT (in ' + dur(t - now) + ')';
+    return;
+  }
+  let next = null;
+  for (let add = 0; add < 2 && !next; add++) {
+    for (const [h, label] of EVENTS) {
+      const t = new Date(now); t.setUTCDate(t.getUTCDate() + add); t.setUTCHours(h, 0, 0, 0);
+      if (t > now && (!next || t < next.t)) next = { t, label };
+    }
+  }
+  const isFriClose = now.getUTCDay() === 5 && next && next.t.getUTCHours() === 22;
+  status.innerHTML = '<b>Market open</b> · ' + clock + ' · next: ' +
+    (isFriClose ? 'weekly market close' : next.label) + ' in ' + dur(next.t - now);
+}
 
 /* ---------------- 08 - Multi-timeframe confluence gauge ---------------- */
 function tfScore(A) {
@@ -2530,8 +2567,8 @@ function renderSeasonality(bars) {
 
 /* ---------------- 10 - CFTC Commitment of Traders ---------------- */
 const COT_BASE = 'https://publicreporting.cftc.gov/resource/';
-const COT_GOLD_NAME = "market_and_exchange_names='BITCOIN - CHICAGO MERCANTILE EXCHANGE'";
-const COT_GOLD_CODE = "cftc_contract_market_code='133741'";
+const COT_GOLD_NAME = "market_and_exchange_names='GOLD - COMMODITY EXCHANGE INC.'";
+const COT_GOLD_CODE = "cftc_contract_market_code='088691'";
 /* several equivalent queries race each other; the first one that answers wins */
 const COT_SOURCES = [
   { kind: 'noncomm', long: 'noncomm_positions_long_all', short: 'noncomm_positions_short_all',
@@ -2567,7 +2604,7 @@ async function loadCOT() {
     if (Promise.any) res = await Promise.any(attempts);
     else res = await new Promise((ok, no) => { let f = 0; attempts.forEach(a => a.then(ok, () => { if (++f === attempts.length) no(new Error('all CFTC queries failed')); })); });
     S.cot = res.rows; S.cotKind = res.kind; S.cotLoadedAt = Date.now();
-    try { localStorage.setItem('aslbtc-cot-v2', JSON.stringify(res)); } catch (e) {}
+    try { localStorage.setItem('asl-cot-v2', JSON.stringify(res)); } catch (e) {}
     renderCOT();
   } catch (e) {
     console.warn('ASL dashboard: COT failed', e);
@@ -2599,7 +2636,7 @@ function renderCOT() {
     (dlt != null ? ' · week change ' + (dlt >= 0 ? '+' : '−') + Math.abs(dlt).toLocaleString('en-US') : '') +
     ' · ' + Math.round(pct) + '% of the range across the last ' + rows.length + ' weekly reports (0% = max short, 100% = max long)');
   setText('cot-title', S.cotKind === 'managed' ? 'MANAGED MONEY NET POSITION' : 'NON-COMMERCIAL NET POSITION (LARGE SPECULATORS)');
-  if (note) note.textContent = 'Weekly Commitment of Traders report for CME Bitcoin futures (' + (S.cotKind === 'managed' ? 'Disaggregated report, managed money' : 'Legacy report, "non-commercial" = large speculators') +
+  if (note) note.textContent = 'Weekly Commitment of Traders report for COMEX gold futures (' + (S.cotKind === 'managed' ? 'Disaggregated report, managed money' : 'Legacy report, "non-commercial" = large speculators') +
     ') · US CFTC public data · latest report ' + latestRow.date + ' · checked ' + utcClock(new Date(S.cotLoadedAt || Date.now())) + ' · re-checked every 30 min (new data lands Fridays ~19:30 UTC)';
   renderCOTChart(rows);
 }
@@ -2639,25 +2676,153 @@ function renderCOTChart(rows) {
   box.innerHTML = svg;
 }
 
-/* ---------------- 11 - Position size calculator ---------------- */
-let calcSlUserEdited = false;
+/* ---------------- 11 - Pro position size calculator ---------------- */
+const SYMS = {
+  'XAU/USD':  { cs: 100,    pip: 0.1,    dec: 2, quote: 'USD', baseUSD: false, unit: 'oz' },
+  'XAG/USD':  { cs: 5000,   pip: 0.01,   dec: 3, quote: 'USD', baseUSD: false, unit: 'oz' },
+  'EUR/USD':  { cs: 100000, pip: 0.0001, dec: 5, quote: 'USD', baseUSD: false, unit: 'units' },
+  'GBP/USD':  { cs: 100000, pip: 0.0001, dec: 5, quote: 'USD', baseUSD: false, unit: 'units' },
+  'AUD/USD':  { cs: 100000, pip: 0.0001, dec: 5, quote: 'USD', baseUSD: false, unit: 'units' },
+  'NZD/USD':  { cs: 100000, pip: 0.0001, dec: 5, quote: 'USD', baseUSD: false, unit: 'units' },
+  'USD/JPY':  { cs: 100000, pip: 0.01,   dec: 3, quote: 'JPY', baseUSD: true,  unit: 'units' },
+  'USD/CHF':  { cs: 100000, pip: 0.0001, dec: 5, quote: 'CHF', baseUSD: true,  unit: 'units' },
+  'USD/CAD':  { cs: 100000, pip: 0.0001, dec: 5, quote: 'CAD', baseUSD: true,  unit: 'units' },
+  'US30':     { cs: 1,      pip: 1,      dec: 1, quote: 'USD', baseUSD: false, unit: 'contracts' },
+  'NAS100':   { cs: 1,      pip: 1,      dec: 1, quote: 'USD', baseUSD: false, unit: 'contracts' },
+  'SPX500':   { cs: 1,      pip: 1,      dec: 1, quote: 'USD', baseUSD: false, unit: 'contracts' },
+  'WTI Oil':  { cs: 1000,   pip: 0.01,   dec: 2, quote: 'USD', baseUSD: false, unit: 'bbl' },
+  'BTC/USD':  { cs: 1,      pip: 1,      dec: 2, quote: 'USD', baseUSD: false, unit: 'BTC' }
+};
+const XC = { edited: false };
+const xcEl = id => document.getElementById(id);
+const xcNum = id => { const v = parseFloat((xcEl(id) || {}).value); return isFinite(v) ? v : NaN; };
 
-function updateCalc() {
-  const balanceEl = $('calc-balance'), riskEl = $('calc-risk'), slEl = $('calc-sl-pts');
-  if (!balanceEl || !riskEl || !slEl) return;
-  const balance = parseFloat(balanceEl.value) || 0;
-  const riskPct = parseFloat(riskEl.value) || 0;
-  const slPts = parseFloat(slEl.value) || 0;
-  const riskUsd = balance * (riskPct / 100);
-  setText('calc-risk-usd', '$' + fmt(riskUsd, 2));
-  if (slPts > 0) {
-    const oz = riskUsd / slPts;
-    setText('calc-oz', fmt(oz, 4));
-    setText('calc-lots', S.spot ? '$' + fmt(oz * S.spot.price, 0) : '—');
-  } else {
-    setText('calc-oz', '—');
-    setText('calc-lots', '—');
+function xcSavePrefs() {
+  try {
+    localStorage.setItem('asl-calc-v1', JSON.stringify({
+      sym: xcEl('xc-symbol').value, bal: xcEl('xc-balance').value, lev: xcEl('xc-lev').value,
+      mode: xcEl('xc-risk-mode').value, risk: xcEl('xc-risk').value
+    }));
+  } catch (e) {}
+}
+
+function xcWarn(list, err) {
+  const el = xcEl('xc-warn'); if (!el) return;
+  el.className = 'xc-warn' + (err ? ' err' : '');
+  el.innerHTML = list.map(escapeHTML).join('<br>');
+}
+
+function xcCalc() {
+  const sym = SYMS[xcEl('xc-symbol').value]; if (!sym) return;
+  const bal = xcNum('xc-balance'), lev = Math.max(1, xcNum('xc-lev') || 1);
+  const mode = xcEl('xc-risk-mode').value, rv = xcNum('xc-risk');
+  const entry = xcNum('xc-entry'), sl = xcNum('xc-sl'), tp = xcNum('xc-tp');
+  const dash = id => setText(id, '—');
+  const warns = []; let hardErr = false;
+
+  setText('xc-risk-label', mode === 'pct' ? 'Risk per trade (%)' : 'Risk per trade (USD)');
+  const riskUsd = mode === 'pct' ? (isFinite(bal) && isFinite(rv) ? bal * rv / 100 : NaN) : rv;
+  setText('xc-risk-usd', isFinite(riskUsd) ? '$' + fmt(riskUsd, 2) : '$—');
+  if (mode === 'pct' && rv > 3) warns.push('Risk above 3% per trade is aggressive — most professional traders risk 0.5–2%.');
+  if (isFinite(riskUsd) && isFinite(bal) && riskUsd > bal) { warns.push('Risk amount is larger than the account balance.'); hardErr = true; }
+
+  const vpu = isFinite(entry) && entry > 0 ? (sym.quote === 'USD' ? sym.cs : sym.cs / entry) : NaN;     // USD per 1.00 price move, per lot
+  const notional = isFinite(entry) && entry > 0 ? (sym.baseUSD ? sym.cs : sym.cs * entry) : NaN;          // USD value of 1 lot
+  setText('xc-pipval', isFinite(vpu) ? '$' + fmt(vpu * sym.pip, 2) : '—');
+
+  if (!(entry > 0) || !(sl > 0)) {
+    ['xc-lots', 'xc-units', 'xc-dist', 'xc-reward', 'xc-margin'].forEach(dash);
+    setText('xc-real-risk', '$—'); setText('xc-dir', '—');
+    setText('xc-lots-sub', ''); setText('xc-dist-sub', ''); setText('xc-margin-sub', '');
+    xcWarn(['Enter entry and stop-loss prices to calculate the lot size.'], false); return;
   }
+  const dist = Math.abs(entry - sl);
+  if (dist === 0) { xcWarn(['Stop loss cannot equal the entry price.'], true); return; }
+  const buy = sl < entry;
+  setText('xc-dir', buy ? 'BUY (long)' : 'SELL (short)');
+  const dirEl = xcEl('xc-dir'); if (dirEl) dirEl.style.color = buy ? 'var(--buy)' : 'var(--sell)';
+
+  setText('xc-dist', fmt(dist, sym.dec));
+  setText('xc-dist-sub', fmt(dist / sym.pip, 1) + ' pips');
+
+  let lots = NaN;
+  if (isFinite(riskUsd) && riskUsd > 0) {
+    const raw = riskUsd / (dist * vpu);
+    lots = Math.floor(raw * 100 + 1e-9) / 100;          // round DOWN to 0.01 so risk never exceeds the target
+    if (lots < 0.01) {
+      const minRisk = 0.01 * dist * vpu;
+      warns.push('Even the minimum 0.01 lot risks $' + fmt(minRisk, 2) + ', more than your $' + fmt(riskUsd, 2) + ' target. Widen the risk or tighten the stop.');
+      lots = 0.01; hardErr = true;
+    }
+  }
+  if (!isFinite(lots)) { ['xc-lots', 'xc-units', 'xc-reward', 'xc-margin'].forEach(dash); setText('xc-real-risk', '$—'); xcWarn(warns, true); return; }
+
+  const units = lots * sym.cs;
+  const realRisk = lots * dist * vpu;
+  setText('xc-lots', fmt(lots, 2));
+  setText('xc-lots-sub', fmt(lots * 100, 0) + ' micro-lots');
+  setText('xc-units', fmt(units, units >= 1000 ? 0 : 2) + ' ' + sym.unit);
+  setText('xc-real-risk', '$' + fmt(realRisk, 2) + (isFinite(bal) && bal > 0 ? ' (' + (realRisk / bal * 100).toFixed(2) + '%)' : ''));
+
+  if (isFinite(tp) && tp > 0) {
+    const okSide = buy ? tp > entry : tp < entry;
+    if (!okSide) { warns.push('Take profit is on the wrong side of the entry for a ' + (buy ? 'buy' : 'sell') + ' trade.'); dash('xc-reward'); }
+    else {
+      const profit = lots * Math.abs(tp - entry) * vpu, rr = Math.abs(tp - entry) / dist;
+      setText('xc-reward', '+$' + fmt(profit, 2) + ' · 1:' + rr.toFixed(2));
+      if (rr < 1) warns.push('Reward is smaller than risk (R:R below 1:1).');
+    }
+  } else setText('xc-reward', '—');
+
+  if (isFinite(notional)) {
+    const margin = lots * notional / lev;
+    setText('xc-margin', '$' + fmt(margin, 2));
+    setText('xc-margin-sub', isFinite(bal) && bal > 0 ? (margin / bal * 100).toFixed(1) + '% of balance · 1:' + lev : '1:' + lev);
+    if (isFinite(bal) && margin > bal) { warns.push('Required margin exceeds your balance — lower the lot size, raise leverage or widen risk.'); hardErr = true; }
+    else if (isFinite(bal) && margin > bal * 0.5) warns.push('This trade would use more than 50% of your balance as margin.');
+  }
+  xcWarn(warns, hardErr);
+}
+
+/* called by the trade plan: auto-fills gold prices until the user edits them */
+function xcSetPlan(plan) {
+  XC.lastPlan = plan;
+  if (!plan || XC.edited || !xcEl('xc-symbol') || xcEl('xc-symbol').value !== 'XAU/USD') return;
+  xcEl('xc-entry').value = plan.entry.toFixed(2);
+  xcEl('xc-sl').value = plan.sl.toFixed(2);
+  xcEl('xc-tp').value = plan.tp1.toFixed(2);
+  xcCalc();
+}
+window.ASL_CALC = { setPlan: xcSetPlan };
+
+function xcSymbolChanged(fromUser) {
+  const sym = SYMS[xcEl('xc-symbol').value];
+  const step = sym.pip >= 1 ? 1 : sym.pip;
+  ['xc-entry', 'xc-sl', 'xc-tp'].forEach(id => { const el = xcEl(id); if (el) { el.step = String(step); if (fromUser) el.value = ''; } });
+  if (fromUser) XC.edited = false;
+  if (xcEl('xc-symbol').value === 'XAU/USD' && S.spot && fromUser && !xcEl('xc-entry').value) xcEl('xc-entry').value = S.spot.price.toFixed(2);
+  if (XC.lastPlan) xcSetPlan(XC.lastPlan);
+  xcSavePrefs(); xcCalc();
+}
+
+function initCalc() {
+  const sel = xcEl('xc-symbol'); if (!sel) return;
+  sel.innerHTML = Object.keys(SYMS).map(k => '<option value="' + k + '">' + k + '</option>').join('');
+  try {
+    const p = JSON.parse(localStorage.getItem('asl-calc-v1') || 'null');
+    if (p) {
+      if (SYMS[p.sym]) sel.value = p.sym;
+      if (p.bal) xcEl('xc-balance').value = p.bal;
+      if (p.lev) xcEl('xc-lev').value = p.lev;
+      if (p.mode) xcEl('xc-risk-mode').value = p.mode;
+      if (p.risk) xcEl('xc-risk').value = p.risk;
+    }
+  } catch (e) {}
+  sel.addEventListener('change', () => xcSymbolChanged(true));
+  ['xc-balance', 'xc-lev', 'xc-risk'].forEach(id => xcEl(id).addEventListener('input', () => { xcSavePrefs(); xcCalc(); }));
+  xcEl('xc-risk-mode').addEventListener('change', () => { xcSavePrefs(); xcCalc(); });
+  ['xc-entry', 'xc-sl', 'xc-tp'].forEach(id => xcEl(id).addEventListener('input', () => { XC.edited = true; xcCalc(); }));
+  xcSymbolChanged(false);
 }
 
 /* 1H / 4H / Daily signal cards + master signal */
@@ -2701,7 +2866,7 @@ function renderDailyOutlook(A, conf) {
   const now = new Date();
   const dateStr = now.toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' });
   const note = $('outlook-note');
-  if (note) note.textContent = 'Generated automatically from live indicators · last written ' + utcClock(now) + ', ' + dateStr + ' · bitcoin only';
+  if (note) note.textContent = 'Generated automatically from live indicators · last written ' + utcClock(now) + ', ' + dateStr + ' · gold only';
 
   const open = marketOpen(now);
   const s50 = A.smaOf(50), s200 = A.smaOf(200);
@@ -2711,10 +2876,10 @@ function renderDailyOutlook(A, conf) {
   const dxyChg = dxyChangeAt(S.others.dxy, now.toISOString().slice(0, 10));
   const dxyPhrase = (dxyChg != null && isFinite(dxyChg))
     ? (' The dollar index is ' + (dxyChg >= 0 ? 'up' : 'down') + ' ' + Math.abs(dxyChg * 100).toFixed(2) + '% over the last five sessions, ' +
-      (dxyChg < -0.003 ? 'a tailwind for bitcoin' : dxyChg > 0.003 ? 'a headwind for bitcoin' : 'broadly flat for now') + '.')
+      (dxyChg < -0.003 ? 'a tailwind for gold' : dxyChg > 0.003 ? 'a headwind for gold' : 'broadly flat for now') + '.')
     : '';
 
-  const p1 = (dateStr + ': bitcoin is trading at ' + fmt(A.price) + (open ? ', with the market open' : ', with the market closed') +
+  const p1 = (dateStr + ': gold is trading at ' + fmt(A.price) + (open ? ', with the market open' : ', with the market closed') +
     '. Price sits ' + (s200 != null ? (A.price > s200 ? 'above' : 'below') + ' its 200-day average (' + fmt(s200) + ')' : 'without enough history yet for a 200-day read') +
     (s50 != null ? ' and ' + (A.price > s50 ? 'above' : 'below') + ' its 50-day (' + fmt(s50) + ')' : '') +
     ', putting the medium-term structure in a ' + trendWord + ' posture (' + A.maBuy + ' of ' + A.maTotal + ' moving averages bullish).' + dxyPhrase);
@@ -2757,14 +2922,14 @@ function renderNow() {
     let dailyA = null, conf = null;
     if (S.hist && S.hist.length > 30) {
       dailyA = analyse(S.hist, S.spot ? S.spot.price : null);
-      dailyA.marketLabel = 'Bitcoin';
+      dailyA.marketLabel = 'Gold';
       conf = confluenceOf(dailyA, dxyChangeAt(S.others.dxy, new Date().toISOString().slice(0, 10)));
       S.dir = dirFromNet(conf.net, S.dir);
       renderTechnical(dailyA);
       renderVerdict(dailyA, conf, S.dir);
       renderConfluence(conf);
       renderLevels(dailyA);
-      renderPerformance(S.bt, S.spot ? S.spot.price : null, 'bitcoin');
+      renderPerformance(S.bt, S.spot ? S.spot.price : null, 'gold');
       renderVolatility(S.hist);
       renderSeasonality(S.hist);
       renderDailyOutlook(dailyA, conf);
@@ -2800,10 +2965,7 @@ async function refresh() {
 }
 
 /* wire up the position-size calculator once, at startup */
-['calc-balance', 'calc-risk'].forEach(id => { const el = $(id); if (el) el.addEventListener('input', updateCalc); });
-const calcSlEl = $('calc-sl-pts');
-if (calcSlEl) calcSlEl.addEventListener('input', () => { calcSlUserEdited = true; updateCalc(); });
-updateCalc();
+initCalc();
 
 function tick() {
   secondsLeft -= 1;
@@ -2818,31 +2980,17 @@ document.addEventListener('visibilitychange', () => {
 
 /* instant paint from cache on repeat visits, fresh data replaces it a moment later */
 try {
-  const c = JSON.parse(localStorage.getItem('aslbtc-hist-v2') || 'null');
+  const c = JSON.parse(localStorage.getItem('asl-hist-v2') || 'null');
   if (Array.isArray(c) && c.length > 230 && c[0].o != null) { S.hist = c; }
-  const hc = JSON.parse(localStorage.getItem('aslbtc-hourly-v1') || 'null');
+  const hc = JSON.parse(localStorage.getItem('asl-hourly-v1') || 'null');
   if (Array.isArray(hc) && hc.length > 40 && hc[0].o != null) S.hourly = hc;
-  const sc = JSON.parse(localStorage.getItem('aslbtc-spot-v1') || 'null');
+  const sc = JSON.parse(localStorage.getItem('asl-spot-v1') || 'null');
   if (sc && isFinite(sc.price) && Date.now() - (sc.cachedAt || 0) < 10 * 60 * 1000) S.spot = sc;
-  const nc = JSON.parse(localStorage.getItem('aslbtc-news-v1') || 'null');
+  const nc = JSON.parse(localStorage.getItem('asl-news-v1') || 'null');
   if (Array.isArray(nc)) { S.fund.news = nc.filter(a => a.title && a.url && (!a.time || Date.now() - a.time < 48 * 3600e3)).slice(0, 14); S.newsPool = S.fund.news.map(a => ({ ...a, src: 'cache' })); if (S.fund.news.length) renderFundamentals(); }
-  const k = JSON.parse(localStorage.getItem('aslbtc-cot-v2') || 'null');
+  const k = JSON.parse(localStorage.getItem('asl-cot-v2') || 'null');
   if (k && Array.isArray(k.rows) && k.rows.length > 5) { S.cot = k.rows; S.cotKind = k.kind; renderCOT(); }
 } catch (e) {}
-
-/* ---- crypto derivatives & sentiment (Binance spot/futures, alternative.me, CoinGecko) ---- */
-async function loadDeriv(){
-  const T=(id,v)=>setText(id,v), bn=window.__bn;
-  await Promise.allSettled([
-    bn('/api/v3/ticker/24hr?symbol=BTCUSDT').then(j=>{T('dv-chg',sgn(+j.priceChangePercent,2)+'%');T('dv-hl',fmt(+j.lowPrice,0)+' – '+fmt(+j.highPrice,0));T('dv-vol','$'+fmt(+j.quoteVolume/1e9,2)+'B');}),
-    getJSON('https://fapi.binance.com/fapi/v1/premiumIndex?symbol=BTCUSDT',8000).then(j=>{T('dv-fund',sgn(+j.lastFundingRate*100,4)+'%');T('dv-basis',sgn((+j.markPrice-+j.indexPrice)/+j.indexPrice*100,3)+'%');}),
-    getJSON('https://fapi.binance.com/fapi/v1/openInterest?symbol=BTCUSDT',8000).then(j=>T('dv-oi',fmt(+j.openInterest,0)+' BTC')),
-    getJSON('https://fapi.binance.com/futures/data/globalLongShortAccountRatio?symbol=BTCUSDT&period=1h&limit=1',8000).then(j=>T('dv-ls',fmt(+j[0].longShortRatio,2))),
-    getJSON('https://api.alternative.me/fng/?limit=1',8000).then(j=>T('dv-fng',j.data[0].value+' · '+j.data[0].value_classification)),
-    getJSON('https://api.coingecko.com/api/v3/global',8000).then(j=>T('corr-gsr',fmt(j.data.market_cap_percentage.btc,1)+'%'))
-  ]);
-}
-loadDeriv(); setInterval(()=>{ if(!document.hidden) loadDeriv(); },30000);
 renderSessions();
 renderNow();
 refresh();
@@ -2851,5 +2999,21 @@ setInterval(tick, 1000);
 })();
 </script>
 
+<script>
+/* Community: renders a hand-curated daily JSON (title, author, bias, short summary, optional link). */
+(function(){
+  var box=document.getElementById('comm-list'); if(!box) return;
+  var file=box.getAttribute('data-src');
+  var esc=function(v){return String(v==null?'':v).replace(/[&<>"']/g,function(m){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m];});};
+  var ok=function(u){return !u||/^https:\/\//.test(String(u));};
+  fetch(file+'?d='+new Date().toISOString().slice(0,10),{cache:'no-cache'}).then(function(r){ if(!r.ok) throw 0; return r.json(); }).then(function(j){
+    var rows=(j.ideas||[]).filter(function(x){return x&&x.title&&ok(x.url);}).slice(0,8); if(!rows.length) return; var sec=document.getElementById('community'); if(sec) sec.hidden=false;
+    box.innerHTML=rows.map(function(x){
+      var s=String(x.side||'').toLowerCase(), cls=s==='long'?'long':s==='short'?'short':'edu';
+      var tag=x.url?'a':'div', lnk=x.url?' href="'+esc(x.url)+'" target="_blank" rel="noopener noreferrer"':''; return '<'+tag+' class="comm-item"'+lnk+'><div class="comm-top"><span class="comm-side '+cls+'">'+esc((x.side||'IDEA').toUpperCase())+'</span><span>by '+esc(x.author||'ASL community')+'</span>'+(x.tf?'<span>· '+esc(x.tf)+'</span>':'')+'</div><h4>'+esc(x.title)+'</h4>'+(x.note?'<p>'+esc(x.note)+'</p>':'')+'</'+tag+'>';
+    }).join('')+'<div class=\"comm-foot\">Last updated '+esc(j.updated||'—')+' · community opinions for educational purposes, not ASL recommendations or financial advice.</div>';
+  }).catch(function(){});
+})();
+</script>
 </body>
 </html>
