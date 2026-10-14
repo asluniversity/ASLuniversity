@@ -843,6 +843,47 @@
             font-weight: 500;
         }
 
+
+        /* ============ BENEFIT "LEARN MORE" ============ */
+        .benefits-grid { align-items: start; }
+        .benefit-more {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            margin-top: 16px;
+            padding: 8px 16px;
+            font-family: var(--mono);
+            font-size: 11.5px;
+            font-weight: 600;
+            letter-spacing: .07em;
+            text-transform: uppercase;
+            color: var(--accent);
+            background: transparent;
+            border: 1px solid var(--hairline);
+            border-radius: 999px;
+            cursor: pointer;
+            transition: all .2s ease;
+        }
+        .benefit-more:hover { border-color: var(--accent); background: var(--toggle-active-bg); }
+        .benefit-more svg { width: 14px; height: 14px; fill: none; stroke: currentColor; stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round; transition: transform .25s ease; }
+        .benefit-card.open .benefit-more { background: var(--toggle-active-bg); border-color: var(--accent); }
+        .benefit-card.open .benefit-more svg { transform: rotate(180deg); }
+        .benefit-detail {
+            display: grid;
+            grid-template-rows: 0fr;
+            transition: grid-template-rows .3s ease;
+        }
+        .benefit-card.open .benefit-detail { grid-template-rows: 1fr; }
+        .benefit-detail-inner { overflow: hidden; min-height: 0; text-align: left; }
+        .benefit-detail-inner p {
+            font-size: 13.5px;
+            color: var(--text-color);
+            line-height: 1.7;
+            margin-top: 12px;
+        }
+        .benefit-detail-inner p:first-child { margin-top: 18px; padding-top: 16px; border-top: 1px solid var(--hairline); }
+        @media (prefers-reduced-motion: reduce) { .benefit-detail, .benefit-more svg { transition: none; } }
+
         /* ============ TESTIMONIAL SECTION ============ */
         .testimonial-section {
             max-width: 1200px;
@@ -1158,6 +1199,171 @@
             letter-spacing: 0.03em;
         }
 
+        /* ============ AI CHAT WIDGET ============ */
+        .chat-launcher {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 62px;
+            height: 62px;
+            border-radius: 50%;
+            border: 0;
+            cursor: pointer;
+            background: linear-gradient(135deg, #0BB1D2 0%, #1eb3cc 100%);
+            color: #0A0A0B;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 8px 28px rgba(11,177,210,0.45), 0 0 0 0 rgba(11,177,210,0.5);
+            z-index: 60;
+            transition: transform .25s ease;
+            animation: chat-pulse 2.6s ease-out infinite;
+        }
+        .chat-launcher:hover { transform: scale(1.08); }
+        .chat-launcher svg { width: 28px; height: 28px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+        .chat-launcher .ic-close { display: none; }
+        .chat-launcher.open .ic-chat { display: none; }
+        .chat-launcher.open .ic-close { display: block; }
+        .chat-launcher.open { animation: none; }
+        @keyframes chat-pulse {
+            0% { box-shadow: 0 8px 28px rgba(11,177,210,0.45), 0 0 0 0 rgba(11,177,210,0.5); }
+            70%, 100% { box-shadow: 0 8px 28px rgba(11,177,210,0.45), 0 0 0 18px rgba(11,177,210,0); }
+        }
+
+        .chat-panel {
+            position: fixed;
+            right: 30px;
+            bottom: 106px;
+            width: 372px;
+            height: min(560px, calc(100vh - 140px));
+            display: flex;
+            flex-direction: column;
+            background: var(--surface-bg);
+            border: 1px solid var(--hairline);
+            border-top: 3px solid var(--accent);
+            border-radius: 8px;
+            box-shadow: 0 18px 60px rgba(0,0,0,0.38), 0 0 40px rgba(11,177,210,0.15);
+            z-index: 70;
+            overflow: hidden;
+            opacity: 0;
+            transform: translateY(14px) scale(.98);
+            pointer-events: none;
+            transition: opacity .2s ease, transform .2s ease;
+        }
+        .chat-panel.open { opacity: 1; transform: none; pointer-events: auto; }
+
+        .chat-head {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 14px 16px;
+            background: var(--card-bg);
+            border-bottom: 1px solid var(--hairline);
+        }
+        .chat-avatar {
+            width: 38px; height: 38px;
+            border-radius: 50%;
+            background: var(--toggle-active-bg);
+            border: 1px solid var(--accent);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 18px;
+            flex-shrink: 0;
+        }
+        .chat-head-text { min-width: 0; flex: 1; }
+        .chat-head-text b { display: block; font-family: var(--display); font-size: 14.5px; color: var(--heading-color); }
+        .chat-head-text span { display: flex; align-items: center; gap: 6px; font-family: var(--mono); font-size: 10.5px; letter-spacing: .08em; text-transform: uppercase; color: var(--accent); }
+        .chat-head-text span i { width: 7px; height: 7px; border-radius: 50%; background: #2FBE7A; box-shadow: 0 0 8px #2FBE7A; }
+
+
+        .chat-body {
+            flex: 1;
+            overflow-y: auto;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            scroll-behavior: smooth;
+        }
+        .chat-msg {
+            max-width: 86%;
+            padding: 10px 13px;
+            font-size: 13.5px;
+            line-height: 1.6;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            border-radius: 12px;
+        }
+        .chat-msg.bot {
+            align-self: flex-start;
+            background: var(--card-bg);
+            border: 1px solid var(--hairline);
+            color: var(--text-color);
+            border-bottom-left-radius: 3px;
+        }
+        .chat-msg.user {
+            align-self: flex-end;
+            background: linear-gradient(135deg, #0BB1D2 0%, #1eb3cc 100%);
+            color: #0A0A0B;
+            font-weight: 500;
+            border-bottom-right-radius: 3px;
+        }
+                .chat-typing { display: inline-flex; gap: 4px; padding: 13px 14px; }
+        .chat-typing i { width: 7px; height: 7px; border-radius: 50%; background: var(--accent); opacity: .35; animation: chat-dot 1.2s infinite; }
+        .chat-typing i:nth-child(2) { animation-delay: .18s; }
+        .chat-typing i:nth-child(3) { animation-delay: .36s; }
+        @keyframes chat-dot { 0%, 80%, 100% { opacity: .3; transform: translateY(0); } 40% { opacity: 1; transform: translateY(-3px); } }
+
+        .chat-chips { display: flex; flex-wrap: wrap; gap: 7px; padding: 0 16px 10px; }
+        .chat-chips button {
+            font-family: var(--mono);
+            font-size: 11px;
+            color: var(--accent);
+            background: transparent;
+            border: 1px solid var(--hairline);
+            border-radius: 999px;
+            padding: 6px 11px;
+            cursor: pointer;
+            transition: all .15s ease;
+        }
+        .chat-chips button:hover { border-color: var(--accent); background: var(--toggle-active-bg); }
+
+        .chat-form {
+            display: flex;
+            gap: 8px;
+            padding: 12px;
+            border-top: 1px solid var(--hairline);
+            background: var(--card-bg);
+        }
+        .chat-form input {
+            flex: 1;
+            min-width: 0;
+            font-family: var(--sans);
+            font-size: 16px; /* 16px prevents iOS zoom on focus */
+            padding: 11px 13px;
+            border-radius: 6px;
+            border: 1px solid var(--hairline);
+            background: var(--surface-bg);
+            color: var(--text-color);
+        }
+        .chat-form input:focus { outline: none; border-color: var(--accent); }
+        .chat-form button {
+            width: 44px;
+            border: 0;
+            border-radius: 6px;
+            cursor: pointer;
+            background: linear-gradient(135deg, #0BB1D2 0%, #1eb3cc 100%);
+            color: #0A0A0B;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .chat-form button:disabled { opacity: .5; cursor: default; }
+        .chat-form button svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
+        .chat-foot { font-family: var(--mono); font-size: 9.5px; letter-spacing: .04em; color: var(--muted-color); text-align: center; padding: 0 12px 10px; background: var(--card-bg); }
+
+        @media (max-width: 520px) {
+            .chat-launcher { right: 16px; bottom: 16px; width: 56px; height: 56px; }
+            .chat-panel { right: 10px; left: 10px; width: auto; bottom: 84px; height: min(70vh, calc(100vh - 110px)); }
+        }
+
         /* ============ RESPONSIVE ============ */
         @media (max-width: 860px) {
             .nav-links { display: none; }
@@ -1415,54 +1621,72 @@
                 <div class="benefit-icon">💰</div>
                 <h3>Zero Trading Fees</h3>
                 <p>Buy and sell any cryptocurrency on our platform without paying transaction fees ever.</p>
+                <button type="button" class="benefit-more" aria-expanded="false" aria-controls="benefit-detail-1"><span class="bm-label">Learn more</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></button>
+                <div class="benefit-detail" id="benefit-detail-1"><div class="benefit-detail-inner"><p>Your membership promises zero trading fees on all transactions. You can buy and sell on our platform without paying transaction fees, so more of your results stay with you.</p><p>The $49 monthly membership is the only cost listed. There are no hidden fees, and you can cancel anytime.</p></div></div>
             </div>
 
             <div class="benefit-card">
                 <div class="benefit-icon">📈</div>
                 <h3>Weekly Growth Program</h3>
                 <p>Structured plan targeting 2-5% weekly returns with clear entry and exit signals daily.</p>
+                <button type="button" class="benefit-more" aria-expanded="false" aria-controls="benefit-detail-2"><span class="bm-label">Learn more</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></button>
+                <div class="benefit-detail" id="benefit-detail-2"><div class="benefit-detail-inner"><p>A structured plan built around a 2-5% weekly return target. Every day you get clear entry and exit signals, so you know when to act and when to stay out.</p><p>It replaces guesswork with a routine you can follow week after week.</p><p>Important: 2-5% is a target, not a guarantee. Results vary and trading always carries risk.</p></div></div>
             </div>
 
             <div class="benefit-card">
                 <div class="benefit-icon">🎯</div>
                 <h3>80% Accurate Signals</h3>
                 <p>Access exclusive trading signals channel with historical ~80% win rate and trade plans.</p>
+                <button type="button" class="benefit-more" aria-expanded="false" aria-controls="benefit-detail-3"><span class="bm-label">Learn more</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></button>
+                <div class="benefit-detail" id="benefit-detail-3"><div class="benefit-detail-inner"><p>You get access to our exclusive signals channel, which has a historical win rate of about 80%.</p><p>Each signal comes with a trade plan that shows clear entry and exit levels, so you can follow it step by step.</p><p>This is a historical figure. Past performance does not guarantee future results.</p></div></div>
             </div>
 
             <div class="benefit-card">
                 <div class="benefit-icon">🏆</div>
                 <h3>Trader Certificate</h3>
                 <p>Receive an official accredited certificate recognizing you as a top, profitable trader.</p>
+                <button type="button" class="benefit-more" aria-expanded="false" aria-controls="benefit-detail-4"><span class="bm-label">Learn more</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></button>
+                <div class="benefit-detail" id="benefit-detail-4"><div class="benefit-detail-inner"><p>Members receive an official accredited certificate recognizing them as a top, profitable trader.</p><p>It's a document you can keep as proof of your progress and skills as you grow with the program.</p></div></div>
             </div>
 
             <div class="benefit-card">
                 <div class="benefit-icon">💎</div>
                 <h3>$1,000 Prop Account</h3>
                 <p>Opportunity to earn a free funded trading account by passing our skills evaluation.</p>
+                <button type="button" class="benefit-more" aria-expanded="false" aria-controls="benefit-detail-5"><span class="bm-label">Learn more</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></button>
+                <div class="benefit-detail" id="benefit-detail-5"><div class="benefit-detail-inner"><p>There's an opportunity to earn a free $1,000 funded (prop) trading account by passing our skills evaluation.</p><p>The site notes this opportunity comes without having to complete the usual stage, so you can show your skills without going through the standard challenge.</p><p>Receiving the account depends on passing the evaluation.</p></div></div>
             </div>
 
             <div class="benefit-card">
                 <div class="benefit-icon">👨‍🏫</div>
                 <h3>Expert Training</h3>
                 <p>Learn directly from the world's top investors through our comprehensive programs.</p>
+                <button type="button" class="benefit-more" aria-expanded="false" aria-controls="benefit-detail-6"><span class="bm-label">Learn more</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></button>
+                <div class="benefit-detail" id="benefit-detail-6"><div class="benefit-detail-inner"><p>Learn directly from top investors through our comprehensive training programs and expert courses.</p><p>Training comes together with personal guidance and risk-management plans, so what you learn is applied with discipline in real trading.</p></div></div>
             </div>
 
             <div class="benefit-card">
                 <div class="benefit-icon">🤖</div>
                 <h3>Bot trader</h3>
                 <p>Receive Specialized and custom trading robot for your account.</p>
+                <button type="button" class="benefit-more" aria-expanded="false" aria-controls="benefit-detail-7"><span class="bm-label">Learn more</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></button>
+                <div class="benefit-detail" id="benefit-detail-7"><div class="benefit-detail-inner"><p>Every member receives a specialized, custom trading robot made for their own account, rather than a generic one-size-fits-all tool.</p><p>A robot can help you follow your plan consistently. Automated trading still carries risk, like any trading.</p></div></div>
             </div>
 
             <div class="benefit-card">
                 <div class="benefit-icon">🛡️</div>
                 <h3>Risk Management</h3>
                 <p>Personalized guidance with clear risk rules and portfolio management strategies.</p>
+                <button type="button" class="benefit-more" aria-expanded="false" aria-controls="benefit-detail-8"><span class="bm-label">Learn more</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></button>
+                <div class="benefit-detail" id="benefit-detail-8"><div class="benefit-detail-inner"><p>You get personalized guidance with clear risk rules and portfolio-management strategies.</p><p>This includes a Personal Risk Management Guide: a strategy tailored to each individual, so your approach to risk fits you.</p><p>Strong risk control is what helps protect your account over the long run.</p></div></div>
             </div>
 
             <div class="benefit-card">
                 <div class="benefit-icon">📊</div>
                 <h3>Personal Panel</h3>
                 <p>Daily Analysis & Technical Outlook & Journal and Account Analysis Panel</p>
+                <button type="button" class="benefit-more" aria-expanded="false" aria-controls="benefit-detail-9"><span class="bm-label">Learn more</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></button>
+                <div class="benefit-detail" id="benefit-detail-9"><div class="benefit-detail-inner"><p>Your Personal Panel gives you tools to understand the market and your own trading:</p><p>- Daily Analysis &amp; Technical Outlook: a live XAU/USD (gold) chart with the daily outlook, key levels and indicators.</p><p>- Account Journal &amp; Analysis: review your account's profit and loss, win rate, equity curve, and your strengths and areas to improve.</p><p>Find them in the three-dot menu at the top right of the page, together with the Personal Growth Program.</p></div></div>
             </div>
         </div>
     </section>
@@ -1549,8 +1773,27 @@
         <button class="btn">Claim Your Membership Today</button>
     </section>
 
-    <!-- Telegram Support Button -->
-    <a href="https://t.me/mrasltl" class="telegram-support" title="Contact us on Telegram">✉️</a>
+    <!-- AI Chat -->
+    <button type="button" class="chat-launcher" id="chat-launcher" aria-label="Open AI chat" aria-expanded="false" aria-controls="chat-panel">
+        <svg class="ic-chat" viewBox="0 0 24 24"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20.5l1.5-4.6A8 8 0 1 1 21 12z"/></svg>
+        <svg class="ic-close" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg>
+    </button>
+    <div class="chat-panel" id="chat-panel" role="dialog" aria-label="ASL University AI assistant">
+        <div class="chat-head">
+            <div class="chat-avatar">🤖</div>
+            <div class="chat-head-text">
+                <b>ASL Assistant</b>
+                <span><i></i> Online</span>
+            </div>
+        </div>
+        <div class="chat-body" id="chat-body"></div>
+        <div class="chat-chips" id="chat-chips"></div>
+        <form class="chat-form" id="chat-form" autocomplete="off">
+            <input type="text" id="chat-input" placeholder="Ask anything about ASL University…" maxlength="500" aria-label="Your message">
+            <button type="submit" id="chat-send" aria-label="Send"><svg viewBox="0 0 24 24"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg></button>
+        </form>
+        <div class="chat-foot">AI answers may be imperfect · Not financial advice</div>
+    </div>
 
     <!-- Footer -->
     <footer>
@@ -1664,6 +1907,233 @@
             } else {
                 startAll();
             }
+        })();
+
+
+        // ============ BENEFIT "LEARN MORE" TOGGLES ============
+        (function () {
+            document.querySelectorAll('.benefit-more').forEach(function (btn) {
+                btn.addEventListener('click', function () {
+                    var card = btn.closest('.benefit-card');
+                    var open = !card.classList.contains('open');
+                    card.classList.toggle('open', open);
+                    btn.setAttribute('aria-expanded', String(open));
+                    btn.querySelector('.bm-label').textContent = open ? 'Show less' : 'Learn more';
+                });
+            });
+        })();
+
+        // ============ AI CHAT ============
+        (function () {
+            /* 1) Paste your Cloudflare Worker URL here to enable the live AI (see chat-worker.js).
+               2) Leave it empty and the chat still answers from the built-in site knowledge below. */
+            var CHAT_API_URL = '';
+
+            var launcher = document.getElementById('chat-launcher');
+            var panel = document.getElementById('chat-panel');
+            var body = document.getElementById('chat-body');
+            var chips = document.getElementById('chat-chips');
+            var form = document.getElementById('chat-form');
+            var input = document.getElementById('chat-input');
+            var sendBtn = document.getElementById('chat-send');
+            if (!launcher || !panel) return;
+
+            var history = [];
+            var busy = false;
+            var greeted = false;
+
+            /* ---- built-in knowledge: one entry per part of the website ---- */
+            var KB = [
+                { k: ['hello', 'hi', 'hey', 'good morning', 'good evening', 'greetings'],
+                  a: "Hi! I'm the ASL University assistant. Ask me about pricing, what's included, the growth program, signals, the analysis pages, results, or how to join." },
+                { k: ['thanks', 'thank you', 'thx', 'appreciate'],
+                  a: "You're welcome! Anything else you'd like to know about ASL University?" },
+                { k: ['bye', 'goodbye', 'see you'],
+                  a: "Goodbye! Come back anytime if you have more questions." },
+
+                { k: ['what is asl', 'about asl', 'who are you', 'about you', 'what do you do', 'what is this', 'asl university', 'about the site', 'about the website'],
+                  a: "ASL University is a premium trading membership. It gives active traders professional tools, verified signals, training, risk-management guidance and a structured growth program to help them scale and build toward financial independence." },
+                { k: ['who is it for', 'who can join', 'beginner', 'experienced', 'suitable', 'newbie', 'for me', 'requirements', 'eligible', 'experience needed'],
+                  a: "The membership is designed for active, serious traders who want to scale their trading with professional tools and a structured program. The site doesn't list a minimum experience requirement. You also get expert training courses and personal guidance." },
+
+                { k: ['price', 'cost', 'how much', 'pricing', '$49', '49', 'monthly', 'per month', 'subscription', 'plan', 'plans', 'expensive', 'cheap'],
+                  a: "The Premium Membership is $49 per month. There are no hidden fees, you can cancel anytime, and there is no lock-in." },
+                { k: ['payment', 'pay', 'paypal', 'card', 'crypto payment', 'usdt', 'bank', 'invoice', 'checkout'],
+                  a: "The site doesn't list payment methods yet. Use the \"Join Now\" button to start your membership and you'll be guided through payment from there." },
+                { k: ['refund', 'money back', 'guarantee money', 'chargeback'],
+                  a: "The site doesn't mention a refund policy. What it does promise: no hidden fees, cancel anytime, and no lock-in." },
+                { k: ['limit', 'limited', 'spots', 'seats', '100 members', 'how many members', 'full', 'sold out', 'capacity', 'availability', 'available'],
+                  a: "Membership is limited to 100 members per month, so spots can fill up. The live counter near the top of the page shows the 100-member limit." },
+                { k: ['30 day', '30 days', 'duration', 'period', 'how long', 'access period', 'expire', 'expiry', 'renew'],
+                  a: "Membership access runs for 30 days. You can cancel anytime with no lock-in." },
+                { k: ['cancel', 'cancellation', 'lock-in', 'lock in', 'contract', 'commitment', 'quit', 'stop membership'],
+                  a: "You can cancel anytime. There's no lock-in and no hidden fees." },
+
+                { k: ['included', 'include', 'what do i get', 'what will i get', 'benefits', 'benefit', 'features', 'perks', 'everything', 'premium membership', 'worth'],
+                  a: "Your Premium Membership includes:\n- Zero trading fees\n- Weekly growth program (2-5% target)\n- Exclusive signals channel (~80% historical win rate)\n- Accredited trader certificate\n- $1,000 prop account opportunity\n- Expert training courses\n- Specialized custom trading robot\n- Personal risk-management guide\n- Personal Panel (daily analysis + account journal)\n- 24/7 support access" },
+                { k: ['zero fee', 'zero trading fee', 'no fee', 'fees', 'commission', 'transaction fee', 'free trading'],
+                  a: "The membership promises zero trading fees on all transactions, so you can buy and sell without paying transaction fees on our platform." },
+                { k: ['growth program', 'weekly', 'return', 'returns', 'profit target', '2-5', '2%', '5%', 'weekly growth', 'target'],
+                  a: "The Weekly Growth Program is a structured plan targeting 2-5% weekly returns, with clear entry and exit signals every day. It is a target, not a guarantee. Results vary and trading carries risk." },
+                { k: ['signal', 'signals', 'win rate', '80%', 'accuracy', 'accurate', 'entry', 'exit', 'trade plan', 'signals channel'],
+                  a: "You get access to an exclusive signals channel with a historical win rate of about 80%, including trade plans with clear entry and exit levels. Past performance doesn't guarantee future results, and trading always carries risk." },
+                { k: ['certificate', 'certified', 'accredited', 'certification', 'diploma'],
+                  a: "Members receive an official accredited certificate recognizing them as a top, profitable trader." },
+                { k: ['prop', 'funded', '$1,000', '1000', '1,000', 'prop account', 'funded account', 'stage', 'challenge', 'evaluation'],
+                  a: "There's an opportunity to earn a free $1,000 funded (prop) trading account by passing our skills evaluation, and the site notes it comes without having to complete the usual stage." },
+                { k: ['training', 'course', 'courses', 'learn', 'education', 'teach', 'lessons', 'mentor', 'investors', 'coaching', 'class'],
+                  a: "You get expert training courses where you learn directly from top investors through comprehensive programs, plus personal guidance and risk-management plans." },
+                { k: ['bot', 'robot', 'expert advisor', 'ea', 'automated', 'automation', 'trading bot', 'bot trader', 'algo'],
+                  a: "Members receive a specialized, custom trading robot built for their own account (see \"Bot trader\" in the benefits)." },
+                { k: ['risk', 'risk management', 'drawdown', 'stop loss', 'position size', 'portfolio', 'risk guide', 'personal strategy'],
+                  a: "You get personalized risk-management guidance: clear risk rules, portfolio-management strategies, and a Personal Risk Management Guide tailored to each individual." },
+                { k: ['support', '24/7', 'help', 'contact', 'reach', 'customer service', 'assistance', 'human', 'agent', 'talk to someone'],
+                  a: "24/7 support access is included with your membership. You'll find the support option in the three-dot menu at the top right of the page." },
+
+                { k: ['panel', 'personal panel', 'dashboard', 'member area', 'portal'],
+                  a: "The Personal Panel includes your Daily Analysis & Technical Outlook (live XAU/USD gold chart) and the Account Journal & Analysis page. Open the three-dot menu at the top of the page to reach them." },
+                { k: ['analysis', 'technical', 'fundamental', 'outlook', 'xau', 'gold', 'xauusd', 'chart', 'levels', 'pivot', 'support and resistance', 'daily analysis', 'market analysis'],
+                  a: "The Technical & Fundamental Analysis page shows a live XAU/USD (gold) chart, the daily outlook, key levels, indicators and news. Open it from the three-dot menu at the top of the page." },
+                { k: ['journal', 'account journal', 'statement', 'track', 'tracking', 'performance', 'my account', 'upload', 'metatrader', 'mt4', 'mt5', 'win/loss'],
+                  a: "The Account Journal & Analysis page lets you review your trading account: profit and loss, win rate, equity curve, best and worst symbols, strengths and areas to improve. Open it from the three-dot menu at the top of the page." },
+                { k: ['personal growth', 'mindset', 'growth plan', 'strategy', 'personalize', 'personalise', 'growth-program'],
+                  a: "The Personal Growth Program is about personalizing the strategy to match your mindset. You'll find it in the three-dot menu at the top of the page." },
+                { k: ['menu', 'three dot', 'three-dot', 'dots', 'where do i find', 'navigate', 'navigation', 'where is'],
+                  a: "The three-dot button at the top right of the page opens a menu with: Technical & Fundamental Analysis, Account Journal & Analysis, Personal Growth Program, and Support. On mobile it also lists Benefits, Pricing and Join Now." },
+
+                { k: ['testimonial', 'review', 'reviews', 'members say', 'feedback', 'results', 'proof', 'verified', 'real', 'legit', 'scam', 'trust', 'trustworthy', 'fake', 'evidence'],
+                  a: "In the \"What Our Members Say\" section you'll see member feedback with their verified result or certificate. Under each one, the \"Analyze Account\" button opens that member's account analysis so you can check their numbers yourself." },
+                { k: ['analyze account', 'analyse account', 'member account', 'jon', 'sarah', 'mike', 'their account'],
+                  a: "Each testimonial has an \"Analyze Account\" button that opens a detailed analysis of that member's trading account, so you can see the performance behind the story." },
+                { k: ['students profit', 'profit earned', '10,000', '$10,000', 'earned by', 'live stats', 'statistics', 'stats', 'counter', 'community', 'growing'],
+                  a: "The live stats near the top show: up to 100 members allowed per month, $10,000+ in profit earned by our students, and a 30-day membership access period. The animated chart reflects the community and results growing every month." },
+
+                { k: ['join', 'sign up', 'signup', 'register', 'buy', 'purchase', 'subscribe', 'enroll', 'start', 'how do i', 'get started', 'claim', 'membership today'],
+                  a: "To join, press \"Join Now\" (or \"Claim Your Membership Today\") on this page and follow the steps. Spots are limited to 100 members per month." },
+                { k: ['dark mode', 'light mode', 'theme', 'dark', 'light', 'colors', 'colours', 'appearance'],
+                  a: "Use the DARK / LIGHT switch in the top bar to change the website theme. Your choice is remembered next time you visit." },
+                { k: ['mobile', 'phone', 'iphone', 'android', 'tablet', 'responsive', 'app'],
+                  a: "The website works on phones, tablets and computers. There's no separate app to install." },
+                { k: ['broker', 'which broker', 'platform', 'exchange', 'forex', 'stocks', 'markets', 'what markets', 'instruments', 'pairs'],
+                  a: "The site doesn't name specific brokers or markets. The daily analysis page focuses on XAU/USD (gold), and the account journal connects to MetaTrader accounts. Ask about a specific feature and I'll explain what the site says about it." },
+
+                { k: ['guarantee', 'guaranteed', 'promise', 'sure profit', 'make money', 'rich', 'safe', 'risk free', 'risk-free', 'lose', 'loss', 'losing', 'disclaimer', 'financial advice', 'advice', 'legal', 'terms'],
+                  a: "No profits are guaranteed. Historical results don't guarantee future performance, trading carries risk, and you should understand the risks before investing. ASL University membership is not financial advice." }
+            ];
+
+            var FALLBACK = "I don't have that detail yet. I can help with: pricing, what's included, the growth program, signals, certificate, prop account, training, trading bot, risk management, the analysis and journal pages, member results, and how to join. Which one would you like to know about?";
+
+            function esc(s) { return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); }
+
+            function kbAnswer(text) {
+                var t = ' ' + text.toLowerCase().replace(/[^a-z0-9$%'\/\-\s,.]/g, ' ') + ' ';
+                var best = null, bestScore = 0;
+                KB.forEach(function (e) {
+                    var s = 0;
+                    e.k.forEach(function (key) {
+                        var hit = key.length <= 4
+                            ? new RegExp('(^|[^a-z0-9])' + esc(key) + '($|[^a-z0-9])').test(t)
+                            : t.indexOf(key) !== -1;
+                        if (hit) s += key.length + (key.indexOf(' ') !== -1 ? 4 : 0);
+                    });
+                    if (s > bestScore) { bestScore = s; best = e; }
+                });
+                return best ? best.a : FALLBACK;
+            }
+
+            /* ---- UI helpers ---- */
+            function addMsg(role, text) {
+                var d = document.createElement('div');
+                d.className = 'chat-msg ' + role;
+                d.textContent = text;
+                body.appendChild(d);
+                body.scrollTop = body.scrollHeight;
+                return d;
+            }
+            function showTyping() {
+                var d = document.createElement('div');
+                d.className = 'chat-msg bot chat-typing';
+                d.innerHTML = '<i></i><i></i><i></i>';
+                body.appendChild(d);
+                body.scrollTop = body.scrollHeight;
+                return d;
+            }
+            function setBusy(b) { busy = b; sendBtn.disabled = b; }
+
+            function renderChips() {
+                var items = ['How much does it cost?', "What's included?", 'How do I join?', 'Are profits guaranteed?', 'Tell me about the analysis pages'];
+                chips.innerHTML = '';
+                items.forEach(function (label) {
+                    var b = document.createElement('button');
+                    b.type = 'button';
+                    b.textContent = label;
+                    b.addEventListener('click', function () { chips.style.display = 'none'; send(label); });
+                    chips.appendChild(b);
+                });
+            }
+
+            async function askApi() {
+                var ctrl = new AbortController();
+                var timer = setTimeout(function () { ctrl.abort(); }, 25000);
+                try {
+                    var res = await fetch(CHAT_API_URL, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ messages: history.slice(-10) }),
+                        signal: ctrl.signal
+                    });
+                    if (!res.ok) throw new Error('bad status ' + res.status);
+                    var data = await res.json();
+                    if (!data || !data.reply) throw new Error('empty reply');
+                    return String(data.reply);
+                } finally { clearTimeout(timer); }
+            }
+
+            async function send(text) {
+                text = (text || '').trim();
+                if (!text || busy) return;
+                setBusy(true);
+                addMsg('user', text);
+                history.push({ role: 'user', content: text });
+                var typing = showTyping();
+                var reply;
+                if (CHAT_API_URL) {
+                    try { reply = await askApi(); }
+                    catch (e) { reply = kbAnswer(text); }
+                } else {
+                    await new Promise(function (r) { setTimeout(r, 450); });
+                    reply = kbAnswer(text);
+                }
+                typing.remove();
+                addMsg('bot', reply);
+                history.push({ role: 'assistant', content: reply });
+                setBusy(false);
+                input.focus();
+            }
+
+            function setOpen(open) {
+                panel.classList.toggle('open', open);
+                launcher.classList.toggle('open', open);
+                launcher.setAttribute('aria-expanded', String(open));
+                if (open) {
+                    if (!greeted) {
+                        greeted = true;
+                        addMsg('bot', "Hi! \uD83D\uDC4B I'm the ASL University assistant. Ask me anything about the membership, pricing, benefits, results or how to join.");
+                        renderChips();
+                    }
+                    setTimeout(function () { input.focus(); }, 220);
+                }
+            }
+
+            launcher.addEventListener('click', function () { setOpen(!panel.classList.contains('open')); });
+            document.addEventListener('keydown', function (e) { if (e.key === 'Escape') setOpen(false); });
+            form.addEventListener('submit', function (e) {
+                e.preventDefault();
+                var v = input.value;
+                input.value = '';
+                chips.style.display = 'none';
+                send(v);
+            });
         })();
     </script>
 </body>
