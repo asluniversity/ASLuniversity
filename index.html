@@ -422,6 +422,70 @@
             .growth-svg { height: 100px; }
         }
 
+        /* ============ INTRO VIDEO ============ */
+        .video-section {
+            position: relative;
+            z-index: 1;
+            border-bottom: 1px solid var(--hairline);
+            padding: 54px 0 50px;
+            background: radial-gradient(ellipse 70% 100% at 50% 0%, rgba(11,177,210,0.10), transparent 70%);
+        }
+        .video-inner { max-width: 880px; margin: 0 auto; padding: 0 20px; text-align: center; }
+        .video-eyebrow {
+            font-family: var(--mono);
+            font-size: 11.5px;
+            letter-spacing: .22em;
+            text-transform: uppercase;
+            color: var(--accent);
+            margin-bottom: 12px;
+        }
+        .video-title {
+            font-family: var(--display);
+            font-size: clamp(24px, 3.6vw, 34px);
+            font-weight: 700;
+            color: var(--heading-color);
+            text-shadow: var(--glow-s);
+            margin-bottom: 26px;
+            letter-spacing: -0.01em;
+        }
+        .video-frame {
+            position: relative;
+            aspect-ratio: 16 / 9;
+            background: #000;
+            border: 1px solid var(--hairline);
+            border-top: 3px solid var(--accent);
+            border-radius: 6px;
+            overflow: hidden;
+            box-shadow: 0 0 70px rgba(11,177,210,0.25);
+        }
+        .video-frame video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; background: #000; display: block; }
+        .video-unmute {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            padding: 8px 13px;
+            font-family: var(--mono);
+            font-size: 11px;
+            letter-spacing: .06em;
+            text-transform: uppercase;
+            color: #fff;
+            background: rgba(0,0,0,0.62);
+            border: 1px solid rgba(255,255,255,0.35);
+            border-radius: 999px;
+            cursor: pointer;
+            backdrop-filter: blur(4px);
+            animation: video-nudge 2s ease-in-out infinite;
+        }
+        .video-unmute:hover { background: rgba(11,177,210,0.75); }
+        .video-unmute.hidden { display: none; }
+        .video-unmute svg { width: 15px; height: 15px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+        @keyframes video-nudge { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.06); } }
+        @media (max-width: 640px) { .video-section { padding: 38px 0 34px; } }
+        @media (prefers-reduced-motion: reduce) { .video-unmute { animation: none; } }
+
         /* ============ LIVE STATS ============ */
         .stats-section {
             position: relative;
@@ -572,7 +636,30 @@
             50% { transform: scaleY(1); }
         }
         @media (max-width: 860px) {
-            .stats-inner { grid-template-columns: 1fr; gap: 18px; }
+            .stats-inner { gap: 14px; }
+            .stat-card { padding: 22px 14px 18px; }
+        }
+        /* phones: keep all 3 cards in one row, like desktop, just scaled down */
+        @media (max-width: 640px) {
+            .stats-section { padding: 28px 0; }
+            .stats-inner { padding: 0 10px; gap: 8px; }
+            .stat-card { padding: 14px 6px 12px; border-top-width: 2px; }
+            .stat-card:hover { transform: none; }
+            .stat-live { font-size: 8px; letter-spacing: .1em; gap: 4px; margin-bottom: 8px; }
+            .stat-live i { width: 6px; height: 6px; }
+            .stat-number { font-size: 4.9vw; line-height: 1.15; letter-spacing: -0.02em; text-shadow: none; }
+            .stat-number .stat-suffix[style] { font-size: .5em !important; display: block; }
+            .stat-label { font-size: 8px; letter-spacing: .03em; line-height: 1.35; margin-top: 7px; }
+            .stat-bar { margin-top: 12px; height: 5px; }
+            .stat-ticks { gap: 1px; margin-top: 12px; }
+            .stat-ticks b { height: 5px; border-radius: 1px; }
+            .stat-spark { gap: 2px; height: 16px; margin-top: 12px; }
+            .stat-spark b { width: 3px; }
+        }
+        @media (max-width: 380px) {
+            .stats-inner { padding: 0 6px; gap: 6px; }
+            .stat-card { padding: 12px 4px 10px; }
+            .stat-label { font-size: 7.5px; }
         }
         @media (prefers-reduced-motion: reduce) {
             .stat-card::after, .stat-live i, .stat-spark b { animation: none; }
@@ -1556,6 +1643,23 @@
         </div>
     </section>
 
+    <!-- Intro Video -->
+    <section class="video-section" id="intro-video">
+        <div class="video-inner">
+            <div class="video-eyebrow">A Personal Message</div>
+            <h2 class="video-title">Hear It Directly From Us</h2>
+            <div class="video-frame">
+                <video id="intro-video-el" muted playsinline loop preload="metadata" controls controlsList="nodownload" poster="intro-poster.jpg">
+                    <source src="intro-video.mp4" type="video/mp4" onerror="document.getElementById('intro-video').style.display='none'">
+                </video>
+                <button type="button" class="video-unmute" id="video-unmute" aria-label="Turn sound on">
+                    <svg viewBox="0 0 24 24"><path d="M11 5L6 9H3v6h3l5 4V5z"/><path d="M16 9a4 4 0 0 1 0 6M19 6a8 8 0 0 1 0 12"/></svg>
+                    Tap for sound
+                </button>
+            </div>
+        </div>
+    </section>
+
     <!-- Hero Section 1 -->
     <section class="hero-section">
         <div class="hero-image">
@@ -1909,6 +2013,32 @@
             }
         })();
 
+
+        // ============ INTRO VIDEO (autoplay muted when visible, tap for sound) ============
+        (function () {
+            var section = document.getElementById('intro-video');
+            var v = document.getElementById('intro-video-el');
+            var btn = document.getElementById('video-unmute');
+            if (!section || !v || !btn) return;
+
+            btn.addEventListener('click', function () {
+                v.muted = false;
+                v.volume = 1;
+                v.currentTime = 0;
+                v.play().catch(function () {});
+            });
+            v.addEventListener('volumechange', function () { btn.classList.toggle('hidden', !v.muted); });
+
+            var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+            if (reduce || !('IntersectionObserver' in window)) return;
+            new IntersectionObserver(function (entries, obs) {
+                if (entries[0].isIntersecting) {
+                    var p = v.play();
+                    if (p && p.catch) p.catch(function () {});
+                    obs.disconnect();
+                }
+            }, { threshold: 0.5 }).observe(v);
+        })();
 
         // ============ BENEFIT "LEARN MORE" TOGGLES ============
         (function () {
