@@ -729,6 +729,11 @@ async function parseFile(buf) {
   return parseStatement(decodeBuffer(buf));
 }
 const tradeKey = t => t.ticket ? t.ticket + '|' + t.open : [t.symbol, t.type, t.lots, t.open, t.close].join('|');
+function dedupeTrades(list) {
+  const seen = new Set(), out = [];
+  for (const t of list) { const k = tradeKey(t); if (seen.has(k)) continue; seen.add(k); out.push(t); }
+  return { list: out, removed: list.length - out.length };
+}
 function mergeTrades(existing, incoming) {
   const seen = new Set(existing.map(tradeKey));
   let added = 0, dup = 0;
@@ -1202,6 +1207,7 @@ const active = () => DB.accounts.find(a => a.id === DB.activeId) || DB.accounts[
 
 function loadDB() {
   try { const j = localStorage.getItem(LS_KEY); if (j) { const o = JSON.parse(j); DB = Object.assign(DB, o); DB.ui = Object.assign({ view: 'overview', range: 'all' }, o.ui || {}); } } catch (e) { /* first visit */ }
+  try { for (const a of DB.accounts || []) { const d = dedupeTrades(a.trades || []); if (d.removed) { a.trades = d.list; a.rev = (a.rev || 0) + 1; } } } catch (e) { /* ignore */ }
 }
 function saveDB() {
   try { localStorage.setItem(LS_KEY, JSON.stringify(DB)); return true; }
@@ -1972,7 +1978,32 @@ function openModal(html, onMount) {
 function closeModal() { const r = $('#modal-root'); r.hidden = true; r.innerHTML = ''; document.body.classList.remove('lock'); }
 const download = (name, text, type) => { const b = new Blob([text], { type: type || 'application/json' }), u = URL.createObjectURL(b), l = document.createElement('a'); l.href = u; l.download = name; document.body.appendChild(l); l.click(); l.remove(); setTimeout(() => URL.revokeObjectURL(u), 500); };
 
+/* ---------------- one statement upload per device (and per IP, via optional server check) ---------------- */
+const LOCK_KEY = 'asl-upload-lock-v1', DEV_KEY = 'asl-device-id';
+/* Set this to your backend endpoint to also enforce the limit per IP address (the browser alone cannot see an IP).
+   Contract: POST {action:'check'|'register', device} -> {allowed:true|false}. Leave '' to use the device lock only. */
+const UPLOAD_GUARD_URL = '';
+const deviceId = () => { try { let d = localStorage.getItem(DEV_KEY); if (!d) { d = uid() + uid(); localStorage.setItem(DEV_KEY, d); } return d; } catch (e) { return 'unknown'; } };
+const uploadLocked = () => { try { return !!localStorage.getItem(LOCK_KEY); } catch (e) { return false; } };
+const setUploadLock = n => { try { localStorage.setItem(LOCK_KEY, JSON.stringify({ t: Date.now(), n })); } catch (e) { /* ignore */ } };
+async function guardCall(action) {
+  if (!UPLOAD_GUARD_URL) return true;
+  try { const r = await fetch(UPLOAD_GUARD_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action, device: deviceId() }) }); const j = await r.json(); return j.allowed !== false; }
+  catch (e) { return true; }
+}
+const SITE_PRICING_URL = 'https://asluniversity.github.io/ASLuniversity/#pricing';
+function lockedModal() {
+  openModal('<button class="x" data-close="1" aria-label="Close">×</button><h2>Statement already uploaded</h2>' +
+    '<p class="muted">Each device can upload an account statement <b>one time only</b>, and this device has already used it. Your journal and analysis stay available here as before.</p>' +
+    '<div class="note-box">To keep going, get your <b>ASL University membership</b> on the main website.</div>' +
+    '<div class="modal-foot"><a class="btn btn-primary" id="go-pay" href="' + SITE_PRICING_URL + '" style="text-decoration:none">Go to membership &amp; payment</a><button class="btn btn-secondary" data-close="1">Close</button></div>');
+}
 function connectModal(targetId, initialFile) {
+  if (uploadLocked()) return lockedModal();
+  if (!UPLOAD_GUARD_URL) return connectModalInner(targetId, initialFile);
+  guardCall('check').then(ok => ok ? connectModalInner(targetId, initialFile) : lockedModal());
+}
+function connectModalInner(targetId, initialFile) {
   let pending = null;
   const exist = DB.accounts.filter(a => !a.demo);
   openModal('<button class="x" data-close="1" aria-label="Close">×</button><h2>Upload your account statement</h2>' +
@@ -1988,6 +2019,8 @@ function connectModal(targetId, initialFile) {
       if (!f) return;
       try {
         const res = await parseFile(await f.arrayBuffer());
+        const dd = dedupeTrades(res.trades); res.trades = dd.list;
+        if (dd.removed) { res.notes = (res.notes || []).concat([dd.removed + ' duplicate trade' + (dd.removed > 1 ? 's were' : ' was') + ' found in this file and removed.']); }
         if (!res.trades.length) { pv.innerHTML = '<div class="err">No closed trades were found in this file' + (res.error ? ' (' + esc(res.error) + ')' : '') + '. Make sure it is a detailed statement / history report that includes closed trades (not a PDF or a summary).</div>'; pending = null; return; }
         pending = res;
         const t = res.trades, from = Math.min(...t.map(x => x.open)), to = Math.max(...t.map(x => x.close));
@@ -2030,7 +2063,7 @@ function connectModal(targetId, initialFile) {
           acc.acctType = atype;
           if (atype === 'prop') { const g = id => parseFloat($('#' + id, root).value) || 0; acc.prop = { bal: start, target: g('c-ptarget'), days: g('c-pdays'), daily: g('c-pdaily'), total: g('c-ptotal'), cons: g('c-pcons'), dbase: $('#c-pdbase', root).value, type: $('#c-ptype', root).value }; }
           DB.activeId = acc.id; UI.cal = null; UI.day = null; DB.ui.view = atype === 'prop' ? 'prop' : 'overview';
-          saveDB(); closeModal(); render(); toast(msg);
+          saveDB(); setUploadLock(res.trades.length); guardCall('register'); closeModal(); render(); toast(msg);
         };
       } catch (e) { pv.innerHTML = '<div class="err">Could not read this file: ' + esc(e.message) + '</div>'; }
     };
