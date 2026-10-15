@@ -9,6 +9,13 @@
         /* apply the saved theme before first paint (default = dark) */
         try { document.documentElement.setAttribute('data-theme', localStorage.getItem('asl-theme') === 'light' ? 'light' : 'dark'); }
         catch (e) { document.documentElement.setAttribute('data-theme', 'dark'); }
+
+        /* always start at the top of the page after a refresh / reopen */
+        try { if ('scrollRestoration' in history) history.scrollRestoration = 'manual'; } catch (e) {}
+        try { if (location.hash) history.replaceState(null, '', location.pathname + location.search); } catch (e) {}
+        window.addEventListener('DOMContentLoaded', function () { window.scrollTo(0, 0); });
+        window.addEventListener('load', function () { window.scrollTo(0, 0); setTimeout(function () { window.scrollTo(0, 0); }, 120); });
+        window.addEventListener('pageshow', function () { window.scrollTo(0, 0); });
     </script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -639,27 +646,43 @@
             .stats-inner { gap: 14px; }
             .stat-card { padding: 22px 14px 18px; }
         }
-        /* phones: keep all 3 cards in one row, like desktop, just scaled down */
+        /* phones: one compact connected strip with 3 cells (desktop stays as is) */
         @media (max-width: 640px) {
-            .stats-section { padding: 28px 0; }
-            .stats-inner { padding: 0 10px; gap: 8px; }
-            .stat-card { padding: 14px 6px 12px; border-top-width: 2px; }
-            .stat-card:hover { transform: none; }
-            .stat-live { font-size: 8px; letter-spacing: .1em; gap: 4px; margin-bottom: 8px; }
-            .stat-live i { width: 6px; height: 6px; }
-            .stat-number { font-size: 4.9vw; line-height: 1.15; letter-spacing: -0.02em; text-shadow: none; }
-            .stat-number .stat-suffix[style] { font-size: .5em !important; display: block; }
-            .stat-label { font-size: 8px; letter-spacing: .03em; line-height: 1.35; margin-top: 7px; }
-            .stat-bar { margin-top: 12px; height: 5px; }
-            .stat-ticks { gap: 1px; margin-top: 12px; }
-            .stat-ticks b { height: 5px; border-radius: 1px; }
-            .stat-spark { gap: 2px; height: 16px; margin-top: 12px; }
-            .stat-spark b { width: 3px; }
+            .stats-section { padding: 16px 0; }
+            .stats-inner {
+                padding: 0;
+                margin: 0 10px;
+                max-width: none;
+                gap: 1px;
+                background: var(--hairline);
+                border: 1px solid var(--hairline);
+                border-top: 2px solid var(--accent);
+                border-radius: 6px;
+                overflow: hidden;
+                box-shadow: 0 0 26px rgba(11,177,210,0.16);
+            }
+            .stat-card {
+                padding: 9px 3px 8px;
+                border: 0;
+                border-radius: 0;
+                box-shadow: none;
+            }
+            .stat-card:hover { transform: none; box-shadow: none; }
+            .stat-card::after { display: none; }
+            .stat-live { font-size: 6.5px; letter-spacing: .08em; gap: 3px; margin-bottom: 4px; }
+            .stat-live i { width: 5px; height: 5px; box-shadow: 0 0 6px var(--accent); }
+            .stat-number { font-size: 4.1vw; line-height: 1.1; letter-spacing: -0.02em; text-shadow: none; }
+            .stat-number .stat-suffix[style] { font-size: .55em !important; display: block; line-height: 1; margin-top: 1px; }
+            .stat-label { font-size: 6.5px; letter-spacing: .02em; line-height: 1.3; margin-top: 4px; }
+            .stat-bar { margin: 7px 6px 0; height: 3px; }
+            .stat-ticks { gap: 1px; margin: 7px 6px 0; }
+            .stat-ticks b { height: 3px; border-radius: 1px; }
+            .stat-spark { gap: 1.5px; height: 10px; margin-top: 7px; }
+            .stat-spark b { width: 2.5px; }
         }
         @media (max-width: 380px) {
-            .stats-inner { padding: 0 6px; gap: 6px; }
-            .stat-card { padding: 12px 4px 10px; }
-            .stat-label { font-size: 7.5px; }
+            .stats-inner { margin: 0 6px; }
+            .stat-label { font-size: 6px; }
         }
         @media (prefers-reduced-motion: reduce) {
             .stat-card::after, .stat-live i, .stat-spark b { animation: none; }
@@ -1519,6 +1542,101 @@
         @media (max-width: 380px) {
             .logo { font-size: 17px; }
             .theme-toggle button { padding: 7px 8px; }
+        }
+
+        /* ============ PHONE: COMPACT WHOLE-PAGE LAYOUT (desktop unchanged) ============ */
+        @media (max-width: 640px) {
+            nav { padding: 8px 0; }
+            .nav-container { padding: 0 12px; row-gap: 4px; }
+            .logo { font-size: 15px; letter-spacing: .5px; gap: 6px; }
+            .logo-icon { height: 30px; width: 30px; }
+            .nav-right { gap: 6px; }
+            .theme-toggle { padding: 2px; }
+            .theme-toggle button { padding: 6px 8px; }
+            .theme-toggle svg { width: 12px; height: 12px; }
+            .site-menu-btn { width: 30px; height: 30px; }
+            .site-menu-btn svg { width: 15px; height: 15px; }
+
+            .welcome-banner { padding: 20px 14px 16px; }
+            .welcome-banner h1 { font-size: 23px; line-height: 1.2; }
+            .welcome-banner p { font-size: 11px; margin-top: 7px; letter-spacing: .02em; }
+
+            .growth-chart-section { padding: 4px 0 0; }
+            .growth-chart-inner { padding: 0 12px 4px; }
+            .growth-svg { height: 64px; }
+            .growth-line { stroke-width: 2.2; }
+            .growth-caption { font-size: 8.5px; letter-spacing: .08em; }
+
+            .video-section { padding: 20px 0 22px; }
+            .video-inner { padding: 0 12px; }
+            .video-eyebrow { font-size: 9px; margin-bottom: 6px; letter-spacing: .16em; }
+            .video-title { font-size: 19px; margin-bottom: 12px; }
+            .video-unmute { top: 8px; right: 8px; padding: 6px 10px; font-size: 9px; }
+
+            .hero-section { margin: 20px auto; padding: 0 14px; gap: 14px; min-height: 0; }
+            .hero-image img { max-width: 210px; }
+            .hero-content { gap: 10px; }
+            .badge { font-size: 9.5px; padding: 7px 13px; }
+            .hero-content h1 { font-size: 25px; line-height: 1.2; }
+            .hero-content p { font-size: 13.5px; line-height: 1.6; }
+            .features-list { gap: 7px; margin: 6px 0; }
+            .feature-item { font-size: 12.5px; gap: 8px; }
+            .feature-item::before { width: 19px; height: 19px; font-size: 13px; }
+            .price-tag { font-size: 22px; margin-top: 2px; }
+            .price-tag .currency { font-size: 15px; }
+            .price-tag .period { font-size: 12px; }
+            .cta-buttons { margin-top: 8px; gap: 8px; }
+            .btn { padding: 11px 16px; font-size: 11px; }
+
+            .divider { margin: 26px 0; }
+
+            .benefits-section { margin: 22px 10px; padding: 22px 12px; }
+            .section-title { font-size: 21px; margin-bottom: 16px; }
+            .benefits-grid { gap: 10px; }
+            .benefit-card { padding: 14px 12px; }
+            .benefit-icon { font-size: 28px; margin-bottom: 6px; }
+            .benefit-card h3 { font-size: 14.5px; margin-bottom: 5px; }
+            .benefit-card p { font-size: 12px; line-height: 1.55; }
+            .benefit-more { margin-top: 10px; padding: 6px 12px; font-size: 10px; }
+            .benefit-detail-inner p { font-size: 12px; margin-top: 8px; }
+            .benefit-detail-inner p:first-child { margin-top: 12px; padding-top: 10px; }
+
+            .testimonial-section { margin: 22px auto; padding: 0 12px; }
+            .testimonial-section h2 { font-size: 21px; margin-bottom: 14px; }
+            .testimonial-grid { gap: 12px; grid-template-columns: 1fr; }
+            .testimonial-card { padding: 14px; }
+            .testimonial-card p { font-size: 12.5px; line-height: 1.6; margin-bottom: 8px; }
+            .testimonial-author { font-size: 11px; }
+            .testimonial-proof { margin-top: 10px; }
+            .testimonial-proof img { height: 110px; }
+            .testimonial-proof .tp-label { font-size: 8.5px; padding: 3px 7px; left: 7px; bottom: 7px; }
+            .testimonial-analysis-btn { margin-top: 8px; padding: 9px 12px; font-size: 10.5px; }
+
+            .pricing-section { margin: 22px auto; padding: 0 12px; }
+            .pricing-section h2 { font-size: 22px; margin-bottom: 8px; }
+            .pricing-section > p { font-size: 12.5px; margin-bottom: 16px; }
+            .pricing-card { padding: 18px 14px; }
+            .pricing-card h3 { font-size: 19px; margin-bottom: 6px; }
+            .price-big { font-size: 38px; margin: 10px 0; }
+            .price-big .currency { font-size: 22px; }
+            .price-big .period { font-size: 13px; }
+            .pricing-features { margin: 12px 0; padding: 10px 0; }
+            .pricing-features li { padding: 6px 0; font-size: 12px; gap: 9px; }
+            .pricing-features li::before { width: 20px; height: 20px; font-size: 12px; }
+            .pricing-card .btn-primary { margin-top: 12px; padding: 13px 16px; font-size: 12px; }
+
+            .final-cta { margin-top: 26px; padding: 26px 14px; }
+            .final-cta h2 { font-size: 21px; margin-bottom: 8px; }
+            .final-cta p { font-size: 12.5px; margin-bottom: 14px; }
+            .final-cta .btn { padding: 12px 22px; font-size: 11.5px; }
+
+            footer { padding: 20px 14px; }
+            .disclaimer { font-size: 10px; line-height: 1.6; }
+            .footer-info { margin-top: 12px; padding-top: 12px; font-size: 9.5px; }
+
+            .chat-launcher { width: 50px; height: 50px; right: 12px; bottom: 12px; }
+            .chat-launcher svg { width: 24px; height: 24px; }
+            .chat-panel { bottom: 72px; }
         }
     </style>
 </head>
