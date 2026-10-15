@@ -1,18 +1,18 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="dark">
-<head>
-<meta charset="UTF-8">
+<!-- saved from url=(0070)https://asluniversity.github.io/ASLuniversity/asl-account-journal.html -->
+<html lang="en" data-theme="dark"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ASL University - Account Journal & Analysis</title>
+<title>ASL University - Account Journal &amp; Analysis</title>
 <meta name="color-scheme" content="dark light">
 <script>
   /* apply the saved theme before first paint (default = dark) */
   try { document.documentElement.setAttribute('data-theme', localStorage.getItem('asl-theme') === 'light' ? 'light' : 'dark'); }
   catch (e) { document.documentElement.setAttribute('data-theme', 'dark'); }
 </script>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.googleapis.com/">
+<link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin="">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
 <style>
 * { margin: 0; padding: 0; box-sizing: border-box; }
 :root {
@@ -234,30 +234,59 @@ footer .disclaimer { font-size: 11.5px; color: var(--footer-text); max-width: 82
 .gz-mark b { position: absolute; bottom: 31px; left: 50%; transform: translateX(-50%); white-space: nowrap; font: 600 11px var(--mono); color: var(--heading-color); }
 .gz-tick { position: absolute; top: -3px; width: 2px; height: 20px; background: var(--muted-color); opacity: .8; transform: translateX(-1px); }
 .gz-ends { display: flex; justify-content: space-between; gap: 10px; font-family: var(--mono); font-size: 11px; color: var(--muted-color); }
+
+/* ---------- pro analytics (overview) ---------- */
+.pl { fill: none; stroke: var(--accent); stroke-width: 2.1; stroke-linejoin: round; stroke-linecap: round; }
+.pl.s-acc { stroke: var(--accent); } .pl.s-buy { stroke: var(--buy); } .pl.s-sell { stroke: var(--sell); } .pl.s-warn { stroke: var(--warn); }
+.fan { stroke: none; fill: var(--accent); } .fan.f1 { fill-opacity: 0.13; } .fan.f2 { fill-opacity: 0.26; }
+.lgd { display: flex; gap: 16px; flex-wrap: wrap; font-family: var(--mono); font-size: 11px; color: var(--muted-color); margin: -2px 0 8px; }
+.lgd span { display: inline-flex; align-items: center; gap: 6px; }
+.sw { display: inline-block; width: 16px; height: 4px; border-radius: 2px; background: var(--accent); }
+.sw.s-acc { background: var(--accent); } .sw.s-buy { background: var(--buy); } .sw.s-sell { background: var(--sell); }
+.sw.fan { height: 10px; } .sw.fan.f1 { background: var(--accent); opacity: 0.25; } .sw.fan.f2 { background: var(--accent); opacity: 0.5; }
+.ax.rlab { font-size: 11.5px; fill: var(--text-color); }
+.panel > svg[aria-label="Performance radar"] { max-width: 520px; margin: 0 auto; }
+.rg { fill: none; stroke: var(--row-line); stroke-width: 1; }
+.rpoly { fill: var(--accent); fill-opacity: 0.2; stroke: var(--accent); stroke-width: 2; stroke-linejoin: round; }
+.rdot { fill: var(--accent); stroke: var(--surface-bg); stroke-width: 2; }
+.radar-l { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px 10px; font-family: var(--mono); font-size: 11px; color: var(--muted-color); margin-top: 6px; }
+.radar-l b { color: var(--heading-color); font-size: 13px; margin-right: 3px; }
+.sp { fill: var(--buy); fill-opacity: 0.55; stroke: var(--buy); stroke-width: 1; } .sn { fill: var(--sell); fill-opacity: 0.55; stroke: var(--sell); stroke-width: 1; }
+.sp:hover, .sn:hover { fill-opacity: 0.95; }
+.hm { display: grid; gap: 4px; align-items: stretch; }
+.hm-h { font-family: var(--mono); font-size: 10.5px; color: var(--muted-color); text-align: center; align-self: end; }
+.hm-y { font-family: var(--mono); font-size: 11px; color: var(--muted-color); display: flex; align-items: center; }
+.hm-c { position: relative; overflow: hidden; min-width: 0; min-height: 34px; border: 1px solid var(--row-line); border-radius: 4px; display: flex; align-items: center; justify-content: center; }
+.hm-c::before { content: ""; position: absolute; inset: 0; opacity: var(--o, 0); pointer-events: none; }
+.hm-c.win::before { background: var(--buy); } .hm-c.loss::before { background: var(--sell); }
+.hm-c span { position: relative; font-family: var(--mono); font-size: 10.5px; color: var(--heading-color); font-weight: 600; }
+.hm-c.off { border-color: transparent; background: rgba(127,127,127,0.05); }
+.hm-c.tot { background: rgba(127,127,127,0.08); } .hm-c.tot.pos span { color: var(--buy); } .hm-c.tot.neg span { color: var(--sell); }
+@media (max-width: 760px) { .radar-l { grid-template-columns: 1fr 1fr; } .hm-c { min-height: 28px; } .hm-c span { font-size: 8px; letter-spacing: -0.3px; } .hm { gap: 2px; } .hm-y, .hm-h { font-size: 9px; } }
 </style>
 </head>
-<body>
+<body class="">
 
 <nav>
   <div class="nav-container">
-    <a class="brand" href="./" aria-label="ASL University">
-      <img class="brand-logo" src="asl-logo-transparent.png" alt="" width="46" height="46" decoding="async" onerror="this.style.display='none'">
+    <a class="brand" href="https://asluniversity.github.io/ASLuniversity/" aria-label="ASL University">
+      <img class="brand-logo" src="./ASL University - Account Journal &amp; Analysis_files/asl-logo-transparent.png" alt="" width="46" height="46" decoding="async" onerror="this.style.display=&#39;none&#39;">
       <span class="brand-text"><span class="logo">ASL UNIVERSITY</span><span class="logo-sub">ACCOUNT JOURNAL &amp; ANALYSIS</span></span>
     </a>
-    <div class="tabs" id="tabs" role="tablist" hidden>
-      <button data-view="overview" role="tab">Overview</button>
-      <button data-view="calendar" role="tab">Calendar</button>
-      <button data-view="analysis" role="tab">Analysis</button>
-      <button data-view="prop" role="tab">Prop</button>
-      <button data-view="insights" role="tab">Insights</button>
-      <button data-view="journal" role="tab">Journal</button>
+    <div class="tabs" id="tabs" role="tablist">
+      <button data-view="overview" role="tab" aria-selected="false">Overview</button>
+      <button data-view="calendar" role="tab" aria-selected="false">Calendar</button>
+      <button data-view="analysis" role="tab" aria-selected="false">Analysis</button>
+      <button data-view="prop" role="tab" aria-selected="true">Prop</button>
+      <button data-view="insights" role="tab" aria-selected="false">Insights</button>
+      <button data-view="journal" role="tab" aria-selected="false">Journal</button>
     </div>
     <div class="nav-right">
-      <select id="acct-select" aria-label="Account" hidden></select>
+      <select id="acct-select" aria-label="Account"><option value="tmuo15dqg111">real account (demo)</option><option value="tmup9p7gc1r6io">MT5 ••••2326</option><option value="tmv9e78r71p4x4" selected="">MT5 ••••9968</option></select>
       <button class="nav-btn" id="btn-connect" type="button">+ Upload<span class="hide-s"> statement</span></button>
       <div class="theme-toggle" role="group" aria-label="Color theme">
-        <button type="button" data-theme-btn="dark" aria-pressed="true" title="Dark mode"><svg viewBox="0 0 24 24"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg><span>DARK</span></button>
-        <button type="button" data-theme-btn="light" aria-pressed="false" title="Light mode"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg><span>LIGHT</span></button>
+        <button type="button" data-theme-btn="dark" aria-pressed="true" title="Dark mode"><svg viewBox="0 0 24 24"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"></path></svg><span>DARK</span></button>
+        <button type="button" data-theme-btn="light" aria-pressed="false" title="Light mode"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"></path></svg><span>LIGHT</span></button>
       </div>
     </div>
   </div>
@@ -267,13 +296,13 @@ footer .disclaimer { font-size: 11.5px; color: var(--footer-text); max-width: 82
   <div class="wrap">
 
     <!-- ===== First visit: upload gate ===== -->
-    <section class="landing" id="empty">
+    <section class="landing" id="empty" hidden="">
       <div class="hero-l">
         <h1>Upload your statement.<br><em>See your trading clearly.</em></h1>
         <p>Drop the account statement from MetaTrader 4, MetaTrader 5 or cTrader and get a complete analysis — profit and loss by day, equity and drawdown, your strengths, your weaknesses, and a trading journal.</p>
         <div class="hero-btns">
           <button class="btn btn-primary" data-open="connect" type="button">Upload my statement</button>
-          <button class="btn btn-secondary" data-demo type="button">See a demo account</button>
+          <button class="btn btn-secondary" data-demo="" type="button">See a demo account</button>
         </div>
         <div class="plats"><span>MetaTrader 5</span><span>MetaTrader 4</span><span>cTrader</span><span>HTML · CSV · Excel</span></div>
         <p class="fine" style="margin-top:18px">🔒 No password, no login. Your file is analysed inside your own browser and is never uploaded.</p>
@@ -295,16 +324,16 @@ footer .disclaimer { font-size: 11.5px; color: var(--footer-text); max-width: 82
     </section>
 
     <!-- ===== Dashboard ===== -->
-    <div id="app" hidden>
-      <div class="acctbar" id="acctbar"></div>
-      <div id="view"></div>
+    <div id="app">
+      <div class="acctbar" id="acctbar"><div class="ab-l"><div class="ab-name">MT5 ••••9968 <span class="pill tag">PROP</span></div><div class="ab-meta">MT5 · Account ••••9968 · USD · 60 trades · start $1,000.00</div></div><div class="seg" role="group" aria-label="Period"><button data-range="all" aria-pressed="true">All time</button><button data-range="90" aria-pressed="false">90 days</button><button data-range="30" aria-pressed="false">30 days</button><button data-range="ytd" aria-pressed="false">This year</button></div><div class="ab-r"><button class="btn-mini" data-open="add">+ Trade</button><button class="btn-mini" data-open="connect">Import</button><button class="btn-mini" data-open="settings">Settings</button></div></div>
+      <div id="view"><section class="panel "><h3>PROP FIRM CHALLENGE · RULES</h3><div class="form-g pp-g"><label>Initial account size<input class="inp" type="number" min="0" step="1000" data-pp="bal" value="1000"></label><label>Profit target (%)<input class="inp" type="number" min="0" step="0.5" data-pp="target" value="10"></label><label>Minimum trading days<input class="inp" type="number" min="0" step="1" data-pp="days" value="5"></label><label>Max daily drawdown (%)<input class="inp" type="number" min="0" step="0.5" data-pp="daily" value="5"></label><label>Max total drawdown (%)<input class="inp" type="number" min="0" step="0.5" data-pp="total" value="12"></label><label>Consistency: best day ≤ % of profit (0 = off)<input class="inp" type="number" min="0" step="1" data-pp="cons" value="0"></label><label>Daily limit based on<select class="inp" data-pp="dbase"><option value="initial">Initial balance</option><option value="start" selected="">Start-of-day balance</option></select></label><label>Max drawdown type<select class="inp" data-pp="type"><option value="static" selected="">Static (from initial)</option><option value="trail">Trailing (from peak)</option></select></label></div><p class="fine">Type the rules of your challenge — results update instantly and are saved in this browser for this account. This view always uses all trades of the account (the period filter above does not apply).</p></section><div id="prop-results"><div class="grid-main"><section class="panel"><h3>CHALLENGE STATUS</h3><div class="today-n neg" style="font-size:30px">FAILED</div><div class="fine" style="margin:4px 0 12px">Max total drawdown breached on 14 Oct 2026</div><div class="pp-prog"><i style="width:0%"></i></div><div class="fine" style="margin:-8px 0 14px">0.0% of the profit target</div><div class="tbl-wrap"><table class="tbl"><thead><tr><th>Rule</th><th class="r">Limit</th><th class="r">Current</th><th class="r">Buffer</th><th class="r">Status</th></tr></thead><tbody><tr><td>Profit target</td><td class="r">10% · $100.00</td><td class="r">−$153.48</td><td class="r muted">$253.48 to go</td><td class="r"><span class="pill ">OPEN</span></td></tr><tr><td>Daily drawdown</td><td class="r">5% · $50.00</td><td class="r">7.23% · 14 Oct 2026</td><td class="r muted">0.00% left</td><td class="r"><span class="pill bad">FAIL</span></td></tr><tr><td>Total drawdown</td><td class="r">12% · static</td><td class="r">15.35%</td><td class="r muted">0.00% left</td><td class="r"><span class="pill bad">FAIL</span></td></tr><tr><td>Minimum trading days</td><td class="r">5</td><td class="r">11</td><td class="r muted">done</td><td class="r"><span class="pill good">MET</span></td></tr></tbody></table></div></section><section class="panel"><h3>CHALLENGE HEALTH SCORE</h3><div class="score"><div><svg class="ring" viewBox="0 0 132 132" width="132" height="132" role="img" aria-label="Failed 9 out of 100"><circle class="rt" cx="66" cy="66" r="56"></circle><circle class="rv" cx="66" cy="66" r="56" stroke-dasharray="31.7 351.9" transform="rotate(-90 66 66)"></circle><text class="rn" x="50%" y="50%" text-anchor="middle" dy="0.1em">9</text><text class="rl" x="50%" y="50%" text-anchor="middle" dy="2.4em">Failed</text></svg></div><div class="score-bars"><div class="sb"><span>Rule safety</span><div class="sb-t"><i style="width:0%" class="r"></i></div><b>0</b></div><div class="sb"><span>Risk discipline</span><div class="sb-t"><i style="width:0%" class="r"></i></div><b>0</b></div><div class="sb"><span>Consistency</span><div class="sb-t"><i style="width:45%" class="y"></i></div><b>45</b></div><div class="sb"><span>Edge</span><div class="sb-t"><i style="width:0%" class="r"></i></div><b>0</b></div></div></div><p class="fine">Rule safety (40%): distance to the daily and total limits. Risk discipline (20%): largest single loss vs the daily limit. Consistency (20%): how much one day carries the profit. Edge (20%): profit factor. A guide for self-review, not a prediction.</p></section></div><div class="kpis"><div class="kpi"><div class="k-label">BALANCE</div><div class="k-val neg">$846.52</div><div class="k-sub">Initial $1,000.00</div></div><div class="kpi"><div class="k-label">NET P/L</div><div class="k-val neg">−$153.48</div><div class="k-sub">−15.35% of initial size</div></div><div class="kpi"><div class="k-label">BUFFER TO LOSS FLOOR</div><div class="k-val neg">−$33.48</div><div class="k-sub">Floor $880.00 (static)</div></div><div class="kpi"><div class="k-label">LATEST DAY · LIMIT USED</div><div class="k-val neg">145%</div><div class="k-sub">14 Oct 2026 · −$65.97</div></div></div><div class="grid-2"><section class="panel"><h3>WHERE YOU ARE · LOSS FLOOR → TARGET</h3><div class="gz-track "><i class="gz-tick" style="left:54.54545454545454%"></i><div class="gz-mark" style="left:0%"><b>NOW $846.52</b></div></div><div class="gz-ends"><span>LOSS FLOOR $880.00</span><span>TARGET $1,100.00</span></div><p class="fine"><b>−$33.48</b> above the loss floor · <b>$253.48</b> to the target · grey tick = initial balance.</p></section><section class="panel"><h3>DAILY DRAWDOWN · 14 OCT 2026</h3><div class="gz-track daily"><i class="gz-tick" style="left:100%"></i><div class="gz-mark" style="left:100%"><b>145% USED</b></div></div><div class="gz-ends"><span>0%</span><span>DAILY FLOOR $866.87 (100%)</span></div><p class="fine">Day started at <b>$912.49</b>, now <b>$846.52</b> (−$65.97). Worst point of the day <b>$846.52</b> = 145% of the limit (grey tick).</p></section></div><section class="panel "><h3>LIVE BALANCE CHART · RULES DRAWN ON IT</h3><div class="chart" id="pp-live"><svg viewBox="0 0 760 290" role="img" aria-label="Live balance curve with profit target, total drawdown floor and daily loss floor" class=""><line class="gl" x1="58" x2="648" y1="247.5" y2="247.5"></line><text class="ax" x="50" y="251.5" text-anchor="end">850</text><line class="gl" x1="58" x2="648" y1="203.5" y2="203.5"></line><text class="ax" x="50" y="207.5" text-anchor="end">900</text><line class="gl" x1="58" x2="648" y1="159.5" y2="159.5"></line><text class="ax" x="50" y="163.5" text-anchor="end">950</text><line class="gl" x1="58" x2="648" y1="115.5" y2="115.5"></line><text class="ax" x="50" y="119.5" text-anchor="end">1k</text><line class="gl" x1="58" x2="648" y1="71.4" y2="71.4"></line><text class="ax" x="50" y="75.4" text-anchor="end">1.1k</text><line class="gl" x1="58" x2="648" y1="27.4" y2="27.4"></line><text class="ax" x="50" y="31.4" text-anchor="end">1.1k</text><line x1="58" x2="648.0" y1="27.4" y2="27.4" stroke="var(--buy)" stroke-dasharray="6 4" stroke-width="1.4"></line><line x1="58" x2="648.0" y1="115.5" y2="115.5" stroke="var(--muted-color)" stroke-dasharray="2 4" stroke-width="1.4"></line><path d="M58.0 221.1 L67.8 221.1 L77.7 221.1 L87.5 221.1 L97.3 221.1 L107.2 221.1 L117.0 221.1 L126.8 221.1 L136.7 221.1 L146.5 221.1 L156.3 221.1 L166.2 221.1 L176.0 221.1 L185.8 221.1 L195.7 221.1 L205.5 221.1 L215.3 221.1 L225.2 221.1 L235.0 221.1 L244.8 221.1 L254.7 221.1 L264.5 221.1 L274.3 221.1 L284.2 221.1 L294.0 221.1 L303.8 221.1 L313.7 221.1 L323.5 221.1 L333.3 221.1 L343.2 221.1 L353.0 221.1 L362.8 221.1 L372.7 221.1 L382.5 221.1 L392.3 221.1 L402.2 221.1 L412.0 221.1 L421.8 221.1 L431.7 221.1 L441.5 221.1 L451.3 221.1 L461.2 221.1 L471.0 221.1 L480.8 221.1 L490.7 221.1 L500.5 221.1 L510.3 221.1 L520.2 221.1 L530.0 221.1 L539.8 221.1 L549.7 221.1 L559.5 221.1 L569.3 221.1 L579.2 221.1 L589.0 221.1 L598.8 221.1 L608.7 221.1 L618.5 221.1 L628.3 221.1 L638.2 221.1 L648.0 221.1" fill="none" stroke="var(--sell)" stroke-dasharray="6 4" stroke-width="1.7"></path><path d="M58.0 159.5 L67.8 159.5 L77.7 159.5 L87.5 159.5 L97.3 159.5 L107.2 159.5 L117.0 159.5 L126.8 159.5 L136.7 159.5 L146.5 159.5 L156.3 159.5 L166.2 159.5 L176.0 159.5 L185.8 159.5 L195.7 159.5 L205.5 159.5 L215.3 159.5 L225.2 159.5 L235.0 159.5 L244.8 159.5 L254.7 159.5 L264.5 159.5 L274.3 159.5 L284.2 188.4 L294.0 188.4 L303.8 188.4 L313.7 188.4 L323.5 188.4 L333.3 188.4 L343.2 188.4 L353.0 188.4 L362.8 198.3 L372.7 198.3 L382.5 198.3 L392.3 198.3 L402.2 198.3 L412.0 219.4 L421.8 202.5 L431.7 202.5 L441.5 202.5 L451.3 202.5 L461.2 202.5 L471.0 202.5 L480.8 202.5 L490.7 202.5 L500.5 202.5 L510.3 234.7 L520.2 234.7 L530.0 234.7 L539.8 229.8 L549.7 216.9 L559.5 216.9 L569.3 224.8 L579.2 229.0 L589.0 229.0 L598.8 229.0 L608.7 229.0 L618.5 229.0 L628.3 229.0 L638.2 232.7 L648.0 232.7" fill="none" stroke="var(--warn)" stroke-dasharray="2 3" stroke-width="1.6"></path><path class="ln" d="M58.0 115.5 L67.8 120.2 L77.7 120.4 L87.5 120.3 L97.3 129.8 L107.2 135.2 L117.0 140.3 L126.8 143.3 L136.7 130.1 L146.5 134.7 L156.3 139.1 L166.2 138.7 L176.0 136.3 L185.8 140.7 L195.7 140.1 L205.5 144.5 L215.3 141.8 L225.2 140.8 L235.0 147.0 L244.8 146.1 L254.7 150.5 L264.5 146.3 L274.3 145.9 L284.2 141.3 L294.0 141.3 L303.8 140.6 L313.7 145.0 L323.5 143.8 L333.3 147.9 L343.2 152.3 L353.0 156.3 L362.8 156.0 L372.7 150.7 L382.5 150.6 L392.3 169.2 L402.2 178.5 L412.0 160.7 L421.8 159.0 L431.7 163.6 L441.5 168.3 L451.3 171.6 L461.2 176.3 L471.0 193.2 L480.8 194.4 L490.7 199.6 L500.5 194.6 L510.3 199.2 L520.2 189.9 L530.0 189.5 L539.8 175.9 L549.7 180.3 L559.5 184.3 L569.3 188.6 L579.2 193.0 L589.0 195.0 L598.8 197.4 L608.7 200.2 L618.5 197.6 L628.3 192.5 L638.2 195.7 L648.0 250.6"></path><circle cx="648.0" cy="250.6" r="5" fill="var(--accent)" stroke="var(--surface-bg)" stroke-width="2"></circle><text class="ax" x="658.0" y="31.4" style="fill:var(--buy);font-weight:600">TARGET 1.1k</text><text class="ax" x="658.0" y="225.1" style="fill:var(--sell);font-weight:600">LOSS FLOOR 880</text><text class="ax" x="658.0" y="238.1" style="fill:var(--warn);font-weight:600">DAILY FLOOR 867</text><text class="ax" x="658.0" y="254.6" style="fill:var(--accent);font-weight:600">NOW 847</text><text class="ax" x="58" y="284">trade 1</text><text class="ax" x="648.0" y="284" text-anchor="end">trade 60</text><line class="hv" x1="333.3333333333333" x2="333.3333333333333" y1="14" y2="264"></line><circle class="hd" r="4.5" cx="333.3333333333333" cy="147.91166392389363"></circle></svg><div class="tip" style="opacity: 0; left: 518.316px; top: 180.666px;"><b>$963.14</b><br>29 Sep 2026 14:37<br>trade #28: −$4.66<br>to target $136.86<br>above loss floor $83.14<br>day P/L −$2.29 · daily floor $917.16</div></div><p class="fine">Blue = balance · green dashed = profit target · red dashed = total drawdown floor · amber dotted = the daily loss floor of each day · grey dotted = initial balance. Hover the chart for the details of every trade. It redraws instantly when you change a rule above.</p></section><section class="panel "><h3>DAILY RESULT VS DAILY LOSS LIMIT · LAST 11 DAYS</h3><svg viewBox="0 0 760 250" role="img" aria-label="Daily result against the daily loss limit"><line class="gl" x1="58" x2="746" y1="195.0" y2="195.0"></line><text class="ax" x="50" y="199.0" text-anchor="end">−60</text><line class="gl" x1="58" x2="746" y1="153.0" y2="153.0"></line><text class="ax" x="50" y="157.0" text-anchor="end">−40</text><line class="gl" x1="58" x2="746" y1="110.9" y2="110.9"></line><text class="ax" x="50" y="114.9" text-anchor="end">−20</text><line class="gl zero" x1="58" x2="746" y1="68.9" y2="68.9"></line><text class="ax" x="50" y="72.9" text-anchor="end">0</text><line class="gl" x1="58" x2="746" y1="26.9" y2="26.9"></line><text class="ax" x="50" y="30.9" text-anchor="end">20</text><rect class="bn" x="66.8" y="68.9" width="45.0" height="72.6" rx="1.5"><title>28 Sep 2026: −$34.57 · 22 trades · 80% of daily limit</title></rect><rect class="bn" x="129.3" y="68.9" width="45.0" height="24.9" rx="1.5"><title>29 Sep 2026: −$11.83 · 8 trades · 25% of daily limit</title></rect><rect class="bn" x="191.8" y="68.9" width="45.0" height="52.9" rx="1.5"><title>30 Sep 2026: −$25.18 · 5 trades · 53% of daily limit</title></rect><rect class="bp" x="254.4" y="26.5" width="45.0" height="42.4" rx="1.5"><title>1 Oct 2026: +$20.20 · 1 trades · 0% of daily limit</title></rect><rect class="bn" x="316.9" y="68.9" width="45.0" height="80.9" rx="1.5"><title>2 Oct 2026: −$38.52 · 9 trades · 93% of daily limit</title></rect><rect class="bp" x="379.5" y="56.7" width="45.0" height="12.3" rx="1.5"><title>6 Oct 2026: +$5.84 · 3 trades · 11% of daily limit</title></rect><rect class="bp" x="442.0" y="36.5" width="45.0" height="32.4" rx="1.5"><title>7 Oct 2026: +$15.42 · 1 trades · 0% of daily limit</title></rect><rect class="bn" x="504.6" y="68.9" width="45.0" height="19.9" rx="1.5"><title>8 Oct 2026: −$9.49 · 2 trades · 20% of daily limit</title></rect><rect class="bn" x="567.1" y="68.9" width="45.0" height="10.5" rx="1.5"><title>9 Oct 2026: −$4.99 · 1 trades · 11% of daily limit</title></rect><rect class="bn" x="629.7" y="68.9" width="45.0" height="9.2" rx="1.5"><title>13 Oct 2026: −$4.39 · 6 trades · 29% of daily limit</title></rect><rect class="bn" x="692.2" y="68.9" width="45.0" height="138.6" rx="1.5"><title>14 Oct 2026: −$65.97 · 2 trades · 145% of daily limit</title></rect><line x1="58" x2="746" y1="174.0" y2="174.0" stroke="var(--sell)" stroke-dasharray="5 4" stroke-width="1.5"></line><text class="ax" x="746" y="169.0" text-anchor="end" style="fill:var(--sell)">daily loss limit −50</text><text class="ax" x="58" y="242">09-28</text><text class="ax" x="746" y="242" text-anchor="end">10-14</text></svg><p class="fine">Any bar reaching the red line ends the challenge.</p></section><div class="grid-2"><section class="panel"><h3>RISK CAPACITY</h3><div class="tbl-wrap"><table class="tbl kv"><tbody><tr><td>Average losing trade</td><td class="r">−$7.22 · 0.72% of initial</td></tr><tr><td>Worst single trade</td><td class="r">−$62.34 · 125% of daily limit</td></tr><tr><td>Average losses to hit the daily limit</td><td class="r">6.9</td></tr><tr><td>Average losses in a row to breach the total floor</td><td class="r">—</td></tr><tr><td>Rule-of-thumb max risk per trade</td><td class="r">$12.50 · 1.25%</td></tr></tbody></table></div><p class="fine">Rule of thumb: risk no more than a quarter of the daily limit per trade, so that four straight losses still cannot end the day. Compare it with your average loss above.</p></section><section class="panel"><h3>PASS PROBABILITY · SIMULATION</h3><p class="muted">The challenge is already failed — no projection.</p></section></div><div class="grid-2"><section class="panel"><h3>DAILY RESULTS · % OF DAILY LIMIT USED</h3><div class="pp-days tbl-wrap"><table class="tbl"><thead><tr><th>Day</th><th class="r">Trades</th><th class="r">P/L</th><th class="r">Daily limit used</th></tr></thead><tbody><tr><td>14 Oct 2026</td><td class="r muted">2</td><td class="r neg">−$65.97</td><td class="r"><span class="pill bad">145%</span></td></tr><tr><td>13 Oct 2026</td><td class="r muted">6</td><td class="r neg">−$4.39</td><td class="r"><span class="pill ">29%</span></td></tr><tr><td>9 Oct 2026</td><td class="r muted">1</td><td class="r neg">−$4.99</td><td class="r"><span class="pill ">11%</span></td></tr><tr><td>8 Oct 2026</td><td class="r muted">2</td><td class="r neg">−$9.49</td><td class="r"><span class="pill ">20%</span></td></tr><tr><td>7 Oct 2026</td><td class="r muted">1</td><td class="r pos">+$15.42</td><td class="r"><span class="muted">—</span></td></tr><tr><td>6 Oct 2026</td><td class="r muted">3</td><td class="r pos">+$5.84</td><td class="r"><span class="pill ">11%</span></td></tr><tr><td>2 Oct 2026</td><td class="r muted">9</td><td class="r neg">−$38.52</td><td class="r"><span class="pill warn">93%</span></td></tr><tr><td>1 Oct 2026</td><td class="r muted">1</td><td class="r pos">+$20.20</td><td class="r"><span class="muted">—</span></td></tr><tr><td>30 Sep 2026</td><td class="r muted">5</td><td class="r neg">−$25.18</td><td class="r"><span class="pill ">53%</span></td></tr><tr><td>29 Sep 2026</td><td class="r muted">8</td><td class="r neg">−$11.83</td><td class="r"><span class="pill ">25%</span></td></tr><tr><td>28 Sep 2026</td><td class="r muted">22</td><td class="r neg">−$34.57</td><td class="r"><span class="pill warn">80%</span></td></tr></tbody></table></div></section><section class="panel "><h3>ASL PROP ACCOUNT REVIEW</h3><div class="pp-p"><p>The account moved from $1,000.00 to $846.52 (−15.35%) over 11 trading days — 0% of the 10% target.</p><p><b class="neg">Rule breach:</b> the 12% max drawdown limit was crossed on 14 Oct 2026. On most prop firms this ends the challenge — confirm with your firm how they count it.</p><p>Worst daily drawdown 7.23% on 14 Oct 2026 (145% of your daily limit). Total drawdown reached 15.35% of the 12% allowed; the account now sits −15.35% below its peak.</p><p><b class="neg">Position sizing:</b> your worst trade (−$62.34) alone used 125% of the daily limit. Two such losses in a day would end the challenge.</p><p>Average win is 0.61× the average loss with a 40% win rate (profit factor 0.41) — losses are larger than wins, which is hard to sustain.</p></div><p class="fine">Uses closed trades only (a statement does not show floating/intraday equity), so a firm that tracks equity may flag a breach this view cannot see. Days follow the broker/server time of the statement. Rules differ between firms — confirm yours. Not investment advice.</p></section></div></div></div>
     </div>
 
   </div>
 </main>
 
-<div id="modal-root" hidden></div>
-<div id="toast" role="status" aria-live="polite"></div>
+<div id="modal-root" hidden=""></div>
+<div id="toast" role="status" aria-live="polite" class="">Imported 60 trades.</div>
 
 <footer>
   <div class="disclaimer">All figures are calculated automatically from the statement file you upload and are provided for education and self-review only. They depend on the completeness and accuracy of that file, ignore open positions, and are not investment advice. Past performance does not guarantee future results, and trading leveraged products involves a high risk of loss. Your statement is processed locally in your browser and is not sent to any server; journal notes are stored only in this browser — use "Export backup" to keep a copy.</div>
@@ -659,20 +688,28 @@ async function readXLSX(buf) {
   const z = await unzip(buf), dec = b => new TextDecoder().decode(b), ss = [];
   const sst = await z.read('xl/sharedStrings.xml');
   if (sst) {
-    const re = /<si\b[^>]*>([\s\S]*?)<\/si>/g; let m; const x = dec(sst);
-    while ((m = re.exec(x))) ss.push(unxml([...m[1].matchAll(/<t\b[^>]*>([\s\S]*?)<\/t>/g)].map(t => t[1]).join('')));
+    const re = /<si\b[^>]*?(?:\/>|>([\s\S]*?)<\/si>)/g; let m; const x = dec(sst);
+    while ((m = re.exec(x))) ss.push(unxml([...(m[1] || '').replace(/<rPh\b[\s\S]*?<\/rPh>/g, '').matchAll(/<t\b[^>]*>([\s\S]*?)<\/t>/g)].map(t => t[1]).join('')));
   }
   const sheets = z.names.filter(n => /^xl\/worksheets\/sheet\d+\.xml$/.test(n)).sort((a, b) => parseInt(a.match(/(\d+)\.xml/)[1]) - parseInt(b.match(/(\d+)\.xml/)[1]));
   const rows = [];
   for (const name of sheets) {
     const x = dec(await z.read(name));
-    for (const rm of x.matchAll(/<row\b[^>]*>([\s\S]*?)<\/row>/g)) {
+    for (const rm of x.matchAll(/<row\b[^>]*?(?:\/>|>([\s\S]*?)<\/row>)/g)) {
       const cells = [];
-      for (const cm of rm[1].matchAll(/<c\b([^>]*?)(?:\/>|>([\s\S]*?)<\/c>)/g)) {
+      for (const cm of (rm[1] || '').matchAll(/<c\b([^>]*?)(?:\/>|>([\s\S]*?)<\/c>)/g)) {
         const attrs = cm[1], body = cm[2] || '', ref = /\br="([A-Z]+\d+)"/.exec(attrs), t = /\bt="(\w+)"/.exec(attrs);
         let v = '';
         if (t && t[1] === 'inlineStr') v = unxml([...body.matchAll(/<t\b[^>]*>([\s\S]*?)<\/t>/g)].map(q => q[1]).join(''));
-        else { const vm = /<v>([\s\S]*?)<\/v>/.exec(body); if (vm) v = t && t[1] === 's' ? (ss[+vm[1]] || '') : unxml(vm[1]); }
+        else {
+          const vm = /<v\b[^>]*>([\s\S]*?)<\/v>/.exec(body);
+          if (vm) {
+            if (t && t[1] === 's') v = ss[+vm[1]] || '';
+            else if (t && t[1] === 'b') v = vm[1] === '1' ? 'TRUE' : 'FALSE';
+            else if (t && t[1] === 'd') v = unxml(vm[1]).replace('T', ' ').replace(/Z$/, '').replace(/-/g, '.').replace(/\.(\d{2})\.(\d{2})/, '.$1.$2');
+            else v = unxml(vm[1]);
+          }
+        }
         const ix = ref ? colIndex(ref[1]) : cells.length;
         while (cells.length < ix) cells.push('');
         cells[ix] = String(v).trim();
@@ -688,6 +725,7 @@ async function parseFile(buf) {
   const u = new Uint8Array(buf);
   if (u.length > 3 && u[0] === 0x50 && u[1] === 0x4B) return parseRows(await readXLSX(buf), 'xlsx');
   if (u.length > 4 && String.fromCharCode(u[0], u[1], u[2], u[3]) === '%PDF') throw new Error('PDF statements cannot be read. Please export the HTML, CSV or Excel version instead.');
+  if (u.length > 8 && u[0] === 0xD0 && u[1] === 0xCF && u[2] === 0x11 && u[3] === 0xE0) throw new Error('This is an old-format Excel file (.xls). Open it in Excel and use Save As → Excel Workbook (.xlsx), or export the statement as HTML / CSV.');
   return parseStatement(decodeBuffer(buf));
 }
 const tradeKey = t => t.ticket ? t.ticket + '|' + t.open : [t.symbol, t.type, t.lots, t.open, t.close].join('|');
@@ -699,6 +737,122 @@ function mergeTrades(existing, incoming) {
     seen.add(tradeKey(t)); existing.push(t); added++;
   }
   return { added, dup };
+}
+
+
+/* =========================================================
+   PRO ANALYTICS — advanced risk / performance mathematics
+   (used by the Overview "Advanced analytics" section)
+   ========================================================= */
+function percentile(sortedAsc, p) {
+  if (!sortedAsc.length) return 0;
+  const i = (sortedAsc.length - 1) * p, lo = Math.floor(i), hi = Math.ceil(i);
+  return sortedAsc[lo] + (sortedAsc[hi] - sortedAsc[lo]) * (i - lo);
+}
+function fanSim(nets, horizon, runs, seed) {
+  if (nets.length < 20) return null;
+  const rnd = mulberry32(seed || 777), cols = Array.from({ length: horizon + 1 }, () => new Float64Array(runs));
+  for (let r = 0; r < runs; r++) {
+    let eq = 0;
+    for (let i = 1; i <= horizon; i++) { eq += nets[Math.floor(rnd() * nets.length)]; cols[i][r] = eq; }
+  }
+  const P = [0.05, 0.25, 0.5, 0.75, 0.95], bands = P.map(() => new Array(horizon + 1).fill(0));
+  for (let i = 1; i <= horizon; i++) {
+    const s = Array.from(cols[i]).sort((a, b) => a - b);
+    P.forEach((p, k) => { bands[k][i] = percentile(s, p); });
+  }
+  return { horizon, runs, p5: bands[0], p25: bands[1], p50: bands[2], p75: bands[3], p95: bands[4] };
+}
+function topDrawdowns(eq, limit) {
+  const out = [];
+  let peak = eq[0].bal, peakT = eq[0].t, cur = null;
+  for (let i = 1; i < eq.length; i++) {
+    const p = eq[i];
+    if (p.bal >= peak) {
+      if (cur) { cur.end = p.t; cur.recovered = true; out.push(cur); cur = null; }
+      peak = p.bal; peakT = p.t;
+    } else {
+      if (!cur) cur = { start: peakT, peak, trough: p.bal, troughT: p.t, end: null, recovered: false, trades: 0 };
+      cur.trades++;
+      if (p.bal < cur.trough) { cur.trough = p.bal; cur.troughT = p.t; }
+    }
+  }
+  if (cur) out.push(cur);
+  return out.map(d => ({ ...d, depth: d.peak - d.trough, depthPct: d.peak > 0 ? (d.peak - d.trough) / d.peak : null }))
+    .sort((a, b) => b.depth - a.depth).slice(0, limit || 5);
+}
+function proAnalytics(R) {
+  const T = R.T, n = R.n, nets = T.map(t => t.net), P = {};
+  const m = mean(nets), sd = stdev(nets);
+  // distribution shape
+  if (n >= 8 && sd > 0) {
+    const m3 = sum(nets.map(x => ((x - m) / sd) ** 3)) / n, m4 = sum(nets.map(x => ((x - m) / sd) ** 4)) / n;
+    P.skew = m3; P.kurt = m4 - 3;
+  } else { P.skew = null; P.kurt = null; }
+  // tail risk (per trade)
+  const sorted = [...nets].sort((a, b) => a - b);
+  if (n >= 20) {
+    P.var95 = percentile(sorted, 0.05);
+    const tail = sorted.filter(x => x <= P.var95);
+    P.cvar95 = tail.length ? mean(tail) : P.var95;
+  } else { P.var95 = null; P.cvar95 = null; }
+  // Sortino (daily, downside deviation vs 0)
+  const dn = R.dayNets;
+  if (dn.length >= 10) {
+    const dd = Math.sqrt(sum(dn.map(x => Math.min(0, x) ** 2)) / dn.length);
+    P.sortino = dd > 0 ? mean(dn) / dd * Math.sqrt(252) : null;
+  } else P.sortino = null;
+  // time span, Calmar, Ulcer index
+  const span = (R.T[n - 1].close - R.T[0].open) / 86400000;
+  P.spanDays = span;
+  P.calmar = (R.retPct != null && R.maxDDPct > 0 && span >= 30) ? (R.retPct * 365 / span) / R.maxDDPct : null;
+  if (R.startBal > 0) P.ulcer = Math.sqrt(mean(R.eq.map(p => (p.ddPct * 100) ** 2)));
+  else P.ulcer = null;
+  // Rolling metrics
+  const w = clamp(Math.round(n / 4), 10, 30);
+  P.rollW = w; P.roll = [];
+  if (n >= w + 5) {
+    for (let i = w; i <= n; i++) {
+      const seg = nets.slice(i - w, i), gp = sum(seg.filter(x => x > 0)), gl = -sum(seg.filter(x => x < 0));
+      P.roll.push({ i, t: T[i - 1].close, wr: seg.filter(x => x > 0).length / w, pf: gl > 0 ? Math.min(5, gp / gl) : (gp > 0 ? 5 : 0), ex: mean(seg) });
+    }
+  }
+  // Long vs short cumulative
+  P.ls = { buy: [], sell: [] };
+  let cb = 0, cs = 0;
+  T.forEach((t, i) => { if (t.type === 'buy') cb += t.net; else cs += t.net; P.ls.buy.push({ i: i + 1, v: cb }); P.ls.sell.push({ i: i + 1, v: cs }); });
+  // Monte-Carlo fan
+  P.fan = fanSim(nets, clamp(Math.round(n * 0.6), 30, 150), 1500, 4242 + n);
+  // Radar (0-100 each)
+  const sc = R.score;
+  P.radar = [
+    ['Win rate', clamp(R.winRate / 0.7, 0, 1) * 100, pct(R.winRate, 0)],
+    ['Profit factor', clamp(((R.pf === Infinity ? 3 : R.pf) - 0.6) / 1.9, 0, 1) * 100, pfFmt(R.pf)],
+    ['Payoff', clamp((R.payoff === Infinity ? 3 : R.payoff) / 2.5, 0, 1) * 100, pfFmt(R.payoff)],
+    ['Recovery', clamp((R.recovery == null ? 0 : R.recovery) / 4, 0, 1) * 100, R.recovery != null ? num(R.recovery, 2) : '—'],
+    ['Consistency', sc ? sc.cons : clamp(R.profDayRate / 0.7, 0, 1) * 100, pct(R.profDayRate, 0) + ' green days'],
+    ['Discipline', sc ? sc.disc : clamp(100 - (R.revenge.n / n) * 150, 0, 100), 'revenge ' + R.revenge.n + ' · lotCV ' + num(R.lotCV, 2)]
+  ].map(a => ({ label: a[0], v: Math.round(a[1]), text: a[2] }));
+  // Weekday x hour matrix (by entry time)
+  const hm = new Map();
+  for (const t of T) {
+    const d = new Date(t.open), k = d.getUTCDay() + '|' + d.getUTCHours();
+    let c = hm.get(k); if (!c) { c = { dow: d.getUTCDay(), h: d.getUTCHours(), n: 0, net: 0, w: 0 }; hm.set(k, c); }
+    c.n++; c.net += t.net; if (t.net > 0) c.w++;
+  }
+  P.hm = [...hm.values()];
+  // Monthly returns
+  const mm = new Map(); let bal = R.startBal;
+  for (const t of T) {
+    const k = mkey(t.close); let o = mm.get(k);
+    if (!o) { o = { key: k, start: bal, net: 0, n: 0 }; mm.set(k, o); }
+    o.net += t.net; o.n++; bal += t.net;
+  }
+  P.months = [...mm.values()].map(o => ({ ...o, pct: o.start > 0 ? o.net / o.start : null }));
+  // Scatter data
+  P.scatter = T.map(t => ({ d: Math.max(0.5, durMin(t)), v: t.net, lots: t.lots, sym: t.symbol, type: t.type, close: t.close }));
+  P.dds = topDrawdowns(R.eq, 5);
+  return P;
 }
 
 /* ---------------- demo account (clearly labelled in the UI) ---------------- */
@@ -1176,6 +1330,182 @@ function insightCard(it, kind) {
   return '<div class="ins ' + kind + '"><div class="ins-h">' + esc(it.title) + '</div><div class="ins-d">' + esc(it.detail) + '</div><div class="ins-t"><b>' + (kind === 'good' ? 'Keep doing:' : 'Fix it:') + '</b> ' + esc(it.tip) + '</div></div>';
 }
 
+
+/* ---------------- PRO charts (same classes / variables as the rest of the site) ---------------- */
+function sLine(o) { return 'pl ' + (o.cls || ''); }
+
+/* multi-series line chart with shared hover; series = [{name, cls, dash, pts:[{x,y}]}] */
+function multiLineSVG(series, o) {
+  const A = series[0].pts;
+  if (!A || A.length < 2) return noData('Not enough trades yet');
+  const W = o.W || 760, H = o.H || 240, L = 54, R = 14, T = 12, B = 26;
+  const xs = A.map(p => p.x), x0 = xs[0], x1 = xs[xs.length - 1], xspan = x1 - x0 || 1;
+  let lo = Infinity, hi = -Infinity;
+  for (const s of series) for (const p of s.pts) { if (p.y < lo) lo = p.y; if (p.y > hi) hi = p.y; }
+  if (o.zero) { lo = Math.min(lo, 0); hi = Math.max(hi, 0); }
+  if (o.refs) for (const r of o.refs) { lo = Math.min(lo, r.y); hi = Math.max(hi, r.y); }
+  if (hi === lo) hi = lo + 1;
+  const pd = (hi - lo) * 0.08; lo -= pd; hi += pd;
+  const X = v => L + (W - L - R) * ((v - x0) / xspan), Y = v => T + (H - T - B) * (1 - (v - lo) / (hi - lo));
+  const fmtY = o.fmtY || kf;
+  let s = '<svg viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="' + esc(o.label || 'chart') + '">';
+  for (const tk of niceTicks(lo, hi, 4)) s += '<line class="gl' + (tk === 0 && o.zero ? ' zero' : '') + '" x1="' + L + '" x2="' + (W - R) + '" y1="' + Y(tk).toFixed(1) + '" y2="' + Y(tk).toFixed(1) + '"/><text class="ax" x="' + (L - 8) + '" y="' + (Y(tk) + 4).toFixed(1) + '" text-anchor="end">' + fmtY(tk) + '</text>';
+  if (o.refs) for (const r of o.refs) s += '<line class="gl base" x1="' + L + '" x2="' + (W - R) + '" y1="' + Y(r.y).toFixed(1) + '" y2="' + Y(r.y).toFixed(1) + '"/><text class="ax" x="' + (W - R) + '" y="' + (Y(r.y) - 4).toFixed(1) + '" text-anchor="end">' + esc(r.label) + '</text>';
+  if (o.area) {
+    const p0 = series[0].pts, base = Y(o.zero ? 0 : lo + pd).toFixed(1);
+    s += '<path class="ar" d="' + p0.map((p, i) => (i ? 'L' : 'M') + X(p.x).toFixed(1) + ' ' + Y(p.y).toFixed(1)).join(' ') + ' L' + X(x1).toFixed(1) + ' ' + base + ' L' + X(x0).toFixed(1) + ' ' + base + ' Z"/>';
+  }
+  for (const sr of series) s += '<path class="pl ' + (sr.cls || '') + '" d="' + sr.pts.map((p, i) => (i ? 'L' : 'M') + X(p.x).toFixed(1) + ' ' + Y(p.y).toFixed(1)).join(' ') + '"' + (sr.dash ? ' stroke-dasharray="' + sr.dash + '"' : '') + '/>';
+  for (let i = 0; i <= 3; i++) { const v = x0 + xspan * i / 3; s += '<text class="ax" x="' + (i === 0 ? L : i === 3 ? W - R : X(v)).toFixed(1) + '" y="' + (H - 6) + '" text-anchor="' + (i === 0 ? 'start' : i === 3 ? 'end' : 'middle') + '">' + esc((o.fmtX || (q => Math.round(q)))(v)) + '</text>'; }
+  s += '<line class="hv" x1="0" x2="0" y1="' + T + '" y2="' + (H - B) + '"/><circle class="hd" r="4.5" cx="0" cy="0"/></svg><div class="tip"></div>';
+  HOVERS.push({ id: o.id, W, pts: A.map((p, i) => ({ x: X(p.x), y: Y(p.y), tip: o.tip(i) })) });
+  const legend = o.legend ? '<div class="lgd">' + series.map(sr => '<span><i class="sw ' + (sr.cls || '') + '"></i>' + esc(sr.name) + '</span>').join('') + '</div>' : '';
+  return legend + '<div class="chart" id="' + o.id + '">' + s + '</div>';
+}
+
+/* Monte-Carlo fan chart: percentile bands of cumulative P/L over the next N trades */
+function fanSVG(F, o) {
+  const W = o.W || 760, H = o.H || 280, L = 58, R = 14, T = 12, B = 26, N = F.horizon;
+  let lo = Math.min(0, ...F.p5), hi = Math.max(0, ...F.p95);
+  if (hi === lo) hi = lo + 1;
+  const pd = (hi - lo) * 0.06; lo -= pd; hi += pd;
+  const X = i => L + (W - L - R) * (i / N), Y = v => T + (H - T - B) * (1 - (v - lo) / (hi - lo));
+  const path = a => a.map((v, i) => (i ? 'L' : 'M') + X(i).toFixed(1) + ' ' + Y(v).toFixed(1)).join(' ');
+  const band = (a, b) => 'M' + a.map((v, i) => X(i).toFixed(1) + ' ' + Y(v).toFixed(1)).join(' L') + ' L' + b.map((v, i) => [X(N - i).toFixed(1), Y(b[N - i]).toFixed(1)].join(' ')).join(' L') + ' Z';
+  let s = '<svg viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="Monte Carlo projection of cumulative profit and loss">';
+  for (const tk of niceTicks(lo, hi, 5)) s += '<line class="gl' + (tk === 0 ? ' zero' : '') + '" x1="' + L + '" x2="' + (W - R) + '" y1="' + Y(tk).toFixed(1) + '" y2="' + Y(tk).toFixed(1) + '"/><text class="ax" x="' + (L - 8) + '" y="' + (Y(tk) + 4).toFixed(1) + '" text-anchor="end">' + kf(tk) + '</text>';
+  s += '<path class="fan f1" d="' + band(F.p5, F.p95) + '"/><path class="fan f2" d="' + band(F.p25, F.p75) + '"/>';
+  s += '<path class="pl s-acc" d="' + path(F.p50) + '"/>';
+  for (let i = 0; i <= 4; i++) { const v = Math.round(N * i / 4); s += '<text class="ax" x="' + (i === 0 ? L : i === 4 ? W - R : X(v)).toFixed(1) + '" y="' + (H - 6) + '" text-anchor="' + (i === 0 ? 'start' : i === 4 ? 'end' : 'middle') + '">' + (v === 0 ? 'now' : '+' + v) + '</text>'; }
+  s += '<line class="hv" x1="0" x2="0" y1="' + T + '" y2="' + (H - B) + '"/><circle class="hd" r="4.5" cx="0" cy="0"/></svg><div class="tip"></div>';
+  const pts = [];
+  for (let i = 0; i <= N; i++) pts.push({ x: X(i), y: Y(F.p50[i]), tip: '<b>After ' + i + ' trades</b><br>95% case ' + money(F.p95[i], true) + '<br>75% case ' + money(F.p75[i], true) + '<br>median ' + money(F.p50[i], true) + '<br>25% case ' + money(F.p25[i], true) + '<br>5% case ' + money(F.p5[i], true) });
+  HOVERS.push({ id: o.id, W, pts });
+  return '<div class="lgd"><span><i class="sw s-acc"></i>Median</span><span><i class="sw fan f2"></i>25%–75% of runs</span><span><i class="sw fan f1"></i>5%–95% of runs</span></div><div class="chart" id="' + o.id + '">' + s + '</div>';
+}
+
+/* radar / spider chart (0-100 per axis) */
+function radarSVG(axes) {
+  const W = VW() < 600 ? 390 : 460, H = 300, cx = W / 2, cy = H / 2 + 4, r = VW() < 600 ? 92 : 100, n = axes.length;
+  const ang = i => -Math.PI / 2 + i * 2 * Math.PI / n, pt = (i, k) => [cx + Math.cos(ang(i)) * r * k, cy + Math.sin(ang(i)) * r * k];
+  let s = '<svg viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="Performance radar">';
+  for (const k of [0.25, 0.5, 0.75, 1]) s += '<polygon class="rg" points="' + axes.map((_, i) => pt(i, k).map(v => v.toFixed(1)).join(',')).join(' ') + '"/>';
+  axes.forEach((a, i) => {
+    const [x, y] = pt(i, 1), [lx, ly] = pt(i, 1.2), anchor = Math.abs(lx - cx) < 8 ? 'middle' : lx > cx ? 'start' : 'end';
+    s += '<line class="rg" x1="' + cx + '" y1="' + cy + '" x2="' + x.toFixed(1) + '" y2="' + y.toFixed(1) + '"/><text class="ax rlab" x="' + lx.toFixed(1) + '" y="' + (ly + 4).toFixed(1) + '" text-anchor="' + anchor + '">' + esc(a.label) + '</text>';
+  });
+  s += '<polygon class="rpoly" points="' + axes.map((a, i) => pt(i, a.v / 100).map(v => v.toFixed(1)).join(',')).join(' ') + '"/>';
+  axes.forEach((a, i) => { const [x, y] = pt(i, a.v / 100); s += '<circle class="rdot" cx="' + x.toFixed(1) + '" cy="' + y.toFixed(1) + '" r="4"><title>' + esc(a.label + ': ' + a.v + '/100 · ' + a.text) + '</title></circle>'; });
+  return s + '</svg>';
+}
+
+/* scatter: holding time (log) vs result, bubble = lot size */
+function scatterSVG(pts, W) {
+  if (pts.length < 5) return noData('Need at least 5 trades');
+  W = W || 560; const H = 250, L = 54, R = 14, T = 12, B = 30;
+  const dmax = Math.max(...pts.map(p => p.d)), dmin = Math.min(...pts.map(p => p.d));
+  const lx0 = Math.log10(Math.max(0.5, Math.min(dmin, 1))), lx1 = Math.log10(Math.max(dmax, 10)) + 0.05;
+  let lo = Math.min(0, ...pts.map(p => p.v)), hi = Math.max(0, ...pts.map(p => p.v));
+  if (hi === lo) hi = lo + 1; const pd = (hi - lo) * 0.1; lo -= pd; hi += pd;
+  const X = d => L + (W - L - R) * ((Math.log10(d) - lx0) / (lx1 - lx0)), Y = v => T + (H - T - B) * (1 - (v - lo) / (hi - lo));
+  const lm = mean(pts.map(p => p.lots)) || 1;
+  let s = '<svg viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="Holding time versus result">';
+  for (const tk of niceTicks(lo, hi, 4)) s += '<line class="gl' + (tk === 0 ? ' zero' : '') + '" x1="' + L + '" x2="' + (W - R) + '" y1="' + Y(tk).toFixed(1) + '" y2="' + Y(tk).toFixed(1) + '"/><text class="ax" x="' + (L - 8) + '" y="' + (Y(tk) + 4).toFixed(1) + '" text-anchor="end">' + kf(tk) + '</text>';
+  for (const [d, lb] of [[1, '1m'], [5, '5m'], [15, '15m'], [60, '1h'], [240, '4h'], [1440, '1d'], [10080, '1w']]) if (Math.log10(d) >= lx0 && Math.log10(d) <= lx1) s += '<line class="gl" x1="' + X(d).toFixed(1) + '" x2="' + X(d).toFixed(1) + '" y1="' + T + '" y2="' + (H - B) + '"/><text class="ax" x="' + X(d).toFixed(1) + '" y="' + (H - 10) + '" text-anchor="middle">' + lb + '</text>';
+  for (const p of pts) s += '<circle class="' + (p.v >= 0 ? 'sp' : 'sn') + '" cx="' + X(p.d).toFixed(1) + '" cy="' + Y(p.v).toFixed(1) + '" r="' + clamp(2.6 + Math.sqrt(p.lots / lm) * 1.8, 2.6, 8).toFixed(1) + '"><title>' + esc(p.sym + ' ' + p.type + ' · ' + dur(p.d) + ' · ' + num(p.lots) + ' lots · ' + money(p.v, true)) + '</title></circle>';
+  return s + '</svg>';
+}
+
+/* heatmaps (HTML grid, colours follow the site theme) */
+function heatCell(v, max, label, title) {
+  const o = v === 0 ? 0 : clamp(Math.abs(v) / (max || 1), 0.14, 0.85);
+  return '<div class="hm-c ' + (v > 0 ? 'win' : v < 0 ? 'loss' : '') + '" style="--o:' + o.toFixed(2) + '" title="' + esc(title) + '"><span>' + label + '</span></div>';
+}
+function monthHeat(P, hasPct) {
+  if (!P.months.length) return noData();
+  const years = [...new Set(P.months.map(m => m.key.slice(0, 4)))].sort(), val = m => hasPct && m.pct != null ? m.pct * 100 : m.net;
+  const mx = Math.max(...P.months.map(m => Math.abs(val(m))));
+  const fmt = v => hasPct ? (v > 0 ? '+' : v < 0 ? '−' : '') + Math.abs(v).toFixed(Math.abs(v) >= 10 ? 0 : 1) + '%' : kf(v);
+  let h = '<div class="hm" style="grid-template-columns:40px repeat(12,minmax(0,1fr)) 54px"><div></div>' + MONTHS.map(m => '<div class="hm-h">' + m + '</div>').join('') + '<div class="hm-h">Year</div>';
+  for (const y of years) {
+    h += '<div class="hm-y">' + y + '</div>';
+    let ytd = 0, ytdNet = 0, startY = null;
+    for (let mo = 1; mo <= 12; mo++) {
+      const m = P.months.find(x => x.key === y + '-' + pad2(mo));
+      if (!m) { h += '<div class="hm-c off"></div>'; continue; }
+      if (startY == null) startY = m.start;
+      ytdNet += m.net; const v = val(m);
+      h += heatCell(v, mx, fmt(v), MONTHS[mo - 1] + ' ' + y + ': ' + money(m.net, true) + ' · ' + m.n + ' trades' + (m.pct != null ? ' · ' + pct(m.pct) : ''));
+    }
+    const yv = hasPct && startY > 0 ? ytdNet / startY * 100 : ytdNet;
+    h += '<div class="hm-c tot ' + (yv >= 0 ? 'pos' : 'neg') + '"><span>' + fmt(yv) + '</span></div>';
+  }
+  return h + '</div>';
+}
+function monthStats(P) {
+  const M = P.months; if (!M.length) return '';
+  const best = M.reduce((a, m) => m.net > a.net ? m : a, M[0]), worst = M.reduce((a, m) => m.net < a.net ? m : a, M[0]);
+  const up = M.filter(m => m.net > 0).length, lab = m => MONTHS[+m.key.slice(5) - 1] + ' ' + m.key.slice(2, 4);
+  return '<div class="mini"><div><span>Best month</span><b class="pos">' + money(best.net, true) + ' · ' + lab(best) + '</b></div><div><span>Worst month</span><b class="neg">' + money(worst.net, true) + ' · ' + lab(worst) + '</b></div><div><span>Profitable months</span><b>' + up + ' of ' + M.length + ' (' + pct(up / M.length, 0) + ')</b></div><div><span>Average month</span><b class="' + cls(mean(M.map(m => m.net))) + '">' + money(mean(M.map(m => m.net)), true) + '</b></div></div>';
+}
+function dowHourHeat(P) {
+  if (!P.hm.length) return noData();
+  const hrs = P.hm.map(c => c.h), h0 = Math.min(...hrs), h1 = Math.max(Math.max(...hrs), h0 + 7);
+  const rows = DOW_ORDER.filter(d => d < 6 && d > 0 || P.hm.some(c => c.dow === d));
+  const mx = Math.max(...P.hm.map(c => Math.abs(c.net)));
+  const cols = h1 - h0 + 1;
+  let h = '<div class="hm" style="grid-template-columns:40px repeat(' + cols + ',minmax(0,1fr))"><div></div>';
+  for (let k = h0; k <= h1; k++) h += '<div class="hm-h">' + (cols > 14 ? (k % 2 ? '' : pad2(k)) : pad2(k)) + '</div>';
+  for (const d of rows) {
+    h += '<div class="hm-y">' + DOW[d] + '</div>';
+    for (let k = h0; k <= h1; k++) {
+      const c = P.hm.find(x => x.dow === d && x.h === k);
+      h += c ? heatCell(c.net, mx, '', DOW[d] + ' ' + pad2(k) + ':00 · ' + money(c.net, true) + ' · ' + c.n + ' trades · win rate ' + pct(c.w / c.n, 0)) : '<div class="hm-c off"></div>';
+    }
+  }
+  return h + '</div>';
+}
+function ddTable(P) {
+  if (!P.dds.length) return '<p class="muted">No drawdown yet — the equity curve never fell below a previous peak.</p>';
+  return '<div class="tbl-wrap"><table class="tbl"><thead><tr><th>#</th><th class="r">Depth</th><th class="r">Depth %</th><th>Peak</th><th>Trough</th><th>Recovered</th><th class="r">Trades</th></tr></thead><tbody>' +
+    P.dds.map((d, i) => '<tr><td>' + (i + 1) + '</td><td class="r neg">' + money(-d.depth) + '</td><td class="r">' + (d.depthPct != null ? pct(d.depthPct) : '—') + '</td><td>' + fmtDate(d.start) + '</td><td>' + fmtDate(d.troughT) + '</td><td>' + (d.recovered ? fmtDate(d.end) + ' · ' + dur((d.end - d.start) / 60000) : '<span class="pill warn">STILL OPEN</span>') + '</td><td class="r">' + d.trades + '</td></tr>').join('') + '</tbody></table></div>';
+}
+function proSection(R) {
+  if (R.n < 10) return '';
+  const P = proAnalytics(R), hasPct = R.startBal > 0;
+  const dash = v => v == null ? '—' : v;
+  const kp = '<div class="kpis">' +
+    kpi('SHARPE · DAILY', R.sharpe != null ? num(R.sharpe) : '—', 'Return per unit of total volatility (annualised)', R.sharpe != null ? (R.sharpe >= 1 ? 'pos' : R.sharpe < 0 ? 'neg' : '') : '') +
+    kpi('SORTINO', P.sortino != null ? num(P.sortino) : '—', 'Same, but only penalises losing days', P.sortino != null ? (P.sortino >= 1.5 ? 'pos' : P.sortino < 0 ? 'neg' : '') : '') +
+    kpi('CALMAR', P.calmar != null ? num(P.calmar) : '—', P.calmar != null ? 'Annualised return ÷ max drawdown' : 'Needs a % balance and 30+ days of history', P.calmar != null ? cls(P.calmar) : '') +
+    kpi('ULCER INDEX', P.ulcer != null ? num(P.ulcer, 2) + '%' : '—', P.ulcer != null ? 'Depth and duration of drawdowns — lower is calmer' : 'Needs a starting balance') +
+    kpi('VaR 95% · PER TRADE', P.var95 != null ? money(P.var95) : '—', '1 trade in 20 is worse than this', P.var95 != null ? 'neg' : '') +
+    kpi('CVaR 95%', P.cvar95 != null ? money(P.cvar95) : '—', 'Average of those worst 5% of trades', P.cvar95 != null ? 'neg' : '') +
+    kpi('SKEWNESS', P.skew != null ? num(P.skew) : '—', P.skew == null ? '' : P.skew > 0.3 ? 'Right-skewed: a few big winners' : P.skew < -0.3 ? 'Left-skewed: a few big losers hurt' : 'Roughly symmetric results', P.skew != null ? (P.skew > 0.3 ? 'pos' : P.skew < -0.3 ? 'neg' : '') : '') +
+    kpi('EXCESS KURTOSIS', P.kurt != null ? num(P.kurt) : '—', P.kurt == null ? '' : P.kurt > 1 ? 'Fat tails: outsized wins/losses are common' : 'Normal-like tails') +
+    '</div>';
+  const radar = panel('PERFORMANCE RADAR', radarSVG(P.radar) + '<div class="radar-l">' + P.radar.map(a => '<span><b>' + a.v + '</b> ' + esc(a.label) + '</span>').join('') + '</div><p class="fine">Each axis is scaled 0–100 (win rate, profit factor, payoff, recovery factor, profitable-day consistency, discipline). A larger, rounder shape means a more balanced edge.</p>');
+  let rollBody = noData('Needs at least ' + (P.rollW + 5) + ' trades');
+  if (P.roll.length > 2) {
+    const pts = k => P.roll.map(r => ({ x: r.i, y: k(r) }));
+    rollBody = multiLineSVG([{ name: 'Rolling win rate', cls: 's-acc', pts: pts(r => r.wr * 100) }], { id: 'ch-rwr', W: PW('half'), H: 200, label: 'Rolling win rate', fmtY: v => num(v, 0) + '%', fmtX: v => '#' + Math.round(v), refs: [{ y: 50, label: '50%' }], area: true, tip: i => '<b>' + pct(P.roll[i].wr, 0) + ' win rate</b><br>trades ' + (P.roll[i].i - P.rollW + 1) + '–' + P.roll[i].i + '<br>' + fmtDate(P.roll[i].t) }) +
+      '<h3 class="sub-h">ROLLING EXPECTANCY · PER TRADE</h3>' +
+      multiLineSVG([{ name: 'Rolling expectancy', cls: 's-buy', pts: pts(r => r.ex) }], { id: 'ch-rex', W: PW('half'), H: 170, label: 'Rolling expectancy', zero: true, fmtX: v => '#' + Math.round(v), tip: i => '<b>' + money(P.roll[i].ex, true) + ' per trade</b><br>last ' + P.rollW + ' trades · up to #' + P.roll[i].i + '<br>profit factor ' + num(P.roll[i].pf) });
+  }
+  const roll = panel('ROLLING PERFORMANCE · LAST ' + P.rollW + ' TRADES WINDOW', rollBody + '<p class="fine">A moving window shows whether your edge is improving or fading. Win rate trending below 50% together with negative expectancy is an early warning.</p>');
+  const fanP = P.fan ? panel('MONTE CARLO · NEXT ' + P.fan.horizon + ' TRADES (' + P.fan.runs.toLocaleString() + ' SIMULATED PATHS)', fanSVG(P.fan, { id: 'ch-mc', W: PW('full') }) +
+    '<div class="sim" style="margin-top:12px"><div class="sim-k"><div class="k-label">MEDIAN OUTCOME</div><div class="k-val small ' + cls(P.fan.p50[P.fan.horizon]) + '">' + money(P.fan.p50[P.fan.horizon], true) + '</div></div><div class="sim-k"><div class="k-label">BEST 5% OF PATHS</div><div class="k-val small pos">' + money(P.fan.p95[P.fan.horizon], true) + '</div></div><div class="sim-k"><div class="k-label">WORST 5% OF PATHS</div><div class="k-val small neg">' + money(P.fan.p5[P.fan.horizon], true) + '</div></div></div>' +
+    '<p class="fine">Your own trade results are re-sampled at random (bootstrap) to draw thousands of possible futures. The cone is a statistical range, not a forecast — it assumes your future trades resemble your past ones.</p>') : '';
+  const heat = '<div class="grid-2">' + panel('MONTHLY RETURNS' + (hasPct ? ' · % OF BALANCE' : ' · P/L'), monthHeat(P, hasPct) + monthStats(P) + '<p class="fine">Green = profitable month, red = losing month; colour strength follows the size. Hover a cell for details.</p>') +
+    panel('WEEKDAY × ENTRY HOUR · P/L HEATMAP', dowHourHeat(P) + '<p class="fine">Statement (broker) time, by trade entry. Bright green cells are your best time slots; bright red cells are where you lose money.</p>') + '</div>';
+  const ls = multiLineSVG([{ name: 'Buy / long', cls: 's-buy', pts: P.ls.buy.map(p => ({ x: p.i, y: p.v })) }, { name: 'Sell / short', cls: 's-sell', pts: P.ls.sell.map(p => ({ x: p.i, y: p.v })) }], { id: 'ch-ls', W: PW('half'), H: 230, label: 'Cumulative result buy versus sell', zero: true, legend: true, fmtX: v => '#' + Math.round(v), tip: i => '<b>After trade #' + P.ls.buy[i].i + '</b><br>buys ' + money(P.ls.buy[i].v, true) + '<br>sells ' + money(P.ls.sell[i].v, true) });
+  const two = '<div class="grid-2">' + panel('HOLDING TIME VS RESULT · BUBBLE = LOT SIZE', scatterSVG(P.scatter, PW('half')) + '<p class="fine">Each dot is a trade. Dots far below the line on the right mean losers held too long; a cloud of losses on the left means over-trading short scalps.</p>') +
+    panel('BUY VS SELL · CUMULATIVE P/L', ls + '<p class="fine">Shows which direction actually pays. A diverging pair means one side carries the account and the other should be reviewed.</p>') + '</div>';
+  const dds = panel('TOP 5 DRAWDOWNS · DEPTH, RECOVERY TIME', ddTable(P) + '<p class="fine">A drawdown starts at an equity peak and ends when a new peak is made. Long recovery times matter as much as depth.</p>');
+  return '<div class="sec-l">ADVANCED ANALYTICS · RISK-ADJUSTED PERFORMANCE &amp; MATHEMATICAL MODELS</div><div style="height:14px"></div>' + kp +
+    '<div class="grid-2">' + radar + roll + '</div>' + fanP + heat + two + dds;
+}
+
 /* ---------------- views ---------------- */
 function todayBlock(a) {
   const key = todayKey(), tt = a.trades.filter(t => dkey(t.close) === key).sort((x, y) => x.close - y.close);
@@ -1222,7 +1552,7 @@ function viewOverview(a, ctx) {
     : '<p class="muted">Add at least 10 closed trades to unlock automatic strengths and weaknesses.</p>';
   return kpis + '<div class="grid-main">' + equity + '<div class="stack">' + score + today + '</div></div>' +
     '<div class="grid-2">' + panel('DAILY P/L · LAST ' + Math.min(45, R.days.length) + ' TRADING DAYS', barsSVG(dayItems, { W: PW('half'), label: 'Daily profit and loss' })) + panel('MONTHLY P/L', barsSVG(monItems, { W: PW('half'), label: 'Monthly profit and loss' })) + '</div>' +
-    panel('WHAT TO WORK ON · WHAT TO KEEP', top);
+    proSection(R) + panel('WHAT TO WORK ON · WHAT TO KEEP', top);
 }
 
 function viewCalendar(a) {
@@ -1647,7 +1977,7 @@ function connectModal(targetId, initialFile) {
   const exist = DB.accounts.filter(a => !a.demo);
   openModal('<button class="x" data-close="1" aria-label="Close">×</button><h2>Upload your account statement</h2>' +
     '<p class="muted">Upload the account statement from <b>MetaTrader 4, MetaTrader 5 or cTrader</b>. Everything is analysed <b>inside your browser</b> — your file is not uploaded anywhere.</p>' +
-    '<div class="drop" id="drop"><input type="file" id="file" accept=".htm,.html,.csv,.txt,.xlsx,text/html,text/csv"><div><b>Drop your statement here</b> or click to choose a file<div class="fine">HTML · CSV · Excel (.xlsx)</div></div></div>' +
+    '<div class="drop" id="drop"><input type="file" id="file" accept=".htm,.html,.csv,.txt,.xlsx,.xlsm,.xls,text/html,text/csv,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"><div><b>Drop your statement here</b> or click to choose a file<div class="fine">HTML · CSV · Excel (.xlsx)</div></div></div>' +
     '<div id="pv"></div>' +
     '<details class="how" open><summary>How do I export my statement?</summary><ol><li><b>MetaTrader 4:</b> Terminal → <i>Account History</i> tab → right-click → pick <i>All History</i> → right-click again → <i>Save as Detailed Report</i> (.htm).</li><li><b>MetaTrader 5:</b> Toolbox → <i>History</i> tab → choose <i>Positions</i> and the period → right-click → <i>Report</i> → HTML (or Open XML/Excel).</li><li><b>cTrader:</b> <i>History</i> tab → set the date range → <i>Export</i> → CSV or Excel.</li><li>Upload the saved file here. To update later, import a newer statement into the same account — duplicates are skipped.</li></ol>' +
     '<p class="fine">PDF statements cannot be read. Other platform? Use the <a class="lnk" id="tpl">CSV template</a>.</p></details>' +
@@ -1832,5 +2162,6 @@ function init() {
 if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init); else init();
 })();
 </script>
-</body>
-</html>
+
+
+</body></html>
