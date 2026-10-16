@@ -6,6 +6,79 @@
 <title>ASL University — XAU/USD Market Intelligence</title>
 <meta name="color-scheme" content="dark light">
 <script>
+/* ASL 1-minute preview: a visitor can stay on this page for 1 minute in total (time is remembered on the device,
+   so refreshing or coming back does not reset it). When the minute is used up they are sent to the payment section
+   of the main site to buy the membership. */
+(function () {
+  var PREVIEW_SECONDS = 60;
+  var SHOW_COUNTDOWN = true;      /* small "free preview 0:42 left" badge; set false to hide it */
+  var PAY_URL = 'https://asluniversity.github.io/ASLuniversity/#pricing';
+  var KEY = 'asl-analysis-used-v1', DEV = 'asl-device-id';
+  /* optional: your backend, so the free minute is also limited per IP address (a browser cannot see its own IP).
+     POST {device, page:'analysis'}  ->  {allowed:true|false}   (server stores IP + device on the first allowed call) */
+  var GUARD_URL = '';
+
+  var root = document.documentElement, LIMIT = PREVIEW_SECONDS * 1000, going = false, pill = null, last = Date.now();
+
+  function readUsed() { try { var v = parseInt(localStorage.getItem(KEY), 10); return v >= 0 ? v : 0; } catch (e) { return 0; } }
+  function writeUsed(v) { try { localStorage.setItem(KEY, String(Math.round(v))); } catch (e) {} }
+  function deviceId() {
+    try { var d = localStorage.getItem(DEV); if (!d) { d = Math.random().toString(36).slice(2) + Date.now().toString(36); localStorage.setItem(DEV, d); } return d; }
+    catch (e) { return 'unknown'; }
+  }
+  var used = readUsed(), firstVisit = (used === 0);
+
+  function go() {
+    if (going) return; going = true;
+    clearInterval(tm);
+    writeUsed(LIMIT);
+    root.style.visibility = 'hidden';
+    location.replace(PAY_URL);
+  }
+
+  /* minute already used up on an earlier visit -> straight to the membership page */
+  if (used >= LIMIT) { var tm; go(); return; }
+
+  /* badge */
+  var css = '#asl-pill{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(14px + env(safe-area-inset-bottom,0px));z-index:2147482000;display:flex;align-items:center;gap:12px;' +
+    'padding:8px 8px 8px 14px;border-radius:999px;border:1px solid var(--hairline,#24272B);background:var(--panel,#111214);color:var(--white,#F5F7F8);' +
+    'font:11px var(--mono,monospace);letter-spacing:.05em;box-shadow:0 8px 30px rgba(0,0,0,.35);white-space:nowrap}' +
+    '#asl-pill b{color:var(--blue,#0BB1D2);font-weight:600}#asl-pill.low b{color:var(--sell,#E15B4D)}' +
+    '#asl-pill a{padding:7px 12px;border-radius:999px;text-decoration:none;font-weight:700;color:#061116;background:linear-gradient(135deg,#0BB1D2,#1eb3cc)}' +
+    '@media(max-width:520px){#asl-pill{font-size:10px;gap:8px;padding-left:11px}}';
+  function fmt(s) { return Math.floor(s / 60) + ':' + ('0' + (s % 60)).slice(-2); }
+  function left() { return Math.max(0, Math.ceil((LIMIT - used) / 1000)); }
+  function showPill() {
+    if (!SHOW_COUNTDOWN || pill || going) return;
+    var st = document.createElement('style'); st.textContent = css; document.head.appendChild(st);
+    pill = document.createElement('div'); pill.id = 'asl-pill';
+    pill.innerHTML = '<span>FREE PREVIEW &middot; <b>' + fmt(left()) + '</b> left</span><a href="' + PAY_URL + '">Get membership</a>';
+    document.body.appendChild(pill);
+  }
+  if (document.body) showPill(); else document.addEventListener('DOMContentLoaded', showPill);
+
+  /* count the time the visitor is actually looking at the page */
+  var tm = setInterval(function () {
+    var now = Date.now(), dt = Math.min(now - last, 2500); last = now;
+    if (!document.hidden) { used += dt; writeUsed(used); }
+    if (used >= LIMIT) { go(); return; }
+    if (pill) { pill.querySelector('b').textContent = fmt(left()); pill.className = left() <= 10 ? 'low' : ''; }
+  }, 1000);
+  document.addEventListener('visibilitychange', function () { last = Date.now(); });
+  window.addEventListener('pageshow', function () { used = Math.max(used, readUsed()); last = Date.now(); if (used >= LIMIT) go(); });
+
+  /* first visit on this device: ask the server whether this IP already used its free minute */
+  if (firstVisit && GUARD_URL) {
+    var ctrl = window.AbortController ? new AbortController() : null;
+    var to = setTimeout(function () { if (ctrl) ctrl.abort(); }, 4000);
+    fetch(GUARD_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ device: deviceId(), page: 'analysis' }), signal: ctrl ? ctrl.signal : undefined })
+      .then(function (r) { return r.json(); })
+      .then(function (j) { clearTimeout(to); if (j && j.allowed === false) go(); })
+      .catch(function () { clearTimeout(to); });   /* server down -> never block real visitors */
+  }
+})();
+</script>
+<script>
   /* apply saved theme before first paint (default = dark) */
   try { document.documentElement.setAttribute('data-theme', localStorage.getItem('asl-theme') === 'light' ? 'light' : 'dark'); }
   catch (e) { document.documentElement.setAttribute('data-theme', 'dark'); }
@@ -746,43 +819,11 @@ html,body{overflow-x:clip}
   .tf-btn{font-size:10.5px}
 }
 
+  /* ===== Market switch (Gold / Bitcoin) ===== */
   .asset-switch{display:flex; gap:8px; flex-wrap:wrap; padding:14px 0 10px;}
-  .asset-switch a{font-family:var(--mono); font-size:12px; letter-spacing:.06em; text-decoration:none; padding:7px 14px; border:1px solid var(--hairline); color:var(--muted);}
-  .asset-switch a:hover{color:var(--white); border-color:var(--muted);}
-  .asset-switch a.on{color:var(--blue); border-color:var(--blue); pointer-events:none;}
-
-  .comm-card{display:flex; justify-content:space-between; align-items:center; gap:18px; flex-wrap:wrap; padding:20px 22px; background:linear-gradient(165deg,var(--surface),var(--panel)); border:1px solid rgba(11,177,210,.18);}
-  .comm-card p{font-size:14px; line-height:1.6; max-width:640px; margin:0;}
-  .comm-links{display:flex; gap:8px; flex-wrap:wrap;}
-  .comm-links a{font-family:var(--mono); font-size:12px; letter-spacing:.05em; text-decoration:none; padding:10px 16px; border:1px solid var(--blue); color:var(--blue);}
-  .comm-links a:hover{background:var(--blue); color:var(--bg,#000);}
-
-  .comm-list{margin-top:14px; display:grid; gap:10px;}
-  .comm-item{display:block; text-decoration:none; color:inherit; padding:14px 18px; border:1px solid var(--hairline); background:var(--panel);}
-  .comm-item:hover{border-color:var(--blue);}
-  .comm-top{display:flex; gap:10px; align-items:center; font-family:var(--mono); font-size:10px; color:var(--muted); flex-wrap:wrap;}
-  .comm-side{border:1px solid currentColor; padding:2px 7px; font-size:9px; letter-spacing:.08em;}
-  .comm-side.long{color:var(--buy);} .comm-side.short{color:var(--sell);} .comm-side.edu{color:var(--blue);}
-  .comm-item h4{font-size:14px; line-height:1.45; margin:7px 0 4px;}
-  .comm-item p{font-size:13px; line-height:1.6; color:var(--muted); margin:0;}
-  .comm-foot{font-family:var(--mono); font-size:10px; color:var(--muted); margin-top:10px; line-height:1.7;}
-
-  /* ===== Pro position calculator ===== */
-  .xc-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:14px; margin-bottom:18px;}
-  .xc-grid select,
-  .calc-field select{
-    font-family:var(--mono); font-size:14px; color:var(--white); background:var(--panel-2);
-    border:1px solid var(--hairline); border-radius:4px; padding:8px 10px; width:100%;
-  }
-  .xc-grid select:focus{outline:none; border-color:var(--blue);}
-  .xc-results{grid-template-columns:repeat(4,1fr);}
-  .xc-results .calc-stat.main{background:rgba(11,177,210,0.10);}
-  .xc-results .calc-stat.main .ps-val{color:var(--blue); font-size:22px;}
-  .xc-sub{font-family:var(--mono); font-size:10px; color:var(--muted); margin-top:5px;}
-  .xc-warn{font-family:var(--mono); font-size:11.5px; color:#E0A83A; line-height:1.7; min-height:18px; margin-bottom:6px;}
-  .xc-warn.err{color:var(--sell);}
-  @media (max-width:900px){ .xc-grid{grid-template-columns:1fr 1fr;} .xc-results{grid-template-columns:1fr 1fr;} }
-  @media (max-width:520px){ .xc-grid{grid-template-columns:1fr;} }
+  .asset-switch a{font-family:var(--mono); font-size:12px; letter-spacing:.06em; text-decoration:none; padding:8px 16px; border:1px solid var(--hairline); color:var(--muted); transition:all .15s ease;}
+  .asset-switch a:hover{color:var(--white); border-color:var(--blue);}
+  .asset-switch a.on{color:var(--blue); border-color:var(--blue); background:rgba(11,177,210,0.08); pointer-events:none;}
 </style>
 </head>
 <body>
@@ -815,7 +856,7 @@ html,body{overflow-x:clip}
     </div>
   </div>
 
-  <nav class="asset-switch" aria-label="Markets"><a href="asl-xauusd-analysis.html" class="on">GOLD · XAU/USD</a><a href="asl-btcusd-analysis.html">BITCOIN · BTC/USDT</a></nav>
+  <nav class="asset-switch" aria-label="Markets"><a href="asl-xauusd-analysis.html" class="on">GOLD ANALYSIS · XAU/USD</a><a href="asl-btcusd-analysis.html">BITCOIN ANALYSIS · BTC/USDT</a></nav>
 
   <header>
     <div class="hero">
@@ -1119,32 +1160,26 @@ html,body{overflow-x:clip}
       <h2>Position Size Calculator</h2>
       <span class="rule"></span>
     </div>
-    <div class="section-note">Pick your instrument, account size and risk · lot size is calculated from your stop-loss distance · for gold the live trade plan fills the prices automatically</div>
+    <div class="section-note">Uses the live trade plan's stop-loss distance above · figures update automatically as the plan changes</div>
     <div class="calc-box">
-      <div class="xc-grid">
-        <div class="calc-field"><label for="xc-symbol">Instrument</label><select id="xc-symbol"></select></div>
-        <div class="calc-field"><label for="xc-balance">Account balance (USD)</label><input type="number" id="xc-balance" value="10000" min="0" step="100"></div>
-        <div class="calc-field"><label for="xc-lev">Leverage (1:x)</label><input type="number" id="xc-lev" value="100" min="1" step="1"></div>
-        <div class="calc-field"><label for="xc-risk-mode">Risk mode</label>
-          <select id="xc-risk-mode"><option value="pct">Percent of balance (%)</option><option value="usd">Fixed amount (USD)</option></select></div>
-        <div class="calc-field"><label for="xc-risk" id="xc-risk-label">Risk per trade (%)</label><input type="number" id="xc-risk" value="1" min="0" step="0.1"></div>
-        <div class="calc-field"><label for="xc-entry">Entry price</label><input type="number" id="xc-entry" step="any" placeholder="0.00"></div>
-        <div class="calc-field"><label for="xc-sl">Stop loss price</label><input type="number" id="xc-sl" step="any" placeholder="0.00"></div>
-        <div class="calc-field"><label for="xc-tp">Take profit price (optional)</label><input type="number" id="xc-tp" step="any" placeholder="0.00"></div>
-        <div class="calc-field"><label>Direction (auto)</label><input type="text" id="xc-dir" value="—" readonly></div>
+      <div class="calc-row">
+        <label for="calc-balance">Account balance (USD)</label>
+        <input type="number" id="calc-balance" value="10000" min="0" step="100">
       </div>
-      <div class="xc-warn" id="xc-warn"></div>
-      <div class="calc-results xc-results">
-        <div class="calc-stat main"><div class="ps-label">LOT SIZE</div><div class="ps-val" id="xc-lots">—</div><div class="xc-sub" id="xc-lots-sub"></div></div>
-        <div class="calc-stat"><div class="ps-label">RISK AMOUNT (TARGET)</div><div class="ps-val" id="xc-risk-usd">$—</div></div>
-        <div class="calc-stat"><div class="ps-label">ACTUAL RISK (AFTER ROUNDING)</div><div class="ps-val" id="xc-real-risk">$—</div></div>
-        <div class="calc-stat"><div class="ps-label">POSITION SIZE</div><div class="ps-val" id="xc-units">—</div></div>
-        <div class="calc-stat"><div class="ps-label">STOP DISTANCE</div><div class="ps-val" id="xc-dist">—</div><div class="xc-sub" id="xc-dist-sub"></div></div>
-        <div class="calc-stat"><div class="ps-label">VALUE PER PIP (1 LOT)</div><div class="ps-val" id="xc-pipval">—</div></div>
-        <div class="calc-stat"><div class="ps-label">POTENTIAL PROFIT · R:R</div><div class="ps-val" id="xc-reward">—</div></div>
-        <div class="calc-stat"><div class="ps-label">MARGIN REQUIRED</div><div class="ps-val" id="xc-margin">—</div><div class="xc-sub" id="xc-margin-sub"></div></div>
+      <div class="calc-row">
+        <label for="calc-risk">Risk per trade (%)</label>
+        <input type="number" id="calc-risk" value="1" min="0.1" max="10" step="0.1">
       </div>
-      <div class="corr-note">Educational calculator, not a broker-specific quote. Contract sizes follow common broker conventions (gold 100 oz, silver 5,000 oz, forex 100,000 units, indices $1 per point, WTI 1,000 bbl, BTC 1 coin) and differ between brokers. Pairs quoted in JPY/CHF/CAD are converted to USD at the entry price. Always confirm your broker's contract specs and your account currency before sizing a real position.</div>
+      <div class="calc-row">
+        <label for="calc-sl-pts">Stop distance (price points)</label>
+        <input type="number" id="calc-sl-pts" value="0" min="0" step="0.1">
+      </div>
+      <div class="calc-results" id="calc-results">
+        <div class="calc-stat"><div class="ps-label">RISK AMOUNT</div><div class="ps-val" id="calc-risk-usd">$—</div></div>
+        <div class="calc-stat"><div class="ps-label">POSITION SIZE (OZ)</div><div class="ps-val" id="calc-oz">—</div></div>
+        <div class="calc-stat"><div class="ps-label">≈ STANDARD LOTS (100 oz)</div><div class="ps-val" id="calc-lots">—</div></div>
+      </div>
+      <div class="corr-note">Educational calculator only, not a broker-specific quote: 1 standard gold lot = 100 oz, so 0.01 lot = 1 oz. Confirm your broker's actual contract size before sizing a real position.</div>
     </div>
   </section>
 
@@ -1158,16 +1193,6 @@ html,body{overflow-x:clip}
     <div class="outlook-panel" id="outlook-panel">
     <p>Building the live outlook from today's indicators…</p>
     </div>
-  </section>
-
-  <section id="community" hidden>
-    <div class="section-head">
-      <span class="num">13</span>
-      <h2>Community</h2>
-      <span class="rule"></span>
-    </div>
-    <div class="section-note">Trade ideas and chart analysis shared by the ASL University community · updated regularly</div>
-    <div class="comm-list" id="comm-list" data-src="community-gold.json"></div>
   </section>
 
   <footer>
@@ -2272,7 +2297,10 @@ function renderVerdict(A, conf, dir) {
   setText('tp-note', (closed ? 'Market is closed — levels use Friday\u2019s close and are re-checked at the open. ' : '') +
     'Swing plan from the daily chart (stop = ' + (plan.risk / plan.atr).toFixed(1) + '× ATR of ' + fmt(plan.atr, 1) +
     ', placed beyond the nearest pivot level when one is close). Educational example, not advice — risk no more than 1–2% of your account per trade.');
-  if (window.ASL_CALC) window.ASL_CALC.setPlan(plan);
+  if (!calcSlUserEdited) {
+    const slInput = $('calc-sl-pts');
+    if (slInput) { slInput.value = plan.risk.toFixed(2); updateCalc(); }
+  }
 }
 
 function renderConfluence(conf) {
@@ -2676,153 +2704,25 @@ function renderCOTChart(rows) {
   box.innerHTML = svg;
 }
 
-/* ---------------- 11 - Pro position size calculator ---------------- */
-const SYMS = {
-  'XAU/USD':  { cs: 100,    pip: 0.1,    dec: 2, quote: 'USD', baseUSD: false, unit: 'oz' },
-  'XAG/USD':  { cs: 5000,   pip: 0.01,   dec: 3, quote: 'USD', baseUSD: false, unit: 'oz' },
-  'EUR/USD':  { cs: 100000, pip: 0.0001, dec: 5, quote: 'USD', baseUSD: false, unit: 'units' },
-  'GBP/USD':  { cs: 100000, pip: 0.0001, dec: 5, quote: 'USD', baseUSD: false, unit: 'units' },
-  'AUD/USD':  { cs: 100000, pip: 0.0001, dec: 5, quote: 'USD', baseUSD: false, unit: 'units' },
-  'NZD/USD':  { cs: 100000, pip: 0.0001, dec: 5, quote: 'USD', baseUSD: false, unit: 'units' },
-  'USD/JPY':  { cs: 100000, pip: 0.01,   dec: 3, quote: 'JPY', baseUSD: true,  unit: 'units' },
-  'USD/CHF':  { cs: 100000, pip: 0.0001, dec: 5, quote: 'CHF', baseUSD: true,  unit: 'units' },
-  'USD/CAD':  { cs: 100000, pip: 0.0001, dec: 5, quote: 'CAD', baseUSD: true,  unit: 'units' },
-  'US30':     { cs: 1,      pip: 1,      dec: 1, quote: 'USD', baseUSD: false, unit: 'contracts' },
-  'NAS100':   { cs: 1,      pip: 1,      dec: 1, quote: 'USD', baseUSD: false, unit: 'contracts' },
-  'SPX500':   { cs: 1,      pip: 1,      dec: 1, quote: 'USD', baseUSD: false, unit: 'contracts' },
-  'WTI Oil':  { cs: 1000,   pip: 0.01,   dec: 2, quote: 'USD', baseUSD: false, unit: 'bbl' },
-  'BTC/USD':  { cs: 1,      pip: 1,      dec: 2, quote: 'USD', baseUSD: false, unit: 'BTC' }
-};
-const XC = { edited: false };
-const xcEl = id => document.getElementById(id);
-const xcNum = id => { const v = parseFloat((xcEl(id) || {}).value); return isFinite(v) ? v : NaN; };
+/* ---------------- 11 - Position size calculator ---------------- */
+let calcSlUserEdited = false;
 
-function xcSavePrefs() {
-  try {
-    localStorage.setItem('asl-calc-v1', JSON.stringify({
-      sym: xcEl('xc-symbol').value, bal: xcEl('xc-balance').value, lev: xcEl('xc-lev').value,
-      mode: xcEl('xc-risk-mode').value, risk: xcEl('xc-risk').value
-    }));
-  } catch (e) {}
-}
-
-function xcWarn(list, err) {
-  const el = xcEl('xc-warn'); if (!el) return;
-  el.className = 'xc-warn' + (err ? ' err' : '');
-  el.innerHTML = list.map(escapeHTML).join('<br>');
-}
-
-function xcCalc() {
-  const sym = SYMS[xcEl('xc-symbol').value]; if (!sym) return;
-  const bal = xcNum('xc-balance'), lev = Math.max(1, xcNum('xc-lev') || 1);
-  const mode = xcEl('xc-risk-mode').value, rv = xcNum('xc-risk');
-  const entry = xcNum('xc-entry'), sl = xcNum('xc-sl'), tp = xcNum('xc-tp');
-  const dash = id => setText(id, '—');
-  const warns = []; let hardErr = false;
-
-  setText('xc-risk-label', mode === 'pct' ? 'Risk per trade (%)' : 'Risk per trade (USD)');
-  const riskUsd = mode === 'pct' ? (isFinite(bal) && isFinite(rv) ? bal * rv / 100 : NaN) : rv;
-  setText('xc-risk-usd', isFinite(riskUsd) ? '$' + fmt(riskUsd, 2) : '$—');
-  if (mode === 'pct' && rv > 3) warns.push('Risk above 3% per trade is aggressive — most professional traders risk 0.5–2%.');
-  if (isFinite(riskUsd) && isFinite(bal) && riskUsd > bal) { warns.push('Risk amount is larger than the account balance.'); hardErr = true; }
-
-  const vpu = isFinite(entry) && entry > 0 ? (sym.quote === 'USD' ? sym.cs : sym.cs / entry) : NaN;     // USD per 1.00 price move, per lot
-  const notional = isFinite(entry) && entry > 0 ? (sym.baseUSD ? sym.cs : sym.cs * entry) : NaN;          // USD value of 1 lot
-  setText('xc-pipval', isFinite(vpu) ? '$' + fmt(vpu * sym.pip, 2) : '—');
-
-  if (!(entry > 0) || !(sl > 0)) {
-    ['xc-lots', 'xc-units', 'xc-dist', 'xc-reward', 'xc-margin'].forEach(dash);
-    setText('xc-real-risk', '$—'); setText('xc-dir', '—');
-    setText('xc-lots-sub', ''); setText('xc-dist-sub', ''); setText('xc-margin-sub', '');
-    xcWarn(['Enter entry and stop-loss prices to calculate the lot size.'], false); return;
+function updateCalc() {
+  const balanceEl = $('calc-balance'), riskEl = $('calc-risk'), slEl = $('calc-sl-pts');
+  if (!balanceEl || !riskEl || !slEl) return;
+  const balance = parseFloat(balanceEl.value) || 0;
+  const riskPct = parseFloat(riskEl.value) || 0;
+  const slPts = parseFloat(slEl.value) || 0;
+  const riskUsd = balance * (riskPct / 100);
+  setText('calc-risk-usd', '$' + fmt(riskUsd, 2));
+  if (slPts > 0) {
+    const oz = riskUsd / slPts;
+    setText('calc-oz', fmt(oz, 2));
+    setText('calc-lots', fmt(oz / 100, 2));
+  } else {
+    setText('calc-oz', '—');
+    setText('calc-lots', '—');
   }
-  const dist = Math.abs(entry - sl);
-  if (dist === 0) { xcWarn(['Stop loss cannot equal the entry price.'], true); return; }
-  const buy = sl < entry;
-  setText('xc-dir', buy ? 'BUY (long)' : 'SELL (short)');
-  const dirEl = xcEl('xc-dir'); if (dirEl) dirEl.style.color = buy ? 'var(--buy)' : 'var(--sell)';
-
-  setText('xc-dist', fmt(dist, sym.dec));
-  setText('xc-dist-sub', fmt(dist / sym.pip, 1) + ' pips');
-
-  let lots = NaN;
-  if (isFinite(riskUsd) && riskUsd > 0) {
-    const raw = riskUsd / (dist * vpu);
-    lots = Math.floor(raw * 100 + 1e-9) / 100;          // round DOWN to 0.01 so risk never exceeds the target
-    if (lots < 0.01) {
-      const minRisk = 0.01 * dist * vpu;
-      warns.push('Even the minimum 0.01 lot risks $' + fmt(minRisk, 2) + ', more than your $' + fmt(riskUsd, 2) + ' target. Widen the risk or tighten the stop.');
-      lots = 0.01; hardErr = true;
-    }
-  }
-  if (!isFinite(lots)) { ['xc-lots', 'xc-units', 'xc-reward', 'xc-margin'].forEach(dash); setText('xc-real-risk', '$—'); xcWarn(warns, true); return; }
-
-  const units = lots * sym.cs;
-  const realRisk = lots * dist * vpu;
-  setText('xc-lots', fmt(lots, 2));
-  setText('xc-lots-sub', fmt(lots * 100, 0) + ' micro-lots');
-  setText('xc-units', fmt(units, units >= 1000 ? 0 : 2) + ' ' + sym.unit);
-  setText('xc-real-risk', '$' + fmt(realRisk, 2) + (isFinite(bal) && bal > 0 ? ' (' + (realRisk / bal * 100).toFixed(2) + '%)' : ''));
-
-  if (isFinite(tp) && tp > 0) {
-    const okSide = buy ? tp > entry : tp < entry;
-    if (!okSide) { warns.push('Take profit is on the wrong side of the entry for a ' + (buy ? 'buy' : 'sell') + ' trade.'); dash('xc-reward'); }
-    else {
-      const profit = lots * Math.abs(tp - entry) * vpu, rr = Math.abs(tp - entry) / dist;
-      setText('xc-reward', '+$' + fmt(profit, 2) + ' · 1:' + rr.toFixed(2));
-      if (rr < 1) warns.push('Reward is smaller than risk (R:R below 1:1).');
-    }
-  } else setText('xc-reward', '—');
-
-  if (isFinite(notional)) {
-    const margin = lots * notional / lev;
-    setText('xc-margin', '$' + fmt(margin, 2));
-    setText('xc-margin-sub', isFinite(bal) && bal > 0 ? (margin / bal * 100).toFixed(1) + '% of balance · 1:' + lev : '1:' + lev);
-    if (isFinite(bal) && margin > bal) { warns.push('Required margin exceeds your balance — lower the lot size, raise leverage or widen risk.'); hardErr = true; }
-    else if (isFinite(bal) && margin > bal * 0.5) warns.push('This trade would use more than 50% of your balance as margin.');
-  }
-  xcWarn(warns, hardErr);
-}
-
-/* called by the trade plan: auto-fills gold prices until the user edits them */
-function xcSetPlan(plan) {
-  XC.lastPlan = plan;
-  if (!plan || XC.edited || !xcEl('xc-symbol') || xcEl('xc-symbol').value !== 'XAU/USD') return;
-  xcEl('xc-entry').value = plan.entry.toFixed(2);
-  xcEl('xc-sl').value = plan.sl.toFixed(2);
-  xcEl('xc-tp').value = plan.tp1.toFixed(2);
-  xcCalc();
-}
-window.ASL_CALC = { setPlan: xcSetPlan };
-
-function xcSymbolChanged(fromUser) {
-  const sym = SYMS[xcEl('xc-symbol').value];
-  const step = sym.pip >= 1 ? 1 : sym.pip;
-  ['xc-entry', 'xc-sl', 'xc-tp'].forEach(id => { const el = xcEl(id); if (el) { el.step = String(step); if (fromUser) el.value = ''; } });
-  if (fromUser) XC.edited = false;
-  if (xcEl('xc-symbol').value === 'XAU/USD' && S.spot && fromUser && !xcEl('xc-entry').value) xcEl('xc-entry').value = S.spot.price.toFixed(2);
-  if (XC.lastPlan) xcSetPlan(XC.lastPlan);
-  xcSavePrefs(); xcCalc();
-}
-
-function initCalc() {
-  const sel = xcEl('xc-symbol'); if (!sel) return;
-  sel.innerHTML = Object.keys(SYMS).map(k => '<option value="' + k + '">' + k + '</option>').join('');
-  try {
-    const p = JSON.parse(localStorage.getItem('asl-calc-v1') || 'null');
-    if (p) {
-      if (SYMS[p.sym]) sel.value = p.sym;
-      if (p.bal) xcEl('xc-balance').value = p.bal;
-      if (p.lev) xcEl('xc-lev').value = p.lev;
-      if (p.mode) xcEl('xc-risk-mode').value = p.mode;
-      if (p.risk) xcEl('xc-risk').value = p.risk;
-    }
-  } catch (e) {}
-  sel.addEventListener('change', () => xcSymbolChanged(true));
-  ['xc-balance', 'xc-lev', 'xc-risk'].forEach(id => xcEl(id).addEventListener('input', () => { xcSavePrefs(); xcCalc(); }));
-  xcEl('xc-risk-mode').addEventListener('change', () => { xcSavePrefs(); xcCalc(); });
-  ['xc-entry', 'xc-sl', 'xc-tp'].forEach(id => xcEl(id).addEventListener('input', () => { XC.edited = true; xcCalc(); }));
-  xcSymbolChanged(false);
 }
 
 /* 1H / 4H / Daily signal cards + master signal */
@@ -2965,7 +2865,10 @@ async function refresh() {
 }
 
 /* wire up the position-size calculator once, at startup */
-initCalc();
+['calc-balance', 'calc-risk'].forEach(id => { const el = $(id); if (el) el.addEventListener('input', updateCalc); });
+const calcSlEl = $('calc-sl-pts');
+if (calcSlEl) calcSlEl.addEventListener('input', () => { calcSlUserEdited = true; updateCalc(); });
+updateCalc();
 
 function tick() {
   secondsLeft -= 1;
@@ -2999,21 +2902,5 @@ setInterval(tick, 1000);
 })();
 </script>
 
-<script>
-/* Community: renders a hand-curated daily JSON (title, author, bias, short summary, optional link). */
-(function(){
-  var box=document.getElementById('comm-list'); if(!box) return;
-  var file=box.getAttribute('data-src');
-  var esc=function(v){return String(v==null?'':v).replace(/[&<>"']/g,function(m){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m];});};
-  var ok=function(u){return !u||/^https:\/\//.test(String(u));};
-  fetch(file+'?d='+new Date().toISOString().slice(0,10),{cache:'no-cache'}).then(function(r){ if(!r.ok) throw 0; return r.json(); }).then(function(j){
-    var rows=(j.ideas||[]).filter(function(x){return x&&x.title&&ok(x.url);}).slice(0,8); if(!rows.length) return; var sec=document.getElementById('community'); if(sec) sec.hidden=false;
-    box.innerHTML=rows.map(function(x){
-      var s=String(x.side||'').toLowerCase(), cls=s==='long'?'long':s==='short'?'short':'edu';
-      var tag=x.url?'a':'div', lnk=x.url?' href="'+esc(x.url)+'" target="_blank" rel="noopener noreferrer"':''; return '<'+tag+' class="comm-item"'+lnk+'><div class="comm-top"><span class="comm-side '+cls+'">'+esc((x.side||'IDEA').toUpperCase())+'</span><span>by '+esc(x.author||'ASL community')+'</span>'+(x.tf?'<span>· '+esc(x.tf)+'</span>':'')+'</div><h4>'+esc(x.title)+'</h4>'+(x.note?'<p>'+esc(x.note)+'</p>':'')+'</'+tag+'>';
-    }).join('')+'<div class=\"comm-foot\">Last updated '+esc(j.updated||'—')+' · community opinions for educational purposes, not ASL recommendations or financial advice.</div>';
-  }).catch(function(){});
-})();
-</script>
 </body>
 </html>
