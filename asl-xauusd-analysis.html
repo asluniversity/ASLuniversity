@@ -4,6 +4,42 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>ASL University — XAU/USD Market Intelligence</title>
+  <script>
+/* ASL one-time access: each device may open this page once; any later visit is sent to the membership page */
+(function () {
+  var PAY_URL = 'https://asluniversity.github.io/ASLuniversity/#pricing';
+  var LOCK = 'asl-analysis-lock-v1', DEV = 'asl-device-id';
+  /* optional: your backend, so the limit also works per IP address (a browser cannot see its own IP).
+     POST {device, page:'analysis'}  ->  {allowed:true|false}   (the server stores IP + device on the first allowed call) */
+  var GUARD_URL = '';
+
+  var root = document.documentElement;
+  function go() { root.style.display = 'none'; location.replace(PAY_URL); }
+  function deviceId() {
+    try { var d = localStorage.getItem(DEV); if (!d) { d = Math.random().toString(36).slice(2) + Date.now().toString(36); localStorage.setItem(DEV, d); } return d; }
+    catch (e) { return 'unknown'; }
+  }
+  var used = false, inSession = false;
+  try { used = !!localStorage.getItem(LOCK); inSession = !!sessionStorage.getItem(LOCK); } catch (e) {}
+
+  /* already opened before, and this is not the same browser tab session -> membership page */
+  if (used && !inSession) { go(); return; }
+
+  /* first open: remember it (a refresh inside this same tab keeps working) */
+  if (!used) { try { localStorage.setItem(LOCK, String(Date.now())); sessionStorage.setItem(LOCK, '1'); } catch (e) {} }
+
+  /* first open on this device: ask the server whether this IP already used its one visit */
+  if (!used && GUARD_URL) {
+    root.style.visibility = 'hidden';
+    var ctrl = window.AbortController ? new AbortController() : null;
+    var timer = setTimeout(function () { if (ctrl) ctrl.abort(); }, 4000);
+    fetch(GUARD_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ device: deviceId(), page: 'analysis' }), signal: ctrl ? ctrl.signal : undefined })
+      .then(function (r) { return r.json(); })
+      .then(function (j) { clearTimeout(timer); if (j && j.allowed === false) go(); else root.style.visibility = ''; })
+      .catch(function () { clearTimeout(timer); root.style.visibility = ''; });   /* server down -> do not block real visitors */
+  }
+})();
+</script>
 <meta name="color-scheme" content="dark light">
 <script>
   /* apply saved theme before first paint (default = dark) */
