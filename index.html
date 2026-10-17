@@ -1728,7 +1728,7 @@
       .pricing-grid .pricing-card.featured { transform:scale(1.04); box-shadow:0 0 90px rgba(11,177,210,0.4); z-index:2; }
       .plan-badge { position:absolute; top:-14px; left:50%; transform:translateX(-50%); white-space:nowrap; font-family:var(--mono); font-size:11px; font-weight:600; letter-spacing:.06em; text-transform:uppercase; color:#0A0A0B; background:linear-gradient(135deg,#ffd700,#ffb800); padding:6px 14px; border-radius:999px; }
       .plan-discount { display:inline-block; font-family:var(--mono); font-size:12px; font-weight:600; letter-spacing:.05em; color:var(--accent); background:var(--toggle-active-bg); border:1px solid var(--accent); padding:5px 12px; border-radius:999px; }
-      .plan-discount.none { visibility:hidden; }
+      .plan-discount.base { color:var(--muted-color); background:transparent; border-color:var(--hairline); }
       .price-old { font-family:var(--mono); font-size:17px; color:var(--muted-color); text-decoration:line-through; margin-top:14px; min-height:26px; }
       .pricing-grid .price-big { font-size:54px; margin:4px 0 2px; line-height:1.1; }
       .pricing-grid .price-big .currency { font-size:.6em; }
@@ -2099,11 +2099,11 @@
         <div class="pricing-grid">
             <!-- 1 Month -->
             <div class="pricing-card">
-                <h3>1 Month</h3>
-                <span class="plan-discount none">&nbsp;</span>
+                <h3>Monthly</h3>
+                <span class="plan-discount base">STANDARD PRICE</span>
                 <div class="price-old">&nbsp;</div>
                 <div class="price-big"><span class="currency">$</span>49<span class="period">/ month</span></div>
-                <div class="price-note">Pay month to month</div>
+                <div class="price-note">Billed every month<br>No discount</div>
                 <button class="btn btn-secondary" id="join">Join Now</button>
             </div>
 
@@ -2114,7 +2114,7 @@
                 <span class="plan-discount">20% OFF</span>
                 <div class="price-old">$147</div>
                 <div class="price-big"><span class="currency">$</span>117<span class="period">/ 3 months</span></div>
-                <div class="price-note"><b>$39</b> / month<br>Save <b>$30</b></div>
+                <div class="price-note"><b>$39</b> / month<br>You save <b>$30</b></div>
                 <button class="btn btn-primary">Join Now</button>
             </div>
 
@@ -2125,7 +2125,7 @@
                 <span class="plan-discount">30% OFF</span>
                 <div class="price-old">$588</div>
                 <div class="price-big"><span class="currency">$</span>411<span class="period">/ year</span></div>
-                <div class="price-note"><b>$34</b> / month<br>Save <b>$177</b></div>
+                <div class="price-note"><b>$34</b> / month<br>You save <b>$177</b></div>
                 <button class="btn btn-primary">Join Now</button>
             </div>
         </div>
@@ -2141,8 +2141,8 @@
                 <li>$1,000 prop account opportunity</li>
                 <li>Expert training courses</li>
                 <li>Personal Risk Management Guide</li>
-                <li>24/7 support access</li>
-                <li>Cancel anytime, no lock-in</li>
+                <li>Daily Analysis & Technical Outlook</li>
+                <li> Journal and Account Analysis Panel</li>
             </ul>
         </div>
     </section>
