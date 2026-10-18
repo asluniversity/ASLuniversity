@@ -42,7 +42,6 @@ app.set('trust proxy', 1);
 app.use(express.json({ limit: '20kb' }));
 app.use(express.urlencoded({ extended: false }));
 
-const cors = require('cors');
 
 app.use(cors({
     origin: 'https://asluniversity.github.io',
