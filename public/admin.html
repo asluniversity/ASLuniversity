@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ASL Admin</title><meta name="robots" content="noindex,nofollow">
+<style>
+body{font-family:system-ui,sans-serif;background:#0B1416;color:#dceef4;max-width:640px;margin:30px auto;padding:0 16px}
+input,select,button{font:inherit;padding:11px;margin:5px 0;width:100%;border-radius:5px;border:1px solid #2a5566;background:#16323d;color:#fff}
+button{background:#0BB1D2;color:#061116;font-weight:700;cursor:pointer;border:0}
+h1{font-size:22px} table{width:100%;border-collapse:collapse;margin-top:14px;font-size:13px}
+td,th{padding:7px;border-bottom:1px solid #2a5566;text-align:left} #msg{margin:10px 0;min-height:20px}
+</style></head><body>
+<h1>ASL University – Admin</h1>
+<input id="key" type="password" placeholder="Admin key" autocomplete="off">
+<input id="user" placeholder="Customer username (exactly as registered)">
+<select id="plan"><option value="1m">1 Month</option><option value="3m">3 Months</option><option value="12m">12 Months</option><option value="cancel">Cancel / remove access</option></select>
+<button id="go">Activate / Renew</button>
+<div id="msg"></div>
+<button id="list" style="background:#16323d;color:#9fc3cf;border:1px solid #2a5566">Show all customers</button>
+<table id="tbl"></table>
+<script>
+const $=id=>document.getElementById(id), hdr=()=>({'Content-Type':'application/json','Authorization':'Bearer '+$('key').value});
+const fmt=t=>t?new Date(t).toLocaleDateString('en-GB'):'—';
+$('go').onclick=async()=>{
+  const r=await fetch('/api/admin/activate',{method:'POST',headers:hdr(),body:JSON.stringify({username:$('user').value,plan:$('plan').value})});
+  const d=await r.json(); $('msg').textContent=r.ok?('Done. Plan: '+(d.plan||'none')+' · expires: '+fmt(d.expires_at)):('Error: '+d.error);
+};
+$('list').onclick=async()=>{
+  const r=await fetch('/api/admin/users',{headers:hdr()}); const d=await r.json();
+  if(!r.ok){$('msg').textContent='Error: '+d.error;return}
+  const t=$('tbl'); t.innerHTML='<tr><th>Username</th><th>Plan</th><th>Expires</th></tr>';
+  d.users.forEach(u=>{const tr=t.insertRow();[u.username,u.plan||'—',fmt(u.expires_at)].forEach(v=>tr.insertCell().textContent=v)});
+};
+</script></body></html>

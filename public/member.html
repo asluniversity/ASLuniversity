@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Member Area - ASL University</title><meta name="robots" content="noindex">
+<script>try{document.documentElement.setAttribute('data-theme',localStorage.getItem('asl-theme')==='light'?'light':'dark')}catch(e){}</script>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0B1416;--card:#16323d;--text:#dceef4;--head:#F5F7F8;--muted:#9fc3cf;--line:rgba(11,177,210,.25);--acc:#0BB1D2;--ok:#2FBE7A;--bad:#ff7b8a}
+:root[data-theme=light]{--bg:#EEF5F7;--card:#fff;--text:#1E2F36;--head:#0B1A20;--muted:#4F6670;--line:rgba(6,135,162,.25);--acc:#0687A2;--ok:#17855a;--bad:#c0283c}
+*{box-sizing:border-box;margin:0}
+body{background:var(--bg);color:var(--text);font-family:'Space Grotesk',sans-serif;min-height:100vh;padding:24px 16px}
+.wrap{max-width:560px;margin:0 auto}
+.top{display:flex;justify-content:space-between;align-items:center;margin-bottom:22px;font-family:'JetBrains Mono',monospace;font-size:12px}
+.top a,.top button{color:var(--acc);background:none;border:1px solid var(--line);border-radius:4px;padding:8px 12px;cursor:pointer;text-decoration:none;font:inherit}
+.card{background:var(--card);border:1px solid var(--line);border-top:3px solid var(--acc);border-radius:6px;padding:26px;margin-bottom:18px}
+h1{font-size:26px;color:var(--head);margin-bottom:6px}
+.muted{color:var(--muted);font-size:14px}
+.status{display:inline-block;margin:14px 0 4px;padding:6px 14px;border-radius:999px;font:600 12px 'JetBrains Mono',monospace;letter-spacing:.06em}
+.on{color:var(--ok);border:1px solid var(--ok)} .off{color:var(--bad);border:1px solid var(--bad)}
+.row{display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--line);font-size:14px}
+.row:last-child{border:0}
+.links a{display:block;padding:13px 14px;margin-top:10px;border:1px solid var(--line);border-radius:5px;color:var(--head);text-decoration:none}
+.links a:hover{border-color:var(--acc)}
+.locked a{opacity:.45;pointer-events:none}
+</style></head><body><div class="wrap">
+<div class="top"><a href="/">&larr; HOME</a><button id="out">SIGN OUT</button></div>
+<div class="card" id="box"><p class="muted">Loading…</p></div>
+<div class="card links" id="links" style="display:none"><b>Your tools</b>
+<a href="/asl-xauusd-analysis.html">📊 Technical &amp; Fundamental Analysis</a>
+<a href="/asl-account-journal.html">📓 Account Journal &amp; Analysis</a>
+<a href="/growth-program.html">🌱 Personal Growth Program</a></div>
+</div>
+<script>
+fetch('/api/me',{credentials:'include'}).then(r=>r.json()).then(d=>{
+  if(!d.authenticated){location.href='/?login=1';return}
+  const u=d.user,box=document.getElementById('box'),links=document.getElementById('links');
+  const plans={'1m':'Monthly','3m':'3 Months','12m':'12 Months'};
+  const fmt=t=>new Date(t).toLocaleDateString('en-GB',{day:'numeric',month:'long',year:'numeric'});
+  let h='<h1>Welcome, '+u.name.replace(/[<>&"]/g,'')+'</h1>';
+  if(u.active){
+    const days=Math.max(0,Math.ceil((u.expires_at-Date.now())/864e5));
+    h+='<span class="status on">● SUBSCRIPTION ACTIVE</span>'
+      +'<div class="row"><span>Plan</span><b>'+(plans[u.plan]||u.plan)+'</b></div>'
+      +'<div class="row"><span>Expires</span><b>'+fmt(u.expires_at)+'</b></div>'
+      +'<div class="row"><span>Days left</span><b>'+days+'</b></div>';
+    links.style.display='block';
+  }else{
+    h+='<span class="status off">● NO ACTIVE SUBSCRIPTION</span>'
+      +'<p class="muted" style="margin-top:12px">Your account is ready. After your payment is confirmed your plan is activated here. Contact support on Telegram: <a style="color:var(--acc)" href="https://t.me/mrasltl">@mrasltl</a></p>';
+    links.style.display='block';links.classList.add('locked');
+  }
+  box.innerHTML=h;
+}).catch(()=>{document.getElementById('box').innerHTML='<p class="muted">Could not load your account. Please refresh.</p>'});
+document.getElementById('out').onclick=()=>fetch('/api/logout',{method:'POST',credentials:'include'}).then(()=>location.href='/');
+</script></body></html>

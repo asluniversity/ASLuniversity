@@ -1,0 +1,2731 @@
+<!DOCTYPE html>
+<!-- saved from url=(0046)https://asluniversity.github.io/ASLuniversity/ -->
+<html lang="en" data-theme="dark"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ASL University - Premium Trading Membership</title>
+    <meta name="color-scheme" content="dark light">
+    <script>
+        /* apply the saved theme before first paint (default = dark) */
+        try { document.documentElement.setAttribute('data-theme', localStorage.getItem('asl-theme') === 'light' ? 'light' : 'dark'); }
+        catch (e) { document.documentElement.setAttribute('data-theme', 'dark'); }
+
+        /* always start at the top of the page after a refresh / reopen */
+        try { if ('scrollRestoration' in history) history.scrollRestoration = 'manual'; } catch (e) {}
+        try { if (location.hash) history.replaceState(null, '', location.pathname + location.search); } catch (e) {}
+        window.addEventListener('DOMContentLoaded', function () { window.scrollTo(0, 0); });
+        window.addEventListener('load', function () { window.scrollTo(0, 0); setTimeout(function () { window.scrollTo(0, 0); }, 120); });
+        window.addEventListener('pageshow', function () { window.scrollTo(0, 0); });
+    </script>
+    <link rel="preconnect" href="https://fonts.googleapis.com/">
+    <link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin="">
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /* ============ THEME VARIABLES ============ */
+        /* DARK (default) */
+        :root {
+            color-scheme: dark;
+            --page-bg: linear-gradient(135deg, #0B1416 0%, #122630 100%);
+            --text-color: #dceef4;
+            --heading-color: #F5F7F8;
+            --muted-color: #9fc3cf;
+            --surface-bg: #16323d;
+            --card-bg: linear-gradient(165deg, #1a3a46 0%, #16323d 70%);
+            --pricing-bg: linear-gradient(160deg, #1a3a46 0%, #122630 100%);
+            --hairline: rgba(11,177,210,0.22);
+            --accent: #0BB1D2;
+
+            --nav-bg: linear-gradient(135deg, #0d1f26 0%, #0A0A0B 100%);
+            --nav-text: #ffffff;
+            --nav-hover: #ffd700;
+            --nav-shadow: 0 4px 25px rgba(11,177,210,0.15);
+            --logo-glow: 0 0 20px rgba(11,177,210,0.5);
+
+            --cta-bg: linear-gradient(135deg, #0d1f26 0%, #0A0A0B 100%);
+            --cta-heading: #ffffff;
+            --cta-text: rgba(255,255,255,0.95);
+
+            --footer-bg: #08222c;
+            --footer-strong: #ffffff;
+            --footer-text: rgba(255,255,255,0.8);
+            --footer-muted: rgba(255,255,255,0.6);
+            --footer-line: rgba(255,255,255,0.2);
+
+            --glow-h: 0 0 30px rgba(11,177,210,0.35);
+            --glow-s: 0 0 24px rgba(11,177,210,0.3);
+            --glow-price: 0 0 30px rgba(11,177,210,0.4);
+            --glow-cta: 0 0 30px rgba(11,177,210,0.5);
+
+            --toggle-bg: rgba(255,255,255,0.08);
+            --toggle-border: rgba(255,255,255,0.28);
+            --toggle-text: rgba(255,255,255,0.72);
+            --toggle-active-bg: rgba(11,177,210,0.22);
+            --toggle-active-text: #0BB1D2;
+
+            --sans: 'IBM Plex Sans', sans-serif;
+            --display: 'Space Grotesk', sans-serif;
+            --mono: 'JetBrains Mono', monospace;
+        }
+
+        /* LIGHT */
+        :root[data-theme="light"] {
+            color-scheme: light;
+            --page-bg: linear-gradient(135deg, #F6FAFB 0%, #E5EFF3 100%);
+            --text-color: #1E2F36;
+            --heading-color: #0B1A20;
+            --muted-color: #4F6670;
+            --surface-bg: #FFFFFF;
+            --card-bg: linear-gradient(165deg, #FFFFFF 0%, #F3F8FA 70%);
+            --pricing-bg: linear-gradient(160deg, #FFFFFF 0%, #E6F5F9 100%);
+            --hairline: rgba(6,135,162,0.24);
+            --accent: #0687A2;
+
+            --nav-bg: linear-gradient(135deg, #FFFFFF 0%, #EAF4F7 100%);
+            --nav-text: #0B1A20;
+            --nav-hover: #A86F00;
+            --nav-shadow: 0 4px 22px rgba(15,28,34,0.09);
+            --logo-glow: none;
+
+            --cta-bg: linear-gradient(135deg, #DDF2F8 0%, #F1F7F9 100%);
+            --cta-heading: #0B1A20;
+            --cta-text: #2A424B;
+
+            --footer-bg: #E1EAEE;
+            --footer-strong: #0B1A20;
+            --footer-text: #33484F;
+            --footer-muted: #5A6F77;
+            --footer-line: rgba(15,28,34,0.16);
+
+            --glow-h: none;
+            --glow-s: none;
+            --glow-price: none;
+            --glow-cta: none;
+
+            --toggle-bg: rgba(15,28,34,0.05);
+            --toggle-border: rgba(15,28,34,0.18);
+            --toggle-text: #4F6670;
+            --toggle-active-bg: rgba(6,135,162,0.14);
+            --toggle-active-text: #05677D;
+        }
+
+        html { overflow-x: hidden; }
+        body {
+            font-family: var(--sans);
+            background: var(--page-bg);
+            color: var(--text-color);
+            line-height: 1.6;
+            transition: background 0.3s ease, color 0.3s ease;
+            position: relative;
+            overflow-x: hidden;
+            width: 100%;
+        }
+        img { max-width: 100%; height: auto; }
+        body::before{
+            content:"";
+            position:fixed; inset:0;
+            background:
+                radial-gradient(ellipse 1100px 600px at 10% -10%, rgba(11,177,210,0.14), transparent 60%),
+                radial-gradient(ellipse 800px 500px at 105% 12%, rgba(11,177,210,0.09), transparent 60%),
+                radial-gradient(ellipse 900px 600px at 50% 60%, rgba(11,177,210,0.07), transparent 65%),
+                radial-gradient(ellipse 900px 550px at 100% 100%, rgba(11,177,210,0.10), transparent 60%);
+            pointer-events:none; z-index:0;
+        }
+        body::after{
+            content:"";
+            position:fixed; inset:0;
+            background-image:
+                linear-gradient(rgba(11,177,210,0.05) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(11,177,210,0.05) 1px, transparent 1px);
+            background-size:44px 44px;
+            mask-image:radial-gradient(ellipse 1200px 900px at 50% 0%, black, transparent 75%);
+            -webkit-mask-image:radial-gradient(ellipse 1200px 900px at 50% 0%, black, transparent 75%);
+            pointer-events:none; z-index:0;
+        }
+        nav, .hero-section, .divider, .benefits-section, .testimonial-section,
+        .pricing-section, .final-cta, footer, .telegram-support { position:relative; z-index:1; }
+
+        /* Navigation */
+        nav {
+            background: var(--nav-bg);
+            padding: 20px 0;
+            border-bottom: 1px solid var(--hairline);
+            box-shadow: var(--nav-shadow);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            row-gap: 10px;
+        }
+
+        .logo {
+            font-family: var(--display);
+            font-size: 26px;
+            font-weight: 700;
+            color: var(--nav-text);
+            letter-spacing: 2px;
+            text-shadow: var(--logo-glow);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .logo-icon {
+            height: 48px;
+            width: 48px;
+            object-fit: contain;
+            flex-shrink: 0;
+        }
+        /* If your logo photo has a plain WHITE background, uncomment the next
+           line to make that white background blend into the nav bar instead
+           of showing as a box (works on any nav color, light or dark): */
+        /* .logo-icon { mix-blend-mode: multiply; } */
+        .logo-icon:not([src]), .logo-icon[src=""] { display: none; }
+
+        .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 25px;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 30px;
+            list-style: none;
+        }
+
+        .nav-links a {
+            font-family: var(--mono);
+            text-decoration: none;
+            color: var(--nav-text);
+            font-weight: 500;
+            transition: all 0.3s;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+        }
+
+        .nav-links a:hover {
+            color: var(--nav-hover);
+        }
+
+        /* ============ THEME TOGGLE (DARK | LIGHT) ============ */
+        .theme-toggle {
+            display: inline-flex;
+            padding: 3px;
+            gap: 2px;
+            border: 1px solid var(--toggle-border);
+            border-radius: 999px;
+            background: var(--toggle-bg);
+            flex-shrink: 0;
+        }
+
+        .theme-toggle button {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-family: var(--mono);
+            font-size: 11px;
+            letter-spacing: 0.06em;
+            color: var(--toggle-text);
+            background: transparent;
+            border: 0;
+            border-radius: 999px;
+            padding: 7px 13px;
+            cursor: pointer;
+            transition: all 0.15s ease;
+        }
+
+        .theme-toggle button:hover { color: var(--nav-text); }
+
+        .theme-toggle button[aria-pressed="true"] {
+            color: var(--toggle-active-text);
+            background: var(--toggle-active-bg);
+            box-shadow: inset 0 0 0 1px var(--toggle-active-text);
+        }
+
+        .theme-toggle svg {
+            width: 14px;
+            height: 14px;
+            fill: none;
+            stroke: currentColor;
+            stroke-width: 2;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+
+        /* ============ SITE MENU (three dots + dropdown) ============ */
+        .site-menu { position: relative; }
+        .site-menu-btn {
+            display: flex; align-items: center; justify-content: center;
+            width: 34px; height: 34px;
+            border: 1px solid var(--toggle-border);
+            border-radius: 999px;
+            background: var(--toggle-bg);
+            color: var(--nav-text);
+            cursor: pointer;
+            transition: all 0.15s ease;
+            flex-shrink: 0;
+        }
+        .site-menu-btn:hover { border-color: var(--accent); color: var(--accent); }
+        .site-menu-btn[aria-expanded="true"] { border-color: var(--accent); color: var(--accent); background: var(--toggle-active-bg); }
+        .site-menu-btn svg { width: 17px; height: 17px; fill: currentColor; }
+
+        .site-menu-panel {
+            position: absolute;
+            top: calc(100% + 10px);
+            right: 0;
+            min-width: 260px;
+            background: var(--card-bg);
+            border: 1px solid var(--hairline);
+            border-radius: 6px;
+            box-shadow: 0 14px 40px rgba(0,0,0,0.28);
+            padding: 8px;
+            z-index: 200;
+            opacity: 0;
+            transform: translateY(-6px);
+            pointer-events: none;
+            transition: opacity 0.15s ease, transform 0.15s ease;
+        }
+        .site-menu.open .site-menu-panel { opacity: 1; transform: translateY(0); pointer-events: auto; }
+
+        .site-menu-label {
+            font-family: var(--mono);
+            font-size: 10px;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: var(--muted-color);
+            padding: 8px 10px 6px;
+        }
+        .site-menu-link {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 11px 10px;
+            border-radius: 4px;
+            text-decoration: none;
+            color: var(--text-color);
+            transition: background 0.15s ease;
+        }
+        .site-menu-link:hover { background: var(--toggle-active-bg); }
+        .site-menu-link .smi {
+            display: flex; align-items: center; justify-content: center;
+            width: 34px; height: 34px; flex-shrink: 0;
+            border-radius: 6px;
+            background: var(--toggle-bg);
+            color: var(--accent);
+            font-size: 16px;
+        }
+        .site-menu-link .smt { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+        .site-menu-link .smt b { font-family: var(--display); font-size: 13.5px; color: var(--heading-color); font-weight: 600; }
+        .site-menu-link .smt span { font-size: 11.5px; color: var(--muted-color); line-height: 1.4; }
+        .site-menu-sep { height: 1px; background: var(--hairline); margin: 6px 4px; }
+
+        /* ============ WELCOME BANNER ============ */
+        .welcome-banner {
+            text-align: center;
+            padding: 46px 20px 38px;
+            border-bottom: 1px solid var(--hairline);
+            background: radial-gradient(ellipse 70% 120% at 50% 0%, rgba(11,177,210,0.12), transparent 70%);
+        }
+        .welcome-banner .wb-eyebrow {
+            font-family: var(--mono);
+            font-size: 11.5px;
+            letter-spacing: 0.22em;
+            text-transform: uppercase;
+            color: var(--accent);
+            margin-bottom: 14px;
+        }
+        .welcome-banner h1 {
+            font-family: var(--display);
+            font-weight: 700;
+            font-size: clamp(28px, 4.5vw, 44px);
+            line-height: 1.2;
+            color: var(--heading-color);
+            text-shadow: var(--glow-h);
+            letter-spacing: -0.01em;
+        }
+        .welcome-banner h1 .wb-accent { color: var(--accent); }
+        .welcome-banner p {
+            font-family: var(--mono);
+            font-size: 14px;
+            letter-spacing: 0.04em;
+            color: var(--muted-color);
+            margin-top: 16px;
+        }
+        @media (max-width: 768px) {
+            .welcome-banner { padding: 36px 18px 28px; }
+        }
+
+        /* ============ GROWTH CHART (animated, below welcome banner) ============ */
+        .growth-chart-section {
+            border-bottom: 1px solid var(--hairline);
+            background: radial-gradient(ellipse 80% 100% at 50% 100%, rgba(11,177,210,0.10), transparent 70%);
+            padding: 8px 0 0;
+        }
+        .growth-chart-inner {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px 6px;
+            position: relative;
+        }
+        .growth-svg {
+            display: block;
+            width: 100%;
+            height: 130px;
+        }
+        .growth-line {
+            stroke: #ffffff;
+            stroke-width: 3;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            filter: drop-shadow(0 0 6px rgba(255,255,255,0.65)) drop-shadow(0 0 16px rgba(11,177,210,0.55));
+            stroke-dasharray: 1400;
+            stroke-dashoffset: 1400;
+            animation: growth-draw 3.2s ease-out forwards, growth-pulse 2.6s ease-in-out 3.2s infinite;
+        }
+        .growth-area {
+            opacity: 0;
+            animation: growth-fade-in 1.5s ease-out 1.8s forwards;
+        }
+        .growth-dot {
+            fill: #ffffff;
+            filter: drop-shadow(0 0 8px rgba(255,255,255,0.9)) drop-shadow(0 0 18px rgba(11,177,210,0.8));
+            opacity: 0;
+            animation: growth-dot-in 0.6s ease-out 3.2s forwards;
+        }
+        @keyframes growth-draw {
+            to { stroke-dashoffset: 0; }
+        }
+        @keyframes growth-pulse {
+            0%, 100% { filter: drop-shadow(0 0 6px rgba(255,255,255,0.65)) drop-shadow(0 0 16px rgba(11,177,210,0.55)); }
+            50% { filter: drop-shadow(0 0 10px rgba(255,255,255,0.95)) drop-shadow(0 0 26px rgba(11,177,210,0.85)); }
+        }
+        @keyframes growth-fade-in { to { opacity: 1; } }
+        @keyframes growth-dot-in { to { opacity: 1; } }
+        .growth-caption {
+            text-align: center;
+            font-family: var(--mono);
+            font-size: 11.5px;
+            letter-spacing: 0.14em;
+            text-transform: uppercase;
+            color: var(--muted-color);
+            margin-top: 2px;
+        }
+        @media (max-width: 640px) {
+            .growth-svg { height: 100px; }
+        }
+
+        /* ============ INTRO VIDEO ============ */
+        .video-section {
+            position: relative;
+            z-index: 1;
+            border-bottom: 1px solid var(--hairline);
+            padding: 54px 0 50px;
+            background: radial-gradient(ellipse 70% 100% at 50% 0%, rgba(11,177,210,0.10), transparent 70%);
+        }
+        .video-inner { max-width: 880px; margin: 0 auto; padding: 0 20px; text-align: center; }
+        .video-eyebrow {
+            font-family: var(--mono);
+            font-size: 11.5px;
+            letter-spacing: .22em;
+            text-transform: uppercase;
+            color: var(--accent);
+            margin-bottom: 12px;
+        }
+        .video-title {
+            font-family: var(--display);
+            font-size: clamp(24px, 3.6vw, 34px);
+            font-weight: 700;
+            color: var(--heading-color);
+            text-shadow: var(--glow-s);
+            margin-bottom: 26px;
+            letter-spacing: -0.01em;
+        }
+        .video-frame {
+            position: relative;
+            aspect-ratio: 16 / 9;
+            background: #000;
+            border: 1px solid var(--hairline);
+            border-top: 3px solid var(--accent);
+            border-radius: 6px;
+            overflow: hidden;
+            box-shadow: 0 0 70px rgba(11,177,210,0.25);
+        }
+        .video-frame video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; background: #000; display: block; }
+        .video-unmute {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            padding: 8px 13px;
+            font-family: var(--mono);
+            font-size: 11px;
+            letter-spacing: .06em;
+            text-transform: uppercase;
+            color: #fff;
+            background: rgba(0,0,0,0.62);
+            border: 1px solid rgba(255,255,255,0.35);
+            border-radius: 999px;
+            cursor: pointer;
+            backdrop-filter: blur(4px);
+            animation: video-nudge 2s ease-in-out infinite;
+        }
+        .video-unmute:hover { background: rgba(11,177,210,0.75); }
+        .video-unmute.hidden { display: none; }
+        .video-unmute svg { width: 15px; height: 15px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+        @keyframes video-nudge { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.06); } }
+        @media (max-width: 640px) { .video-section { padding: 38px 0 34px; } }
+        @media (prefers-reduced-motion: reduce) { .video-unmute { animation: none; } }
+
+        /* ============ LIVE STATS ============ */
+        .stats-section {
+            position: relative;
+            z-index: 1;
+            border-bottom: 1px solid var(--hairline);
+            padding: 46px 0;
+        }
+        .stats-inner {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 24px;
+        }
+        .stat-card {
+            position: relative;
+            overflow: hidden;
+            background: var(--card-bg);
+            border: 1px solid var(--hairline);
+            border-top: 3px solid var(--accent);
+            border-radius: 4px;
+            padding: 28px 24px 24px;
+            text-align: center;
+            box-shadow: 0 0 40px rgba(11,177,210,0.14);
+            transition: transform .3s ease, box-shadow .3s ease, border-color .3s ease;
+        }
+        .stat-card:hover {
+            transform: translateY(-6px);
+            border-color: var(--accent);
+            box-shadow: 0 0 55px rgba(11,177,210,0.35);
+        }
+        /* moving light sweep */
+        .stat-card::after {
+            content: "";
+            position: absolute;
+            top: 0; left: -60%;
+            width: 40%; height: 100%;
+            background: linear-gradient(100deg, transparent, rgba(11,177,210,0.14), transparent);
+            transform: skewX(-20deg);
+            animation: stat-sweep 4.5s ease-in-out infinite;
+            pointer-events: none;
+        }
+        @keyframes stat-sweep {
+            0%   { left: -60%; }
+            60%, 100% { left: 140%; }
+        }
+        .stat-live {
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            font-family: var(--mono);
+            font-size: 10.5px;
+            letter-spacing: .16em;
+            text-transform: uppercase;
+            color: var(--accent);
+            margin-bottom: 14px;
+        }
+        .stat-live i {
+            width: 8px; height: 8px;
+            border-radius: 50%;
+            background: var(--accent);
+            box-shadow: 0 0 10px var(--accent);
+            animation: stat-blink 1.3s ease-in-out infinite;
+        }
+        @keyframes stat-blink {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: .3; transform: scale(.6); }
+        }
+        .stat-number {
+            font-family: var(--display);
+            font-weight: 700;
+            font-size: clamp(38px, 5vw, 58px);
+            line-height: 1.1;
+            color: var(--heading-color);
+            text-shadow: var(--glow-h);
+            font-variant-numeric: tabular-nums;
+            letter-spacing: -0.01em;
+        }
+        .stat-number .stat-suffix { color: var(--accent); }
+        .stat-label {
+            font-family: var(--mono);
+            font-size: 12px;
+            letter-spacing: .1em;
+            text-transform: uppercase;
+            color: var(--muted-color);
+            margin-top: 10px;
+        }
+        /* progress bar (members) */
+        .stat-bar {
+            height: 6px;
+            margin-top: 20px;
+            border-radius: 99px;
+            background: var(--toggle-bg);
+            overflow: hidden;
+        }
+        .stat-bar span {
+            display: block;
+            height: 100%;
+            width: 0;
+            border-radius: 99px;
+            background: linear-gradient(90deg, #0687A2, #0BB1D2, #7fe6f7);
+            box-shadow: 0 0 12px rgba(11,177,210,.7);
+        }
+        /* ticks (days) */
+        .stat-ticks {
+            display: grid;
+            grid-template-columns: repeat(30, 1fr);
+            gap: 3px;
+            margin-top: 20px;
+        }
+        .stat-ticks b {
+            height: 6px;
+            border-radius: 2px;
+            background: var(--toggle-bg);
+            transition: background .2s ease, box-shadow .2s ease;
+        }
+        .stat-ticks b.on {
+            background: var(--accent);
+            box-shadow: 0 0 8px rgba(11,177,210,.8);
+        }
+        /* profit chart bars */
+        .stat-spark {
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+            gap: 4px;
+            height: 22px;
+            margin-top: 16px;
+        }
+        .stat-spark b {
+            width: 6px;
+            height: 100%;
+            border-radius: 2px;
+            background: linear-gradient(to top, #0687A2, #0BB1D2);
+            transform-origin: bottom;
+            transform: scaleY(.2);
+            animation: stat-bars 1.6s ease-in-out infinite;
+        }
+        .stat-spark b:nth-child(2) { animation-delay: .12s; }
+        .stat-spark b:nth-child(3) { animation-delay: .24s; }
+        .stat-spark b:nth-child(4) { animation-delay: .36s; }
+        .stat-spark b:nth-child(5) { animation-delay: .48s; }
+        .stat-spark b:nth-child(6) { animation-delay: .60s; }
+        .stat-spark b:nth-child(7) { animation-delay: .72s; }
+        @keyframes stat-bars {
+            0%, 100% { transform: scaleY(.25); }
+            50% { transform: scaleY(1); }
+        }
+        @media (max-width: 860px) {
+            .stats-inner { gap: 14px; }
+            .stat-card { padding: 22px 14px 18px; }
+        }
+        /* phones: one compact connected strip with 3 cells (desktop stays as is) */
+        @media (max-width: 640px) {
+            .stats-section { padding: 16px 0; }
+            .stats-inner {
+                padding: 0;
+                margin: 0 10px;
+                max-width: none;
+                gap: 1px;
+                background: var(--hairline);
+                border: 1px solid var(--hairline);
+                border-top: 2px solid var(--accent);
+                border-radius: 6px;
+                overflow: hidden;
+                box-shadow: 0 0 26px rgba(11,177,210,0.16);
+            }
+            .stat-card {
+                padding: 9px 3px 8px;
+                border: 0;
+                border-radius: 0;
+                box-shadow: none;
+            }
+            .stat-card:hover { transform: none; box-shadow: none; }
+            .stat-card::after { display: none; }
+            .stat-live { font-size: 6.5px; letter-spacing: .08em; gap: 3px; margin-bottom: 4px; }
+            .stat-live i { width: 5px; height: 5px; box-shadow: 0 0 6px var(--accent); }
+            .stat-number { font-size: 4.1vw; line-height: 1.1; letter-spacing: -0.02em; text-shadow: none; }
+            .stat-number .stat-suffix[style] { font-size: .55em !important; display: block; line-height: 1; margin-top: 1px; }
+            .stat-label { font-size: 6.5px; letter-spacing: .02em; line-height: 1.3; margin-top: 4px; }
+            .stat-bar { margin: 7px 6px 0; height: 3px; }
+            .stat-ticks { gap: 1px; margin: 7px 6px 0; }
+            .stat-ticks b { height: 3px; border-radius: 1px; }
+            .stat-spark { gap: 1.5px; height: 10px; margin-top: 7px; }
+            .stat-spark b { width: 2.5px; }
+        }
+        @media (max-width: 380px) {
+            .stats-inner { margin: 0 6px; }
+            .stat-label { font-size: 6px; }
+        }
+        @media (prefers-reduced-motion: reduce) {
+            .stat-card::after, .stat-live i, .stat-spark b { animation: none; }
+        }
+
+        /* ============ HERO SECTION 1 ============ */
+        .hero-section {
+            max-width: 1200px;
+            margin: 60px auto;
+            padding: 0 20px;
+            display: flex;
+            align-items: center;
+            gap: 50px;
+            min-height: 500px;
+        }
+
+        .hero-image {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .hero-image img {
+            width: 100%;
+            max-width: 400px;
+            height: auto;
+            object-fit: contain;
+            animation: float 3s ease-in-out infinite;
+            filter: drop-shadow(0 10px 30px rgba(23, 162, 184, 0.25));
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+        }
+
+        @keyframes float-soft {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-7px); }
+        }
+
+        .hero-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .badge {
+            font-family: var(--mono);
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: linear-gradient(135deg, rgba(23, 162, 184, 0.2) 0%, rgba(255, 215, 0, 0.1) 100%);
+            color: var(--accent);
+            padding: 12px 20px;
+            border-radius: 50px;
+            font-size: 12px;
+            font-weight: 600;
+            width: fit-content;
+            border: 1px solid var(--accent);
+            box-shadow: 0 0 20px rgba(11,177,210,0.25);
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+        }
+
+        .hero-content h1 {
+            font-family: var(--display);
+            font-size: 52px;
+            font-weight: 700;
+            line-height: 1.2;
+            color: var(--heading-color);
+            letter-spacing: -0.01em;
+            text-shadow: var(--glow-h);
+        }
+
+        .hero-content .highlight {
+            color: var(--accent);
+            text-decoration: underline;
+            text-decoration-color: #ffd700;
+            text-decoration-thickness: 3px;
+            text-underline-offset: 8px;
+        }
+
+        .hero-content p {
+            font-size: 18px;
+            color: var(--muted-color);
+            font-weight: 400;
+            line-height: 1.8;
+        }
+
+        .features-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin: 20px 0;
+        }
+
+        .feature-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            font-size: 15px;
+            color: var(--text-color);
+            font-weight: 600;
+        }
+
+        .feature-item::before {
+            content: '✓';
+            color: var(--accent);
+            font-weight: bold;
+            font-size: 20px;
+            flex-shrink: 0;
+            margin-top: 0px;
+            background: rgba(23, 162, 184, 0.1);
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .cta-buttons {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
+            align-items: center;
+        }
+
+        .btn {
+            font-family: var(--mono);
+            padding: 16px 32px;
+            border-radius: 4px;
+            font-size: 13px;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #0BB1D2 0%, #1eb3cc 100%);
+            color: #0A0A0B;
+            box-shadow: 0 0 30px rgba(11,177,210,0.45);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 35px rgba(23, 162, 184, 0.45);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: var(--accent);
+            border: 1px solid var(--accent);
+            box-shadow: 0 0 16px rgba(11,177,210,0.15);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(23, 162, 184, 0.05);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(23, 162, 184, 0.2);
+        }
+
+        .price-tag {
+            font-family: var(--display);
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--accent);
+            margin-top: 10px;
+            display: flex;
+            align-items: baseline;
+            gap: 5px;
+        }
+
+        .price-tag .currency {
+            font-size: 20px;
+        }
+
+        .price-tag .period {
+            font-size: 14px;
+            color: var(--muted-color);
+            font-weight: 500;
+        }
+
+        /* ============ DIVIDER ============ */
+        .divider {
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--accent), transparent);
+            margin: 80px 0;
+        }
+
+        /* ============ HERO SECTION 2 ============ */
+        .hero-section.reverse {
+            flex-direction: row-reverse;
+        }
+
+        /* ============ BENEFITS GRID ============ */
+        .benefits-section {
+            max-width: 1200px;
+            margin: 80px auto;
+            padding: 60px 20px;
+            background: var(--surface-bg);
+            border-radius: 4px;
+            box-shadow: 0 0 60px rgba(11,177,210,0.1);
+            border: 1px solid var(--hairline);
+            transition: background 0.3s ease;
+        }
+
+        .section-title {
+            font-family: var(--display);
+            text-align: center;
+            font-size: 42px;
+            font-weight: 700;
+            color: var(--heading-color);
+            margin-bottom: 50px;
+            line-height: 1.2;
+            text-shadow: var(--glow-s);
+        }
+
+        .section-title .highlight {
+            color: var(--accent);
+        }
+
+        .benefits-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 30px;
+        }
+
+        .benefit-card {
+            background: var(--card-bg);
+            padding: 30px;
+            border-radius: 4px;
+            border: 1px solid var(--hairline);
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+
+        .benefit-card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 0 45px rgba(11,177,210,0.3);
+            border-color: var(--accent);
+        }
+
+        .benefit-icon {
+            font-size: 45px;
+            margin-bottom: 15px;
+            filter: drop-shadow(0 4px 8px rgba(23, 162, 184, 0.15));
+        }
+
+        .benefit-card h3 {
+            font-family: var(--display);
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--heading-color);
+            margin-bottom: 10px;
+            letter-spacing: -0.01em;
+        }
+
+        .benefit-card p {
+            font-size: 14px;
+            color: var(--muted-color);
+            line-height: 1.7;
+            font-weight: 500;
+        }
+
+
+        /* ============ BENEFIT "LEARN MORE" ============ */
+        .benefits-grid { align-items: start; }
+        .benefit-more {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            margin-top: 16px;
+            padding: 8px 16px;
+            font-family: var(--mono);
+            font-size: 11.5px;
+            font-weight: 600;
+            letter-spacing: .07em;
+            text-transform: uppercase;
+            color: var(--accent);
+            background: transparent;
+            border: 1px solid var(--hairline);
+            border-radius: 999px;
+            cursor: pointer;
+            transition: all .2s ease;
+        }
+        .benefit-more:hover { border-color: var(--accent); background: var(--toggle-active-bg); }
+        .benefit-more svg { width: 14px; height: 14px; fill: none; stroke: currentColor; stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round; transition: transform .25s ease; }
+        .benefit-card.open .benefit-more { background: var(--toggle-active-bg); border-color: var(--accent); }
+        .benefit-card.open .benefit-more svg { transform: rotate(180deg); }
+        .benefit-detail {
+            display: grid;
+            grid-template-rows: 0fr;
+            transition: grid-template-rows .3s ease;
+        }
+        .benefit-card.open .benefit-detail { grid-template-rows: 1fr; }
+        .benefit-detail-inner { overflow: hidden; min-height: 0; text-align: left; }
+        .benefit-detail-inner p {
+            font-size: 13.5px;
+            color: var(--text-color);
+            line-height: 1.7;
+            margin-top: 12px;
+        }
+        .benefit-detail-inner p:first-child { margin-top: 18px; padding-top: 16px; border-top: 1px solid var(--hairline); }
+        @media (prefers-reduced-motion: reduce) { .benefit-detail, .benefit-more svg { transition: none; } }
+
+        /* ============ TESTIMONIAL SECTION ============ */
+        .testimonial-section {
+            max-width: 1200px;
+            margin: 80px auto;
+            padding: 0 20px;
+            text-align: center;
+        }
+
+        .testimonial-section h2 {
+            font-family: var(--display);
+            font-size: 42px;
+            font-weight: 700;
+            color: var(--heading-color);
+            margin-bottom: 50px;
+            text-shadow: var(--glow-s);
+        }
+
+        .testimonial-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+        }
+
+        .testimonial-card {
+            background: var(--card-bg);
+            padding: 30px;
+            border-radius: 4px;
+            border: 1px solid var(--hairline);
+            border-left: 3px solid var(--accent);
+            box-shadow: 0 0 30px rgba(11,177,210,0.08);
+            transition: background 0.3s ease;
+        }
+
+        .testimonial-card p {
+            color: var(--muted-color);
+            font-size: 15px;
+            line-height: 1.8;
+            margin-bottom: 15px;
+            font-style: italic;
+        }
+
+        .testimonial-author {
+            font-family: var(--mono);
+            color: var(--heading-color);
+            font-weight: 600;
+            font-size: 13px;
+        }
+
+        /* ============ TESTIMONIAL PROOF (certificate / result screenshot) ============ */
+        .testimonial-proof {
+            display: block;
+            margin-top: 18px;
+            border-radius: 4px;
+            overflow: hidden;
+            border: 1px solid var(--hairline);
+            background: var(--surface-bg);
+            position: relative;
+        }
+        .testimonial-proof img {
+            display: block;
+            width: 100%;
+            height: 170px;
+            object-fit: cover;
+            transition: transform 0.3s ease;
+        }
+        .testimonial-proof:hover img { transform: scale(1.04); }
+        /* Account Analysis CTA under each member testimonial */
+        .testimonial-analysis-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            width: 100%;
+            margin-top: 14px;
+            padding: 13px 18px;
+            border: 1px solid var(--accent);
+            border-radius: 4px;
+            background: linear-gradient(135deg, rgba(11,177,210,0.16), rgba(11,177,210,0.05));
+            color: var(--accent);
+            font-family: var(--mono);
+            font-size: 12px;
+            font-weight: 600;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            text-decoration: none;
+            box-shadow: 0 0 16px rgba(11,177,210,0.12);
+            transition: all 0.25s ease;
+        }
+
+        .testimonial-analysis-btn:hover {
+            transform: translateY(-2px);
+            color: #0A0A0B;
+            background: linear-gradient(135deg, #0BB1D2 0%, #1eb3cc 100%);
+            box-shadow: 0 8px 25px rgba(11,177,210,0.28);
+        }
+
+        :root[data-theme="light"] .testimonial-analysis-btn:hover {
+            color: #ffffff;
+        }
+
+        .testimonial-proof .tp-label {
+            position: absolute;
+            left: 10px;
+            bottom: 10px;
+            font-family: var(--mono);
+            font-size: 10px;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            color: #fff;
+            background: rgba(0,0,0,0.55);
+            padding: 5px 9px;
+            border-radius: 3px;
+            pointer-events: none;
+        }
+
+        /* ============ PRICING SECTION ============ */
+        .pricing-section {
+            max-width: 1200px;
+            margin: 80px auto;
+            padding: 0 20px;
+            text-align: center;
+        }
+
+        .pricing-section h2 {
+            font-family: var(--display);
+            font-size: 48px;
+            font-weight: 700;
+            color: var(--heading-color);
+            margin-bottom: 20px;
+            text-shadow: var(--glow-s);
+        }
+
+        .pricing-section > p {
+            font-size: 18px;
+            color: var(--muted-color);
+            margin-bottom: 50px;
+        }
+
+        .pricing-card {
+            background: var(--pricing-bg);
+            border: 1px solid var(--accent);
+            border-top: 3px solid var(--accent);
+            border-radius: 4px;
+            padding: 50px;
+            max-width: 500px;
+            margin: 0 auto;
+            box-shadow: 0 0 70px rgba(11,177,210,0.25);
+            transition: background 0.3s ease;
+        }
+
+        .pricing-card h3 {
+            font-family: var(--display);
+            font-size: 28px;
+            color: var(--heading-color);
+            margin-bottom: 20px;
+            font-weight: 700;
+        }
+
+        .price-big {
+            font-family: var(--display);
+            font-size: 56px;
+            font-weight: 700;
+            color: var(--accent);
+            margin: 30px 0;
+            text-shadow: var(--glow-price);
+        }
+
+        .price-big .currency {
+            font-size: 32px;
+        }
+
+        .price-big .period {
+            font-size: 18px;
+            color: var(--muted-color);
+            font-weight: 500;
+        }
+
+        .pricing-features {
+            text-align: left;
+            margin: 30px 0;
+            padding: 30px 0;
+            border-top: 1px solid var(--hairline);
+            border-bottom: 1px solid var(--hairline);
+        }
+
+        .pricing-features li {
+            list-style: none;
+            padding: 12px 0;
+            color: var(--text-color);
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 15px;
+        }
+
+        .pricing-features li::before {
+            content: '✓';
+            color: var(--accent);
+            font-weight: bold;
+            font-size: 20px;
+            background: rgba(23, 162, 184, 0.1);
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .pricing-card .btn-primary {
+            width: 100%;
+            justify-content: center;
+            margin-top: 30px;
+            font-size: 16px;
+            padding: 18px 32px;
+        }
+
+        /* ============ CTA FINAL SECTION ============ */
+        .final-cta {
+            background: var(--cta-bg);
+            border-top: 1px solid var(--hairline);
+            border-bottom: 1px solid var(--hairline);
+            box-shadow: 0 0 60px rgba(11,177,210,0.12) inset;
+            padding: 60px 20px;
+            text-align: center;
+            margin: 80px 0 0 0;
+            border-radius: 0;
+        }
+
+        .final-cta h2 {
+            font-family: var(--display);
+            font-size: 42px;
+            font-weight: 700;
+            color: var(--cta-heading);
+            margin-bottom: 20px;
+            letter-spacing: -0.01em;
+            text-shadow: var(--glow-cta);
+        }
+
+        .final-cta p {
+            font-size: 18px;
+            color: var(--cta-text);
+            margin-bottom: 30px;
+        }
+
+        .final-cta .btn {
+            background: linear-gradient(135deg, #0BB1D2 0%, #1eb3cc 100%);
+            color: #0A0A0B;
+            font-size: 15px;
+            padding: 18px 50px;
+            box-shadow: 0 0 40px rgba(11,177,210,0.45);
+        }
+
+        .final-cta .btn:hover {
+            background: #ffd700;
+            color: #0a5f7a;
+            transform: translateY(-3px);
+            box-shadow: 0 15px 40px rgba(255, 215, 0, 0.3);
+        }
+
+        /* ============ TELEGRAM SUPPORT ============ */
+        .telegram-support {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: linear-gradient(135deg, #0BB1D2 0%, #1eb3cc 100%);
+            color: white;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            cursor: pointer;
+            box-shadow: 0 8px 25px rgba(23, 162, 184, 0.3);
+            transition: all 0.3s;
+            text-decoration: none;
+            z-index: 50;
+        }
+
+        .telegram-support:hover {
+            transform: scale(1.1);
+            box-shadow: 0 12px 35px rgba(23, 162, 184, 0.4);
+        }
+
+        /* ============ FOOTER ============ */
+        footer {
+            background: var(--footer-bg);
+            color: var(--footer-strong);
+            text-align: center;
+            padding: 40px 20px;
+            border-top: 1px solid var(--hairline);
+        }
+
+        .disclaimer {
+            font-size: 12px;
+            color: var(--footer-text);
+            line-height: 1.8;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .footer-info {
+            font-family: var(--mono);
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid var(--footer-line);
+            color: var(--footer-muted);
+            font-size: 11px;
+            letter-spacing: 0.03em;
+        }
+
+        /* ============ AI CHAT WIDGET ============ */
+        .chat-launcher {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 62px;
+            height: 62px;
+            border-radius: 50%;
+            border: 0;
+            cursor: pointer;
+            background: linear-gradient(135deg, #0BB1D2 0%, #1eb3cc 100%);
+            color: #0A0A0B;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 8px 28px rgba(11,177,210,0.45), 0 0 0 0 rgba(11,177,210,0.5);
+            z-index: 60;
+            transition: transform .25s ease;
+            animation: chat-pulse 2.6s ease-out infinite;
+        }
+        .chat-launcher:hover { transform: scale(1.08); }
+        .chat-launcher svg { width: 28px; height: 28px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+        .chat-launcher .ic-close { display: none; }
+        .chat-launcher.open .ic-chat { display: none; }
+        .chat-launcher.open .ic-close { display: block; }
+        .chat-launcher.open { animation: none; }
+        @keyframes chat-pulse {
+            0% { box-shadow: 0 8px 28px rgba(11,177,210,0.45), 0 0 0 0 rgba(11,177,210,0.5); }
+            70%, 100% { box-shadow: 0 8px 28px rgba(11,177,210,0.45), 0 0 0 18px rgba(11,177,210,0); }
+        }
+
+        .chat-panel {
+            position: fixed;
+            right: 30px;
+            bottom: 106px;
+            width: 372px;
+            height: min(560px, calc(100vh - 140px));
+            display: flex;
+            flex-direction: column;
+            background: var(--surface-bg);
+            border: 1px solid var(--hairline);
+            border-top: 3px solid var(--accent);
+            border-radius: 8px;
+            box-shadow: 0 18px 60px rgba(0,0,0,0.38), 0 0 40px rgba(11,177,210,0.15);
+            z-index: 70;
+            overflow: hidden;
+            opacity: 0;
+            transform: translateY(14px) scale(.98);
+            pointer-events: none;
+            transition: opacity .2s ease, transform .2s ease;
+        }
+        .chat-panel.open { opacity: 1; transform: none; pointer-events: auto; }
+
+        .chat-head {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 14px 16px;
+            background: var(--card-bg);
+            border-bottom: 1px solid var(--hairline);
+        }
+        .chat-avatar {
+            width: 38px; height: 38px;
+            border-radius: 50%;
+            background: var(--toggle-active-bg);
+            border: 1px solid var(--accent);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 18px;
+            flex-shrink: 0;
+        }
+        .chat-head-text { min-width: 0; flex: 1; }
+        .chat-head-text b { display: block; font-family: var(--display); font-size: 14.5px; color: var(--heading-color); }
+        .chat-head-text span { display: flex; align-items: center; gap: 6px; font-family: var(--mono); font-size: 10.5px; letter-spacing: .08em; text-transform: uppercase; color: var(--accent); }
+        .chat-head-text span i { width: 7px; height: 7px; border-radius: 50%; background: #2FBE7A; box-shadow: 0 0 8px #2FBE7A; }
+
+
+        .chat-body {
+            flex: 1;
+            overflow-y: auto;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            scroll-behavior: smooth;
+        }
+        .chat-msg {
+            max-width: 86%;
+            padding: 10px 13px;
+            font-size: 13.5px;
+            line-height: 1.6;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            border-radius: 12px;
+        }
+        .chat-msg.bot {
+            align-self: flex-start;
+            background: var(--card-bg);
+            border: 1px solid var(--hairline);
+            color: var(--text-color);
+            border-bottom-left-radius: 3px;
+        }
+        .chat-msg.user {
+            align-self: flex-end;
+            background: linear-gradient(135deg, #0BB1D2 0%, #1eb3cc 100%);
+            color: #0A0A0B;
+            font-weight: 500;
+            border-bottom-right-radius: 3px;
+        }
+                .chat-typing { display: inline-flex; gap: 4px; padding: 13px 14px; }
+        .chat-typing i { width: 7px; height: 7px; border-radius: 50%; background: var(--accent); opacity: .35; animation: chat-dot 1.2s infinite; }
+        .chat-typing i:nth-child(2) { animation-delay: .18s; }
+        .chat-typing i:nth-child(3) { animation-delay: .36s; }
+        @keyframes chat-dot { 0%, 80%, 100% { opacity: .3; transform: translateY(0); } 40% { opacity: 1; transform: translateY(-3px); } }
+
+        .chat-chips { display: flex; flex-wrap: wrap; gap: 7px; padding: 0 16px 10px; }
+        .chat-chips button {
+            font-family: var(--mono);
+            font-size: 11px;
+            color: var(--accent);
+            background: transparent;
+            border: 1px solid var(--hairline);
+            border-radius: 999px;
+            padding: 6px 11px;
+            cursor: pointer;
+            transition: all .15s ease;
+        }
+        .chat-chips button:hover { border-color: var(--accent); background: var(--toggle-active-bg); }
+
+        .chat-form {
+            display: flex;
+            gap: 8px;
+            padding: 12px;
+            border-top: 1px solid var(--hairline);
+            background: var(--card-bg);
+        }
+        .chat-form input {
+            flex: 1;
+            min-width: 0;
+            font-family: var(--sans);
+            font-size: 16px; /* 16px prevents iOS zoom on focus */
+            padding: 11px 13px;
+            border-radius: 6px;
+            border: 1px solid var(--hairline);
+            background: var(--surface-bg);
+            color: var(--text-color);
+        }
+        .chat-form input:focus { outline: none; border-color: var(--accent); }
+        .chat-form button {
+            width: 44px;
+            border: 0;
+            border-radius: 6px;
+            cursor: pointer;
+            background: linear-gradient(135deg, #0BB1D2 0%, #1eb3cc 100%);
+            color: #0A0A0B;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .chat-form button:disabled { opacity: .5; cursor: default; }
+        .chat-form button svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
+        .chat-foot { font-family: var(--mono); font-size: 9.5px; letter-spacing: .04em; color: var(--muted-color); text-align: center; padding: 0 12px 10px; background: var(--card-bg); }
+
+        @media (max-width: 520px) {
+            .chat-launcher { right: 16px; bottom: 16px; width: 56px; height: 56px; }
+            .chat-panel { right: 10px; left: 10px; width: auto; bottom: 84px; height: min(70vh, calc(100vh - 110px)); }
+        }
+
+        /* ============ RESPONSIVE ============ */
+        @media (max-width: 860px) {
+            .nav-links { display: none; }
+        }
+        @media (min-width: 861px) {
+            .mobile-only-menu-label, .mobile-only-menu-item { display: none; }
+        }
+        @media (max-width: 768px) {
+            .hero-section {
+                flex-direction: column;
+                gap: 30px;
+                margin: 40px auto;
+            }
+
+            .hero-section.reverse {
+                flex-direction: column;
+            }
+
+            .hero-content h1 {
+                font-size: 36px;
+            }
+
+            .nav-container { padding: 0 14px; }
+            .logo { font-size: 20px; letter-spacing: 1px; gap: 8px; }
+            .logo-icon { height: 36px; width: 36px; }
+
+            .nav-right {
+                gap: 8px;
+            }
+
+            .theme-toggle button { padding: 8px 10px; }
+            .theme-toggle button span { display: none; }
+            .site-menu-panel { right: -10px; min-width: 240px; max-width: calc(100vw - 28px); }
+
+            .section-title {
+                font-size: 32px;
+            }
+
+            .benefits-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .cta-buttons {
+                flex-direction: column;
+                width: 100%;
+            }
+
+            .btn {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .pricing-card {
+                padding: 30px;
+            }
+
+            .telegram-support {
+                bottom: 20px;
+                right: 20px;
+            }
+
+            .final-cta h2 {
+                font-size: 32px;
+            }
+        }
+        @media (max-width: 380px) {
+            .logo { font-size: 17px; }
+            .theme-toggle button { padding: 7px 8px; }
+        }
+
+        /* ============ PHONE: COMPACT WHOLE-PAGE LAYOUT (desktop unchanged) ============ */
+        @media (max-width: 640px) {
+            nav { padding: 8px 0; }
+            .nav-container { padding: 0 12px; row-gap: 4px; }
+            .logo { font-size: 15px; letter-spacing: .5px; gap: 6px; }
+            .logo-icon { height: 30px; width: 30px; }
+            .nav-right { gap: 6px; }
+            .theme-toggle { padding: 2px; }
+            .theme-toggle button { padding: 6px 8px; }
+            .theme-toggle svg { width: 12px; height: 12px; }
+            .site-menu-btn { width: 30px; height: 30px; }
+            .site-menu-btn svg { width: 15px; height: 15px; }
+
+            .welcome-banner { padding: 20px 14px 16px; }
+            .welcome-banner h1 { font-size: 23px; line-height: 1.2; }
+            .welcome-banner p { font-size: 11px; margin-top: 7px; letter-spacing: .02em; }
+
+            .growth-chart-section { padding: 4px 0 0; }
+            .growth-chart-inner { padding: 0 12px 4px; }
+            .growth-svg { height: 64px; }
+            .growth-line { stroke-width: 2.2; }
+            .growth-caption { font-size: 8.5px; letter-spacing: .08em; }
+
+            .video-section { padding: 20px 0 22px; }
+            .video-inner { padding: 0 12px; }
+            .video-eyebrow { font-size: 9px; margin-bottom: 6px; letter-spacing: .16em; }
+            .video-title { font-size: 19px; margin-bottom: 12px; }
+            .video-unmute { top: 8px; right: 8px; padding: 6px 10px; font-size: 9px; }
+
+            .hero-section { margin: 20px auto; padding: 0 14px; gap: 14px; min-height: 0; }
+            /* hero picture: framed, centered, softly glowing, never oversized */
+            .hero-image { width: 100%; position: relative; padding: 4px 0 2px; }
+            .hero-image::before {
+                content: "";
+                position: absolute;
+                left: 50%; top: 50%;
+                width: 62%; height: 80%;
+                transform: translate(-50%, -50%);
+                background: radial-gradient(ellipse at center, rgba(11,177,210,0.30), transparent 68%);
+                filter: blur(14px);
+                z-index: 0;
+                pointer-events: none;
+            }
+            .hero-image img {
+                position: relative;
+                z-index: 1;
+                width: auto;
+                max-width: 58%;
+                max-height: 215px;
+                object-fit: contain;
+                border-radius: 12px;
+                animation: float-soft 4.5s ease-in-out infinite;
+                filter: drop-shadow(0 8px 18px rgba(11,177,210,0.28));
+            }
+            /* text under the picture is centered so the block feels balanced */
+            .hero-content { gap: 10px; align-items: center; text-align: center; }
+            .badge { margin: 0 auto; }
+            .features-list { align-items: flex-start; text-align: left; width: 100%; max-width: 330px; margin-left: auto; margin-right: auto; }
+            .price-tag { justify-content: center; }
+            .cta-buttons { width: 100%; }
+            .hero-content .highlight { text-underline-offset: 5px; text-decoration-thickness: 2px; }
+            .badge { font-size: 9.5px; padding: 7px 13px; }
+            .hero-content h1 { font-size: 25px; line-height: 1.2; }
+            .hero-content p { font-size: 13.5px; line-height: 1.6; }
+            .features-list { gap: 7px; margin: 6px 0; }
+            .feature-item { font-size: 12.5px; gap: 8px; }
+            .feature-item::before { width: 19px; height: 19px; font-size: 13px; }
+            .price-tag { font-size: 22px; margin-top: 2px; }
+            .price-tag .currency { font-size: 15px; }
+            .price-tag .period { font-size: 12px; }
+            .cta-buttons { margin-top: 8px; gap: 8px; }
+            .btn { padding: 11px 16px; font-size: 11px; }
+
+            .divider { margin: 26px 0; }
+
+            .benefits-section { margin: 22px 10px; padding: 22px 12px; }
+            .section-title { font-size: 21px; margin-bottom: 16px; }
+            .benefits-grid { gap: 10px; }
+            .benefit-card { padding: 14px 12px; }
+            .benefit-icon { font-size: 28px; margin-bottom: 6px; }
+            .benefit-card h3 { font-size: 14.5px; margin-bottom: 5px; }
+            .benefit-card p { font-size: 12px; line-height: 1.55; }
+            .benefit-more { margin-top: 10px; padding: 6px 12px; font-size: 10px; }
+            .benefit-detail-inner p { font-size: 12px; margin-top: 8px; }
+            .benefit-detail-inner p:first-child { margin-top: 12px; padding-top: 10px; }
+
+            .testimonial-section { margin: 22px auto; padding: 0 12px; }
+            .testimonial-section h2 { font-size: 21px; margin-bottom: 14px; }
+            .testimonial-grid { gap: 12px; grid-template-columns: 1fr; }
+            .testimonial-card { padding: 14px; }
+            .testimonial-card p { font-size: 12.5px; line-height: 1.6; margin-bottom: 8px; }
+            .testimonial-author { font-size: 11px; }
+            .testimonial-proof { margin-top: 10px; }
+            .testimonial-proof img { height: 110px; }
+            .testimonial-proof .tp-label { font-size: 8.5px; padding: 3px 7px; left: 7px; bottom: 7px; }
+            .testimonial-analysis-btn { margin-top: 8px; padding: 9px 12px; font-size: 10.5px; }
+
+            .pricing-section { margin: 22px auto; padding: 0 12px; }
+            .pricing-section h2 { font-size: 22px; margin-bottom: 8px; }
+            .pricing-section > p { font-size: 12.5px; margin-bottom: 16px; }
+            .pricing-card { padding: 18px 14px; }
+            .pricing-card h3 { font-size: 19px; margin-bottom: 6px; }
+            .price-big { font-size: 38px; margin: 10px 0; }
+            .price-big .currency { font-size: 22px; }
+            .price-big .period { font-size: 13px; }
+            .pricing-features { margin: 12px 0; padding: 10px 0; }
+            .pricing-features li { padding: 6px 0; font-size: 12px; gap: 9px; }
+            .pricing-features li::before { width: 20px; height: 20px; font-size: 12px; }
+            .pricing-card .btn-primary { margin-top: 12px; padding: 13px 16px; font-size: 12px; }
+
+            .final-cta { margin-top: 26px; padding: 26px 14px; }
+            .final-cta h2 { font-size: 21px; margin-bottom: 8px; }
+            .final-cta p { font-size: 12.5px; margin-bottom: 14px; }
+            .final-cta .btn { padding: 12px 22px; font-size: 11.5px; }
+
+            footer { padding: 20px 14px; }
+            .disclaimer { font-size: 10px; line-height: 1.6; }
+            .footer-info { margin-top: 12px; padding-top: 12px; font-size: 9.5px; }
+
+            .chat-launcher { width: 50px; height: 50px; right: 12px; bottom: 12px; }
+            .chat-launcher svg { width: 24px; height: 24px; }
+            .chat-panel { bottom: 72px; }
+        }
+    </style>
+
+    <style>
+      /* ASL University member access */
+      .asl-auth-open {
+        border: 1px solid var(--accent); color: var(--accent);
+        background: linear-gradient(135deg, rgba(11,177,210,.14), rgba(11,177,210,.04));
+        padding: 10px 15px; border-radius: 4px; cursor: pointer;
+        font: 600 11px var(--mono); letter-spacing: .07em; white-space: nowrap;
+        transition: .2s ease;
+      }
+      .asl-auth-open:hover { background: var(--accent); color: #071318; box-shadow: 0 0 22px rgba(11,177,210,.25); }
+      .asl-auth-user { display:none; color:var(--accent); font: 500 11px var(--mono); max-width:120px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+      .asl-auth-modal { position:fixed; inset:0; z-index:1000; display:none; align-items:center; justify-content:center; padding:18px; background:rgba(1,8,12,.78); backdrop-filter:blur(9px); }
+      .asl-auth-modal.open { display:flex; }
+      .asl-auth-card { width:min(100%,440px); position:relative; padding:30px; background:var(--surface-bg); color:var(--text-color); border:1px solid var(--hairline); border-top:3px solid var(--accent); border-radius:8px; box-shadow:0 24px 90px rgba(0,0,0,.5),0 0 36px rgba(11,177,210,.12); }
+      .asl-auth-close { position:absolute; right:14px; top:12px; width:34px; height:34px; border:1px solid var(--hairline); border-radius:50%; color:var(--text-color); background:transparent; cursor:pointer; font-size:20px; }
+      .asl-auth-kicker { color:var(--accent); font:11px var(--mono); letter-spacing:.18em; text-transform:uppercase; margin-bottom:8px; }
+      .asl-auth-title { font:700 27px var(--display); color:var(--heading-color); margin:0 35px 8px 0; }
+      .asl-auth-subtitle { color:var(--muted-color); font-size:13px; margin-bottom:22px; }
+      .asl-auth-tabs { display:grid; grid-template-columns:1fr 1fr; gap:6px; padding:4px; border:1px solid var(--hairline); background:var(--toggle-bg); border-radius:5px; margin-bottom:20px; }
+      .asl-auth-tab { padding:11px; border:0; border-radius:3px; cursor:pointer; color:var(--muted-color); background:transparent; font:600 11px var(--mono); letter-spacing:.08em; }
+      .asl-auth-tab.active { color:var(--accent); background:var(--toggle-active-bg); box-shadow:inset 0 0 0 1px var(--hairline); }
+      .asl-auth-form { display:none; }
+      .asl-auth-form.active { display:block; }
+      .asl-auth-field { margin-bottom:15px; }
+      .asl-auth-field label { display:block; margin-bottom:7px; color:var(--text-color); font:11px var(--mono); letter-spacing:.07em; text-transform:uppercase; }
+      .asl-auth-field input { width:100%; padding:13px 14px; border:1px solid var(--hairline); border-radius:4px; outline:none; background:var(--toggle-bg); color:var(--heading-color); font:14px var(--sans); }
+      .asl-auth-field input:focus { border-color:var(--accent); box-shadow:0 0 0 3px rgba(11,177,210,.1); }
+      .asl-auth-submit { width:100%; padding:14px; margin-top:4px; border:0; border-radius:4px; cursor:pointer; background:linear-gradient(135deg,#0BB1D2,#1eb3cc); color:#061116; font:700 12px var(--mono); letter-spacing:.1em; }
+      .asl-auth-submit:disabled { opacity:.6; cursor:wait; }
+      .asl-auth-message { display:none; padding:11px 12px; margin:0 0 14px; border-radius:4px; font-size:12px; line-height:1.5; overflow-wrap:anywhere; }
+      .asl-auth-message.show { display:block; }
+      .asl-auth-message.error { color:#ffb4b4; background:rgba(200,30,50,.12); border:1px solid rgba(255,80,100,.3); }
+      .asl-auth-message.success { color:#9af0ce; background:rgba(20,160,110,.12); border:1px solid rgba(20,200,140,.3); }
+      .asl-auth-note { color:var(--muted-color); font-size:11px; margin-top:13px; line-height:1.6; }
+      @media(max-width:768px) {
+        .nav-right { gap:10px; flex-wrap:wrap; justify-content:flex-end; }
+        .nav-links { gap:12px; }
+        .asl-auth-open { padding:9px 10px; font-size:10px; }
+      }
+      @media(max-width:480px) {
+        .asl-auth-card { padding:24px 19px; }
+        .nav-links { display:none; }
+      }
+    </style>
+
+
+    <style>
+      /* ===== Pricing: 3 plans in ONE row (desktop + mobile) ===== */
+      .pricing-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:24px; max-width:1100px; margin:0 auto; align-items:stretch; }
+      .pricing-grid .pricing-card { max-width:none; margin:0; padding:40px 24px 28px; display:flex; flex-direction:column; align-items:center; position:relative; text-align:center; }
+      .pricing-grid .pricing-card h3 { font-size:26px; margin-bottom:14px; }
+      .pricing-grid .pricing-card.featured { transform:scale(1.04); box-shadow:0 0 90px rgba(11,177,210,0.4); z-index:2; }
+      .plan-badge { position:absolute; top:-14px; left:50%; transform:translateX(-50%); white-space:nowrap; font-family:var(--mono); font-size:11px; font-weight:600; letter-spacing:.06em; text-transform:uppercase; color:#0A0A0B; background:linear-gradient(135deg,#ffd700,#ffb800); padding:6px 14px; border-radius:999px; }
+      .plan-discount { display:inline-block; font-family:var(--mono); font-size:12px; font-weight:600; letter-spacing:.05em; color:var(--accent); background:var(--toggle-active-bg); border:1px solid var(--accent); padding:5px 12px; border-radius:999px; }
+      .plan-discount.base { color:var(--muted-color); background:transparent; border-color:var(--hairline); }
+      .price-old { font-family:var(--mono); font-size:17px; color:var(--muted-color); text-decoration:line-through; margin-top:14px; min-height:26px; }
+      .pricing-grid .price-big { font-size:54px; margin:4px 0 2px; line-height:1.1; }
+      .pricing-grid .price-big .currency { font-size:.6em; }
+      .pricing-grid .price-big .period { display:block; font-size:15px; margin-top:4px; }
+      .price-note { font-family:var(--mono); font-size:12px; color:var(--muted-color); min-height:36px; margin-top:6px; }
+      .price-note b { color:var(--accent); }
+      .pricing-grid .pricing-card .btn { width:100%; justify-content:center; margin-top:auto; padding:16px 12px; font-size:13px; }
+      .plan-includes { max-width:1100px; margin:40px auto 0; padding:30px 26px; background:var(--surface-bg); border:1px solid var(--hairline); border-radius:4px; text-align:left; }
+      .plan-includes h4 { font-family:var(--display); font-size:20px; color:var(--heading-color); text-align:center; margin-bottom:16px; }
+      .plan-includes ul { list-style:none; display:grid; grid-template-columns:repeat(2,1fr); column-gap:30px; }
+      .plan-includes li { display:flex; align-items:center; gap:12px; padding:9px 0; font-size:14.5px; font-weight:600; color:var(--text-color); }
+      .plan-includes li::before { content:'\2713'; color:var(--accent); font-weight:bold; background:rgba(23,162,184,0.1); width:24px; height:24px; border-radius:50%; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+      @media (max-width:900px) {
+        .pricing-grid { gap:14px; }
+        .pricing-grid .pricing-card { padding:34px 12px 20px; }
+        .pricing-grid .pricing-card h3 { font-size:20px; }
+        .pricing-grid .price-big { font-size:40px; }
+        .pricing-grid .pricing-card.featured { transform:none; }
+        .price-old { font-size:14px; min-height:20px; }
+        .price-note { font-size:10.5px; min-height:30px; }
+        .pricing-grid .pricing-card .btn { padding:13px 6px; font-size:11px; }
+        .plan-includes ul { grid-template-columns:1fr; }
+      }
+      @media (max-width:640px) {
+        .pricing-grid { gap:6px; }
+        .pricing-grid .pricing-card { padding:20px 5px 10px; }
+        .pricing-grid .pricing-card h3 { font-size:12.5px; margin-bottom:8px; }
+        .pricing-grid .pricing-card.featured { border-width:2px; }
+        .plan-badge { top:-9px; font-size:7.5px; padding:3px 7px; letter-spacing:.02em; }
+        .plan-discount { font-size:8.5px; padding:3px 6px; letter-spacing:0; }
+        .price-old { font-size:10.5px; min-height:15px; margin-top:8px; }
+        .pricing-grid .price-big { font-size:22px; margin:2px 0; }
+        .pricing-grid .price-big .period { font-size:9px; margin-top:2px; }
+        .price-note { font-size:8.5px; min-height:0; margin:4px 0 10px; line-height:1.35; }
+        .pricing-grid .pricing-card .btn { padding:9px 2px; font-size:9.5px; letter-spacing:.02em; gap:3px; }
+        .plan-includes { margin:22px 0 0; padding:16px 12px; }
+        .plan-includes h4 { font-size:15px; margin-bottom:8px; }
+        .plan-includes li { font-size:12.5px; padding:6px 0; gap:9px; }
+        .plan-includes li::before { width:20px; height:20px; font-size:12px; }
+      }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav>
+        <div class="nav-container">
+            <div class="logo"><img class="logo-icon" src="asl-logo-transparent.png" alt="ASL University logo" onerror="this.style.display=&#39;none&#39;">ASL UNIVERSITY</div>
+            <div class="nav-right">
+                <ul class="nav-links">
+                    <li><a href="https://asluniversity.github.io/ASLuniversity/#benefits">Benefits</a></li>
+                    <li><a href="https://asluniversity.github.io/ASLuniversity/#pricing">Pricing</a></li>
+                    <li><a href="https://asluniversity.github.io/ASLuniversity/#join">Join Now</a></li>
+                </ul>
+                <div class="theme-toggle" role="group" aria-label="Color theme">
+                    <button type="button" data-theme-btn="dark" aria-pressed="true" title="Dark mode">
+                        <svg viewBox="0 0 24 24"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"></path></svg><span>DARK</span>
+                    </button>
+                    <button type="button" data-theme-btn="light" aria-pressed="false" title="Light mode">
+                        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"></path></svg><span>LIGHT</span>
+                    </button>
+                </div>
+                <button type="button" class="asl-auth-open" id="asl-auth-open" aria-haspopup="dialog">MEMBER LOGIN</button>
+                <div class="site-menu" id="site-menu">
+                    <button type="button" class="site-menu-btn" id="site-menu-btn" aria-haspopup="true" aria-expanded="false" aria-label="More ASL University sites" title="More sites">
+                        <svg viewBox="0 0 24 24"><circle cx="5" cy="12" r="2"></circle><circle cx="12" cy="12" r="2"></circle><circle cx="19" cy="12" r="2"></circle></svg>
+                    </button>
+                    <div class="site-menu-panel" id="site-menu-panel" role="menu">
+                        <div class="site-menu-label mobile-only-menu-label">This Page</div>
+                        <a class="site-menu-link mobile-only-menu-item" role="menuitem" href="https://asluniversity.github.io/ASLuniversity/#benefits">
+                            <span class="smi">🎁</span>
+                            <span class="smt"><b>Benefits</b></span>
+                        </a>
+                        <a class="site-menu-link mobile-only-menu-item" role="menuitem" href="https://asluniversity.github.io/ASLuniversity/#pricing">
+                            <span class="smi">💳</span>
+                            <span class="smt"><b>Pricing</b></span>
+                        </a>
+                        <a class="site-menu-link mobile-only-menu-item" role="menuitem" href="https://asluniversity.github.io/ASLuniversity/#join">
+                            <span class="smi">🚀</span>
+                            <span class="smt"><b>Join Now</b></span>
+                        </a>
+                        <div class="site-menu-sep mobile-only-menu-item"></div>
+                        <div class="site-menu-label">ASL University Network</div>
+                        <a class="site-menu-link" role="menuitem" href="https://asluniversity.github.io/ASLuniversity/asl-xauusd-analysis.html" target="_blank" rel="noopener">
+                            <span class="smi">📊</span>
+                            <span class="smt"><b>Technical &amp; Fundamental Analysis</b><span>Live XAU/USD chart, daily outlook &amp; levels</span></span>
+                        </a>
+                        <a class="site-menu-link" role="menuitem" href="https://asluniversity.github.io/ASLuniversity/asl-account-journal.html" target="_blank" rel="noopener">
+                            <span class="smi">📓</span>
+                            <span class="smt"><b>Account Journal &amp; Analysis</b><span>Upload your statement &amp; track your progress</span></span>
+                        </a>
+                        <a class="site-menu-link" role="menuitem" href="https://asluniversity.github.io/ASLuniversity/growth-program.html" target="_blank" rel="noopener">
+                            <span class="smi">🌱</span>
+                            <span class="smt"><b>Personal Growth Program</b><span>Personalizing the strategy to match your mindset</span></span>
+                        </a>
+                        <div class="site-menu-sep"></div>
+                        <a class="site-menu-link" role="menuitem" href="https://t.me/mrasltl" target="_blank" rel="noopener">
+                            <span class="smi">✉️</span>
+                            <span class="smt"><b>Telegram Support</b><span>@mrasltl</span></span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Welcome Banner -->
+    <div class="welcome-banner">
+        <div class="wb-eyebrow"></div>
+        <h1>Welcome to <span class="wb-accent">ASL University</span></h1>
+        <p>Architect your success, master your growth.</p>
+    </div>
+
+    <!-- Growth Chart -->
+    <div class="growth-chart-section">
+        <div class="growth-chart-inner">
+            <svg class="growth-svg" viewBox="0 0 800 220" preserveAspectRatio="none" aria-hidden="true">
+                <defs>
+                    <lineargradient id="growthFill" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="0%" stop-color="#ffffff" stop-opacity="0.35"></stop>
+                        <stop offset="100%" stop-color="#ffffff" stop-opacity="0"></stop>
+                    </lineargradient>
+                </defs>
+                <polygon class="growth-area" points="0,220 0,190 90,175 180,150 270,160 360,120 450,95 540,105 630,65 720,40 800,10 800,220" fill="url(#growthFill)"></polygon>
+                <polyline class="growth-line" points="0,190 90,175 180,150 270,160 360,120 450,95 540,105 630,65 720,40 800,10" fill="none"></polyline>
+                <circle class="growth-dot" r="6">
+                    <animatemotion dur="4s" repeatCount="indefinite" path="M0,190 90,175 180,150 270,160 360,120 450,95 540,105 630,65 720,40 800,10"></animatemotion>
+                </circle>
+            </svg>
+            <div class="growth-caption">Community &amp; Results — Growing Every Month</div>
+        </div>
+    </div>
+
+    <!-- Live Stats -->
+    <section class="stats-section" id="stats">
+        <div class="stats-inner">
+
+            <!-- Members -->
+            <div class="stat-card">
+                <div class="stat-live"><i></i> Live</div>
+                <div class="stat-number"><span data-count="100" data-duration="2600">100</span></div>
+                <div class="stat-label">Members allowed per month</div>
+                <div class="stat-bar"><span id="members-bar" style="width: 100%;"></span></div>
+            </div>
+
+            <!-- Profit -->
+            <div class="stat-card">
+                <div class="stat-live"><i></i> Live</div>
+                <div class="stat-number">$<span data-count="10000" data-duration="3200" data-format="comma">10,000</span><span class="stat-suffix">+</span></div>
+                <div class="stat-label">Profit earned by our students</div>
+                <div class="stat-spark"><b></b><b></b><b></b><b></b><b></b><b></b><b></b></div>
+            </div>
+
+            <!-- Days -->
+            <div class="stat-card">
+                <div class="stat-live"><i></i> Live</div>
+                <div class="stat-number"><span data-count="30" data-duration="2200">30</span> <span class="stat-suffix" style="font-size:.45em;">DAYS</span></div>
+                <div class="stat-label">Membership access period</div>
+                <div class="stat-ticks" id="days-ticks"><b class="on"></b><b class="on"></b><b class="on"></b><b class="on"></b><b class="on"></b><b class="on"></b><b class="on"></b><b class="on"></b><b class="on"></b><b class="on"></b><b class="on"></b><b class="on"></b><b class="on"></b><b class="on"></b><b class="on"></b><b class="on"></b><b class="on"></b><b class="on"></b><b class="on"></b><b class="on"></b><b class="on"></b><b class="on"></b><b class="on"></b><b class="on"></b><b class="on"></b><b class="on"></b><b class="on"></b><b class="on"></b><b class="on"></b><b class="on"></b></div>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- Intro Video -->
+    <section class="video-section" id="intro-video" style="display: none;">
+        <div class="video-inner">
+            <div class="video-eyebrow">A Personal Message</div>
+            <h2 class="video-title">Hear It Directly From Us</h2>
+            <div class="video-frame">
+                <video id="intro-video-el" muted="" playsinline="" loop="" preload="metadata" controls="" controlslist="nodownload" poster="intro-poster.jpg">
+                    <source src="intro-video.mp4" type="video/mp4" onerror="document.getElementById(&#39;intro-video&#39;).style.display=&#39;none&#39;">
+                </video>
+                <button type="button" class="video-unmute" id="video-unmute" aria-label="Turn sound on">
+                    <svg viewBox="0 0 24 24"><path d="M11 5L6 9H3v6h3l5 4V5z"></path><path d="M16 9a4 4 0 0 1 0 6M19 6a8 8 0 0 1 0 12"></path></svg>
+                    Tap for sound
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Hero Section 1 -->
+    <section class="hero-section">
+        <div class="hero-image">
+            <img src="photo_2026-07-21_22-48-23.jpg" alt="Unlock Your Trading Potential">
+        </div>
+        <div class="hero-content">
+            <div class="badge">🚀 Limited to 100 Members</div>
+            <h1>Unlock Your <span class="highlight">Trading Potential</span></h1>
+            <p>Join ASL University's exclusive Premium Trading Membership and gain access to professional tools, verified signals, and a structured growth program designed for active traders.</p>
+
+            <div class="features-list">
+                <div class="feature-item">Zero trading fees on all transactions</div>
+                <div class="feature-item">Weekly growth program targeting 2-5% returns</div>
+                <div class="feature-item">Exclusive trading signals with ~80% win rate</div>
+                <div class="feature-item">Professional trader certificate</div>
+            </div>
+
+            <div class="price-tag">
+                <span class="currency">$</span>49<span class="period">/month</span>
+            </div>
+
+            <div class="cta-buttons">
+                <button class="btn btn-primary">Join Now - Claim Your Spot</button>
+                <button class="btn btn-secondary">Learn More</button>
+            </div>
+        </div>
+    </section>
+
+    <div class="divider"></div>
+
+    <!-- Hero Section 2 -->
+    <section class="hero-section reverse">
+        <div class="hero-image">
+            <img src="photo_2026-07-21_22-49-15.jpg" alt="The Best Traders">
+        </div>
+        <div class="hero-content">
+            <div class="badge">✨ Premium Benefits</div>
+            <h1>Become One of <span class="highlight">The Best Traders</span></h1>
+            <p>Experience an all-in-one monthly membership packed with exceptional benefits designed for serious traders who want to scale their trading business and achieve financial independence.</p>
+
+            <div class="features-list">
+                <div class="feature-item">Specialized and custom trading robot for your account</div>
+                <div class="feature-item">Access to top investor training courses</div>
+                <div class="feature-item">Free $1,000 prop account opportunity Without completing the stage</div>
+                <div class="feature-item">Personal guidance &amp; risk management plans</div>
+            </div>
+
+            <div class="cta-buttons">
+                <button class="btn btn-primary">Start Your Journey</button>
+                <button class="btn btn-secondary">View All Features</button>
+            </div>
+        </div>
+    </section>
+
+    <div class="divider"></div>
+
+    <!-- Benefits Section -->
+    <section class="benefits-section" id="benefits">
+        <h2 class="section-title">What's Included in Your <span class="highlight">Premium Membership</span></h2>
+
+        <div class="benefits-grid">
+            <div class="benefit-card">
+                <div class="benefit-icon">💰</div>
+                <h3>Zero Trading Fees</h3>
+                <p>Buy and sell any cryptocurrency on our platform without paying transaction fees ever.</p>
+                <button type="button" class="benefit-more" aria-expanded="false" aria-controls="benefit-detail-1"><span class="bm-label">Learn more</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"></path></svg></button>
+                <div class="benefit-detail" id="benefit-detail-1"><div class="benefit-detail-inner"><p>Your membership promises zero trading fees on all transactions. You can buy and sell on our platform without paying transaction fees, so more of your results stay with you.</p><p>The $49 monthly membership is the only cost listed. There are no hidden fees, and you can cancel anytime.</p></div></div>
+            </div>
+
+            <div class="benefit-card">
+                <div class="benefit-icon">📈</div>
+                <h3>Weekly Growth Program</h3>
+                <p>Structured plan targeting 2-5% weekly returns with clear entry and exit signals daily.</p>
+                <button type="button" class="benefit-more" aria-expanded="false" aria-controls="benefit-detail-2"><span class="bm-label">Learn more</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"></path></svg></button>
+                <div class="benefit-detail" id="benefit-detail-2"><div class="benefit-detail-inner"><p>A structured plan built around a 2-5% weekly return target. Every day you get clear entry and exit signals, so you know when to act and when to stay out.</p><p>It replaces guesswork with a routine you can follow week after week.</p><p>Important: 2-5% is a target, not a guarantee. Results vary and trading always carries risk.</p></div></div>
+            </div>
+
+            <div class="benefit-card">
+                <div class="benefit-icon">🎯</div>
+                <h3>80% Accurate Signals</h3>
+                <p>Access exclusive trading signals channel with historical ~80% win rate and trade plans.</p>
+                <button type="button" class="benefit-more" aria-expanded="false" aria-controls="benefit-detail-3"><span class="bm-label">Learn more</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"></path></svg></button>
+                <div class="benefit-detail" id="benefit-detail-3"><div class="benefit-detail-inner"><p>You get access to our exclusive signals channel, which has a historical win rate of about 80%.</p><p>Each signal comes with a trade plan that shows clear entry and exit levels, so you can follow it step by step.</p><p>This is a historical figure. Past performance does not guarantee future results.</p></div></div>
+            </div>
+
+            <div class="benefit-card">
+                <div class="benefit-icon">🏆</div>
+                <h3>Trader Certificate</h3>
+                <p>Receive an official accredited certificate recognizing you as a top, profitable trader.</p>
+                <button type="button" class="benefit-more" aria-expanded="false" aria-controls="benefit-detail-4"><span class="bm-label">Learn more</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"></path></svg></button>
+                <div class="benefit-detail" id="benefit-detail-4"><div class="benefit-detail-inner"><p>Members receive an official accredited certificate recognizing them as a top, profitable trader.</p><p>It's a document you can keep as proof of your progress and skills as you grow with the program.</p></div></div>
+            </div>
+
+            <div class="benefit-card">
+                <div class="benefit-icon">💎</div>
+                <h3>$1,000 Prop Account</h3>
+                <p>Opportunity to earn a free funded trading account by passing our skills evaluation.</p>
+                <button type="button" class="benefit-more" aria-expanded="false" aria-controls="benefit-detail-5"><span class="bm-label">Learn more</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"></path></svg></button>
+                <div class="benefit-detail" id="benefit-detail-5"><div class="benefit-detail-inner"><p>There's an opportunity to earn a free $1,000 funded (prop) trading account by passing our skills evaluation.</p><p>The site notes this opportunity comes without having to complete the usual stage, so you can show your skills without going through the standard challenge.</p><p>Receiving the account depends on passing the evaluation.</p></div></div>
+            </div>
+
+            <div class="benefit-card">
+                <div class="benefit-icon">👨‍🏫</div>
+                <h3>Expert Training</h3>
+                <p>Learn directly from the world's top investors through our comprehensive programs.</p>
+                <button type="button" class="benefit-more" aria-expanded="false" aria-controls="benefit-detail-6"><span class="bm-label">Learn more</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"></path></svg></button>
+                <div class="benefit-detail" id="benefit-detail-6"><div class="benefit-detail-inner"><p>Learn directly from top investors through our comprehensive training programs and expert courses.</p><p>Training comes together with personal guidance and risk-management plans, so what you learn is applied with discipline in real trading.</p></div></div>
+            </div>
+
+            <div class="benefit-card">
+                <div class="benefit-icon">🤖</div>
+                <h3>Bot trader</h3>
+                <p>Receive Specialized and custom trading robot for your account.</p>
+                <button type="button" class="benefit-more" aria-expanded="false" aria-controls="benefit-detail-7"><span class="bm-label">Learn more</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"></path></svg></button>
+                <div class="benefit-detail" id="benefit-detail-7"><div class="benefit-detail-inner"><p>Every member receives a specialized, custom trading robot made for their own account, rather than a generic one-size-fits-all tool.</p><p>A robot can help you follow your plan consistently. Automated trading still carries risk, like any trading.</p></div></div>
+            </div>
+
+            <div class="benefit-card">
+                <div class="benefit-icon">🛡️</div>
+                <h3>Risk Management</h3>
+                <p>Personalized guidance with clear risk rules and portfolio management strategies.</p>
+                <button type="button" class="benefit-more" aria-expanded="false" aria-controls="benefit-detail-8"><span class="bm-label">Learn more</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"></path></svg></button>
+                <div class="benefit-detail" id="benefit-detail-8"><div class="benefit-detail-inner"><p>You get personalized guidance with clear risk rules and portfolio-management strategies.</p><p>This includes a Personal Risk Management Guide: a strategy tailored to each individual, so your approach to risk fits you.</p><p>Strong risk control is what helps protect your account over the long run.</p></div></div>
+            </div>
+
+            <div class="benefit-card">
+                <div class="benefit-icon">📊</div>
+                <h3>Personal Panel</h3>
+                <p>Daily Analysis &amp; Technical Outlook &amp; Journal and Account Analysis Panel</p>
+                <button type="button" class="benefit-more" aria-expanded="false" aria-controls="benefit-detail-9"><span class="bm-label">Learn more</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"></path></svg></button>
+                <div class="benefit-detail" id="benefit-detail-9"><div class="benefit-detail-inner"><p>Your Personal Panel gives you tools to understand the market and your own trading:</p><p>- Daily Analysis &amp; Technical Outlook: a live XAU/USD (gold) chart with the daily outlook, key levels and indicators.</p><p>- Account Journal &amp; Analysis: review your account's profit and loss, win rate, equity curve, and your strengths and areas to improve.</p><p>Find them in the three-dot menu at the top right of the page, together with the Personal Growth Program.</p></div></div>
+            </div>
+        </div>
+    </section>
+
+    <div class="divider"></div>
+
+    <!-- Testimonials Section -->
+    <section class="testimonial-section">
+        <h2>What Our Members Say</h2>
+
+        <div class="testimonial-grid">
+            <div class="testimonial-card">
+                <p>"ASL University changed my trading game completely. The signals are incredibly accurate and the training is top-notch!"</p>
+                <div class="testimonial-author">— jon M. | Active Trader</div>
+                <a class="testimonial-proof" href="photo_2026-09-24_18-32-30.jpg" target="_blank" rel="noopener">
+                    <img src="photo_2026-09-24_18-32-30.jpg" alt="Jon M. verified trading result">
+                    <span class="tp-label">Verified Result</span>
+                </a>
+                <a class="testimonial-analysis-btn" href="https://asluniversity.github.io/ASLuniversity/asl-account-journal1.html">
+                    📊 Analyze Account
+                </a>
+            </div>
+
+            <div class="testimonial-card">
+                <p>"Best investment I've made. Zero fees plus the growth program has already paid for itself multiple times over."</p>
+                <div class="testimonial-author">— Sarah K. | Crypto Investor</div>
+                <a class="testimonial-proof" href="photo_2026-09-24_18-32-16.jpg" target="_blank" rel="noopener">
+                    <img src="photo_2026-09-24_18-32-16.jpg" alt="Sarah K. verified trading result">
+                    <span class="tp-label">Verified Result</span>
+                </a>
+                <a class="testimonial-analysis-btn" href="https://asluniversity.github.io/ASLuniversity/asl-account-journal2.html">
+                    📊 Analyze Account
+                </a>
+            </div>
+
+            <div class="testimonial-card">
+                <p>"The community and support here is unmatched. I earned my prop account within 2 months of joining!"</p>
+                <div class="testimonial-author">— Mike T. | Professional Trader</div>
+                <a class="testimonial-proof" href="photo_2026-09-24_18-32-16%20(2).jpg" target="_blank" rel="noopener">
+                    <img src="photo_2026-09-24_18-32-16%20(2).jpg" alt="Mike T. prop account certificate">
+                    <span class="tp-label">Certificate</span>
+                </a>
+                <a class="testimonial-analysis-btn" href="https://asluniversity.github.io/ASLuniversity/asl-account-journal3.html">
+                    📊 Analyze Account
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <div class="divider"></div>
+
+    <!-- Pricing Section -->
+    <section class="pricing-section" id="pricing">
+        <h2>Simple, Transparent Pricing</h2>
+        <p>No hidden fees. Cancel anytime. Join over 100+ active traders in our exclusive community.</p>
+
+        <div class="pricing-grid">
+            <!-- 1 Month -->
+            <div class="pricing-card">
+                <h3>Monthly</h3>
+                <span class="plan-discount base">STANDARD PRICE</span>
+                <div class="price-old">&nbsp;</div>
+                <div class="price-big"><span class="currency">$</span>49<span class="period">/ month</span></div>
+                <div class="price-note">Billed every month<br>No discount</div>
+                <button class="btn btn-secondary" id="join">Join Now</button>
+            </div>
+
+            <!-- 3 Months -->
+            <div class="pricing-card featured">
+                <div class="plan-badge">⭐ Popular</div>
+                <h3>3 Months</h3>
+                <span class="plan-discount">20% OFF</span>
+                <div class="price-old">$147</div>
+                <div class="price-big"><span class="currency">$</span>117<span class="period">/ 3 months</span></div>
+                <div class="price-note"><b>$39</b> / month<br>You save <b>$30</b></div>
+                <button class="btn btn-primary">Join Now</button>
+            </div>
+
+            <!-- 12 Months -->
+            <div class="pricing-card">
+                <div class="plan-badge">💎 Best Value</div>
+                <h3>12 Months</h3>
+                <span class="plan-discount">30% OFF</span>
+                <div class="price-old">$588</div>
+                <div class="price-big"><span class="currency">$</span>411<span class="period">/ year</span></div>
+                <div class="price-note"><b>$34</b> / month<br>You save <b>$177</b></div>
+                <button class="btn btn-primary">Join Now</button>
+            </div>
+        </div>
+
+        <div class="plan-includes">
+            <h4>Every plan includes</h4>
+            <ul>
+                <li>Zero trading fees</li>
+                <li>Weekly growth program (2-5% target)</li>
+                <li>Specialized and custom trading robot for your account</li>
+                <li>Exclusive signals channel (80% win rate)</li>
+                <li>Accredited trader certificate</li>
+                <li>$1,000 prop account opportunity</li>
+                <li>Expert training courses</li>
+                <li>Personal Risk Management Guide</li>
+                <li>24/7 support access</li>
+                <li>Cancel anytime, no lock-in</li>
+            </ul>
+        </div>
+    </section>
+
+    <!-- Final CTA Section -->
+    <section class="final-cta">
+        <h2>Ready to Transform Your Trading?</h2>
+        <p>Join 100+ active traders who are already earning consistent returns with ASL University.</p>
+        <button class="btn">Claim Your Membership Today</button>
+    </section>
+
+    <!-- AI Chat -->
+    <button type="button" class="chat-launcher" id="chat-launcher" aria-label="Open AI chat" aria-expanded="false" aria-controls="chat-panel">
+        <svg class="ic-chat" viewBox="0 0 24 24"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20.5l1.5-4.6A8 8 0 1 1 21 12z"></path></svg>
+        <svg class="ic-close" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"></path></svg>
+    </button>
+    <div class="chat-panel" id="chat-panel" role="dialog" aria-label="ASL University AI assistant">
+        <div class="chat-head">
+            <div class="chat-avatar">🤖</div>
+            <div class="chat-head-text">
+                <b>ASL Assistant</b>
+                <span><i></i> Online</span>
+            </div>
+        </div>
+        <div class="chat-body" id="chat-body"></div>
+        <div class="chat-chips" id="chat-chips"></div>
+        <form class="chat-form" id="chat-form" autocomplete="off">
+            <input type="text" id="chat-input" placeholder="Ask anything about ASL University…" maxlength="500" aria-label="Your message">
+            <button type="submit" id="chat-send" aria-label="Send"><svg viewBox="0 0 24 24"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"></path></svg></button>
+        </form>
+        <div class="chat-foot">AI answers may be imperfect · Not financial advice</div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <div class="disclaimer">
+            <p><strong>Disclaimer:</strong> Historical results do not guarantee future performance. Past performance is not indicative of future results. Terms &amp; conditions apply. Trading cryptocurrency carries risk. Always understand the risks before investing. This membership is not financial advice.</p>
+        </div>
+        <div class="footer-info">
+            <p>© 2024 ASL University. All rights reserved. | Support: @mrasltl on Telegram</p>
+        </div>
+    </footer>
+
+    <script>
+        // Smooth scrolling for nav links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if(target) {
+                    target.scrollIntoView({behavior: 'smooth'});
+                }
+            });
+        });
+
+        // ============ THEME TOGGLE (DARK | LIGHT) ============
+        function applyTheme(theme, persist) {
+            document.documentElement.setAttribute('data-theme', theme);
+            document.querySelectorAll('[data-theme-btn]').forEach(function (b) {
+                b.setAttribute('aria-pressed', String(b.dataset.themeBtn === theme));
+            });
+            if (persist) {
+                try { localStorage.setItem('asl-theme', theme); } catch (e) { /* storage blocked */ }
+            }
+        }
+
+        document.querySelectorAll('[data-theme-btn]').forEach(function (btn) {
+            btn.addEventListener('click', function () { applyTheme(btn.dataset.themeBtn, true); });
+        });
+
+        applyTheme(document.documentElement.getAttribute('data-theme') === 'light' ? 'light' : 'dark', false);
+
+        // ============ SITE MENU (three-dot dropdown) ============
+        (function () {
+            var wrap = document.getElementById('site-menu');
+            var btn = document.getElementById('site-menu-btn');
+            if (!wrap || !btn) return;
+            function setOpen(open) {
+                wrap.classList.toggle('open', open);
+                btn.setAttribute('aria-expanded', String(open));
+            }
+            btn.addEventListener('click', function (e) {
+                e.stopPropagation();
+                setOpen(!wrap.classList.contains('open'));
+            });
+            wrap.querySelectorAll('.site-menu-link').forEach(function (link) {
+                link.addEventListener('click', function () { setOpen(false); });
+            });
+            document.addEventListener('click', function (e) {
+                if (!wrap.contains(e.target)) setOpen(false);
+            });
+            document.addEventListener('keydown', function (e) {
+                if (e.key === 'Escape') setOpen(false);
+            });
+        })();
+
+        // ============ LIVE STATS COUNTERS ============
+        (function () {
+            var section = document.getElementById('stats');
+            if (!section) return;
+
+            var ticksWrap = document.getElementById('days-ticks');
+            for (var i = 0; i < 30; i++) ticksWrap.appendChild(document.createElement('b'));
+            var ticks = ticksWrap.children;
+            var membersBar = document.getElementById('members-bar');
+
+            function easeOutExpo(t) { return t === 1 ? 1 : 1 - Math.pow(2, -10 * t); }
+
+            function run(el) {
+                var target = +el.dataset.count;
+                var duration = +el.dataset.duration || 2500;
+                var comma = el.dataset.format === 'comma';
+                var start = null;
+
+                function step(ts) {
+                    if (!start) start = ts;
+                    var p = Math.min((ts - start) / duration, 1);
+                    var val = Math.round(easeOutExpo(p) * target);
+                    el.textContent = comma ? val.toLocaleString('en-US') : val;
+
+                    if (target === 100) membersBar.style.width = val + '%';
+                    if (target === 30) {
+                        for (var i = 0; i < ticks.length; i++) {
+                            ticks[i].classList.toggle('on', i < val);
+                        }
+                    }
+                    if (p < 1) requestAnimationFrame(step);
+                }
+                requestAnimationFrame(step);
+            }
+
+            var started = false;
+            function startAll() {
+                if (started) return;
+                started = true;
+                section.querySelectorAll('[data-count]').forEach(run);
+            }
+
+            if ('IntersectionObserver' in window) {
+                new IntersectionObserver(function (entries, obs) {
+                    if (entries[0].isIntersecting) { startAll(); obs.disconnect(); }
+                }, { threshold: 0.35 }).observe(section);
+            } else {
+                startAll();
+            }
+        })();
+
+
+        // ============ INTRO VIDEO (autoplay muted when visible, tap for sound) ============
+        (function () {
+            var section = document.getElementById('intro-video');
+            var v = document.getElementById('intro-video-el');
+            var btn = document.getElementById('video-unmute');
+            if (!section || !v || !btn) return;
+
+            btn.addEventListener('click', function () {
+                v.muted = false;
+                v.volume = 1;
+                v.currentTime = 0;
+                v.play().catch(function () {});
+            });
+            v.addEventListener('volumechange', function () { btn.classList.toggle('hidden', !v.muted); });
+
+            var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+            if (reduce || !('IntersectionObserver' in window)) return;
+            new IntersectionObserver(function (entries, obs) {
+                if (entries[0].isIntersecting) {
+                    var p = v.play();
+                    if (p && p.catch) p.catch(function () {});
+                    obs.disconnect();
+                }
+            }, { threshold: 0.5 }).observe(v);
+        })();
+
+        // ============ BENEFIT "LEARN MORE" TOGGLES ============
+        (function () {
+            document.querySelectorAll('.benefit-more').forEach(function (btn) {
+                btn.addEventListener('click', function () {
+                    var card = btn.closest('.benefit-card');
+                    var open = !card.classList.contains('open');
+                    card.classList.toggle('open', open);
+                    btn.setAttribute('aria-expanded', String(open));
+                    btn.querySelector('.bm-label').textContent = open ? 'Show less' : 'Learn more';
+                });
+            });
+        })();
+
+        // ============ AI CHAT ============
+        (function () {
+            /* 1) Paste your Cloudflare Worker URL here to enable the live AI (see chat-worker.js).
+               2) Leave it empty and the chat still answers from the built-in site knowledge below. */
+            var CHAT_API_URL = '';
+
+            var launcher = document.getElementById('chat-launcher');
+            var panel = document.getElementById('chat-panel');
+            var body = document.getElementById('chat-body');
+            var chips = document.getElementById('chat-chips');
+            var form = document.getElementById('chat-form');
+            var input = document.getElementById('chat-input');
+            var sendBtn = document.getElementById('chat-send');
+            if (!launcher || !panel) return;
+
+            var history = [];
+            var busy = false;
+            var greeted = false;
+
+            /* ---- built-in knowledge: one entry per part of the website ---- */
+            var KB = [
+                { k: ['hello', 'hi', 'hey', 'good morning', 'good evening', 'greetings'],
+                  a: "Hi! I'm the ASL University assistant. Ask me about pricing, what's included, the growth program, signals, the analysis pages, results, or how to join." },
+                { k: ['thanks', 'thank you', 'thx', 'appreciate'],
+                  a: "You're welcome! Anything else you'd like to know about ASL University?" },
+                { k: ['bye', 'goodbye', 'see you'],
+                  a: "Goodbye! Come back anytime if you have more questions." },
+
+                { k: ['what is asl', 'about asl', 'who are you', 'about you', 'what do you do', 'what is this', 'asl university', 'about the site', 'about the website'],
+                  a: "ASL University is a premium trading membership. It gives active traders professional tools, verified signals, training, risk-management guidance and a structured growth program to help them scale and build toward financial independence." },
+                { k: ['who is it for', 'who can join', 'beginner', 'experienced', 'suitable', 'newbie', 'for me', 'requirements', 'eligible', 'experience needed'],
+                  a: "The membership is designed for active, serious traders who want to scale their trading with professional tools and a structured program. The site doesn't list a minimum experience requirement. You also get expert training courses and personal guidance." },
+
+                { k: ['price', 'cost', 'how much', 'pricing', '$49', '49', 'monthly', 'per month', 'subscription', 'plan', 'plans', 'expensive', 'cheap'],
+                  a: "The Premium Membership is $49 per month. There are no hidden fees, you can cancel anytime, and there is no lock-in." },
+                { k: ['payment', 'pay', 'paypal', 'card', 'crypto payment', 'usdt', 'bank', 'invoice', 'checkout'],
+                  a: "The site doesn't list payment methods yet. Use the \"Join Now\" button to start your membership and you'll be guided through payment from there." },
+                { k: ['refund', 'money back', 'guarantee money', 'chargeback'],
+                  a: "The site doesn't mention a refund policy. What it does promise: no hidden fees, cancel anytime, and no lock-in." },
+                { k: ['limit', 'limited', 'spots', 'seats', '100 members', 'how many members', 'full', 'sold out', 'capacity', 'availability', 'available'],
+                  a: "Membership is limited to 100 members per month, so spots can fill up. The live counter near the top of the page shows the 100-member limit." },
+                { k: ['30 day', '30 days', 'duration', 'period', 'how long', 'access period', 'expire', 'expiry', 'renew'],
+                  a: "Membership access runs for 30 days. You can cancel anytime with no lock-in." },
+                { k: ['cancel', 'cancellation', 'lock-in', 'lock in', 'contract', 'commitment', 'quit', 'stop membership'],
+                  a: "You can cancel anytime. There's no lock-in and no hidden fees." },
+
+                { k: ['included', 'include', 'what do i get', 'what will i get', 'benefits', 'benefit', 'features', 'perks', 'everything', 'premium membership', 'worth'],
+                  a: "Your Premium Membership includes:\n- Zero trading fees\n- Weekly growth program (2-5% target)\n- Exclusive signals channel (~80% historical win rate)\n- Accredited trader certificate\n- $1,000 prop account opportunity\n- Expert training courses\n- Specialized custom trading robot\n- Personal risk-management guide\n- Personal Panel (daily analysis + account journal)\n- 24/7 support access" },
+                { k: ['zero fee', 'zero trading fee', 'no fee', 'fees', 'commission', 'transaction fee', 'free trading'],
+                  a: "The membership promises zero trading fees on all transactions, so you can buy and sell without paying transaction fees on our platform." },
+                { k: ['growth program', 'weekly', 'return', 'returns', 'profit target', '2-5', '2%', '5%', 'weekly growth', 'target'],
+                  a: "The Weekly Growth Program is a structured plan targeting 2-5% weekly returns, with clear entry and exit signals every day. It is a target, not a guarantee. Results vary and trading carries risk." },
+                { k: ['signal', 'signals', 'win rate', '80%', 'accuracy', 'accurate', 'entry', 'exit', 'trade plan', 'signals channel'],
+                  a: "You get access to an exclusive signals channel with a historical win rate of about 80%, including trade plans with clear entry and exit levels. Past performance doesn't guarantee future results, and trading always carries risk." },
+                { k: ['certificate', 'certified', 'accredited', 'certification', 'diploma'],
+                  a: "Members receive an official accredited certificate recognizing them as a top, profitable trader." },
+                { k: ['prop', 'funded', '$1,000', '1000', '1,000', 'prop account', 'funded account', 'stage', 'challenge', 'evaluation'],
+                  a: "There's an opportunity to earn a free $1,000 funded (prop) trading account by passing our skills evaluation, and the site notes it comes without having to complete the usual stage." },
+                { k: ['training', 'course', 'courses', 'learn', 'education', 'teach', 'lessons', 'mentor', 'investors', 'coaching', 'class'],
+                  a: "You get expert training courses where you learn directly from top investors through comprehensive programs, plus personal guidance and risk-management plans." },
+                { k: ['bot', 'robot', 'expert advisor', 'ea', 'automated', 'automation', 'trading bot', 'bot trader', 'algo'],
+                  a: "Members receive a specialized, custom trading robot built for their own account (see \"Bot trader\" in the benefits)." },
+                { k: ['risk', 'risk management', 'drawdown', 'stop loss', 'position size', 'portfolio', 'risk guide', 'personal strategy'],
+                  a: "You get personalized risk-management guidance: clear risk rules, portfolio-management strategies, and a Personal Risk Management Guide tailored to each individual." },
+                { k: ['support', '24/7', 'help', 'contact', 'reach', 'customer service', 'assistance', 'human', 'agent', 'talk to someone'],
+                  a: "24/7 support access is included with your membership. You'll find the support option in the three-dot menu at the top right of the page." },
+
+                { k: ['panel', 'personal panel', 'dashboard', 'member area', 'portal'],
+                  a: "The Personal Panel includes your Daily Analysis & Technical Outlook (live XAU/USD gold chart) and the Account Journal & Analysis page. Open the three-dot menu at the top of the page to reach them." },
+                { k: ['analysis', 'technical', 'fundamental', 'outlook', 'xau', 'gold', 'xauusd', 'chart', 'levels', 'pivot', 'support and resistance', 'daily analysis', 'market analysis'],
+                  a: "The Technical & Fundamental Analysis page shows a live XAU/USD (gold) chart, the daily outlook, key levels, indicators and news. Open it from the three-dot menu at the top of the page." },
+                { k: ['journal', 'account journal', 'statement', 'track', 'tracking', 'performance', 'my account', 'upload', 'metatrader', 'mt4', 'mt5', 'win/loss'],
+                  a: "The Account Journal & Analysis page lets you review your trading account: profit and loss, win rate, equity curve, best and worst symbols, strengths and areas to improve. Open it from the three-dot menu at the top of the page." },
+                { k: ['personal growth', 'mindset', 'growth plan', 'strategy', 'personalize', 'personalise', 'growth-program'],
+                  a: "The Personal Growth Program is about personalizing the strategy to match your mindset. You'll find it in the three-dot menu at the top of the page." },
+                { k: ['menu', 'three dot', 'three-dot', 'dots', 'where do i find', 'navigate', 'navigation', 'where is'],
+                  a: "The three-dot button at the top right of the page opens a menu with: Technical & Fundamental Analysis, Account Journal & Analysis, Personal Growth Program, and Support. On mobile it also lists Benefits, Pricing and Join Now." },
+
+                { k: ['testimonial', 'review', 'reviews', 'members say', 'feedback', 'results', 'proof', 'verified', 'real', 'legit', 'scam', 'trust', 'trustworthy', 'fake', 'evidence'],
+                  a: "In the \"What Our Members Say\" section you'll see member feedback with their verified result or certificate. Under each one, the \"Analyze Account\" button opens that member's account analysis so you can check their numbers yourself." },
+                { k: ['analyze account', 'analyse account', 'member account', 'jon', 'sarah', 'mike', 'their account'],
+                  a: "Each testimonial has an \"Analyze Account\" button that opens a detailed analysis of that member's trading account, so you can see the performance behind the story." },
+                { k: ['students profit', 'profit earned', '10,000', '$10,000', 'earned by', 'live stats', 'statistics', 'stats', 'counter', 'community', 'growing'],
+                  a: "The live stats near the top show: up to 100 members allowed per month, $10,000+ in profit earned by our students, and a 30-day membership access period. The animated chart reflects the community and results growing every month." },
+
+                { k: ['join', 'sign up', 'signup', 'register', 'buy', 'purchase', 'subscribe', 'enroll', 'start', 'how do i', 'get started', 'claim', 'membership today'],
+                  a: "To join, press \"Join Now\" (or \"Claim Your Membership Today\") on this page and follow the steps. Spots are limited to 100 members per month." },
+                { k: ['dark mode', 'light mode', 'theme', 'dark', 'light', 'colors', 'colours', 'appearance'],
+                  a: "Use the DARK / LIGHT switch in the top bar to change the website theme. Your choice is remembered next time you visit." },
+                { k: ['mobile', 'phone', 'iphone', 'android', 'tablet', 'responsive', 'app'],
+                  a: "The website works on phones, tablets and computers. There's no separate app to install." },
+                { k: ['broker', 'which broker', 'platform', 'exchange', 'forex', 'stocks', 'markets', 'what markets', 'instruments', 'pairs'],
+                  a: "The site doesn't name specific brokers or markets. The daily analysis page focuses on XAU/USD (gold), and the account journal connects to MetaTrader accounts. Ask about a specific feature and I'll explain what the site says about it." },
+
+                { k: ['guarantee', 'guaranteed', 'promise', 'sure profit', 'make money', 'rich', 'safe', 'risk free', 'risk-free', 'lose', 'loss', 'losing', 'disclaimer', 'financial advice', 'advice', 'legal', 'terms'],
+                  a: "No profits are guaranteed. Historical results don't guarantee future performance, trading carries risk, and you should understand the risks before investing. ASL University membership is not financial advice." }
+            ];
+
+            var FALLBACK = "I don't have that detail yet. I can help with: pricing, what's included, the growth program, signals, certificate, prop account, training, trading bot, risk management, the analysis and journal pages, member results, and how to join. Which one would you like to know about?";
+
+            function esc(s) { return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); }
+
+            function kbAnswer(text) {
+                var t = ' ' + text.toLowerCase().replace(/[^a-z0-9$%'\/\-\s,.]/g, ' ') + ' ';
+                var best = null, bestScore = 0;
+                KB.forEach(function (e) {
+                    var s = 0;
+                    e.k.forEach(function (key) {
+                        var hit = key.length <= 4
+                            ? new RegExp('(^|[^a-z0-9])' + esc(key) + '($|[^a-z0-9])').test(t)
+                            : t.indexOf(key) !== -1;
+                        if (hit) s += key.length + (key.indexOf(' ') !== -1 ? 4 : 0);
+                    });
+                    if (s > bestScore) { bestScore = s; best = e; }
+                });
+                return best ? best.a : FALLBACK;
+            }
+
+            /* ---- UI helpers ---- */
+            function addMsg(role, text) {
+                var d = document.createElement('div');
+                d.className = 'chat-msg ' + role;
+                d.textContent = text;
+                body.appendChild(d);
+                body.scrollTop = body.scrollHeight;
+                return d;
+            }
+            function showTyping() {
+                var d = document.createElement('div');
+                d.className = 'chat-msg bot chat-typing';
+                d.innerHTML = '<i></i><i></i><i></i>';
+                body.appendChild(d);
+                body.scrollTop = body.scrollHeight;
+                return d;
+            }
+            function setBusy(b) { busy = b; sendBtn.disabled = b; }
+
+            function renderChips() {
+                var items = ['How much does it cost?', "What's included?", 'How do I join?', 'Are profits guaranteed?', 'Tell me about the analysis pages'];
+                chips.innerHTML = '';
+                items.forEach(function (label) {
+                    var b = document.createElement('button');
+                    b.type = 'button';
+                    b.textContent = label;
+                    b.addEventListener('click', function () { chips.style.display = 'none'; send(label); });
+                    chips.appendChild(b);
+                });
+            }
+
+            async function askApi() {
+                var ctrl = new AbortController();
+                var timer = setTimeout(function () { ctrl.abort(); }, 25000);
+                try {
+                    var res = await fetch(CHAT_API_URL, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ messages: history.slice(-10) }),
+                        signal: ctrl.signal
+                    });
+                    if (!res.ok) throw new Error('bad status ' + res.status);
+                    var data = await res.json();
+                    if (!data || !data.reply) throw new Error('empty reply');
+                    return String(data.reply);
+                } finally { clearTimeout(timer); }
+            }
+
+            async function send(text) {
+                text = (text || '').trim();
+                if (!text || busy) return;
+                setBusy(true);
+                addMsg('user', text);
+                history.push({ role: 'user', content: text });
+                var typing = showTyping();
+                var reply;
+                if (CHAT_API_URL) {
+                    try { reply = await askApi(); }
+                    catch (e) { reply = kbAnswer(text); }
+                } else {
+                    await new Promise(function (r) { setTimeout(r, 450); });
+                    reply = kbAnswer(text);
+                }
+                typing.remove();
+                addMsg('bot', reply);
+                history.push({ role: 'assistant', content: reply });
+                setBusy(false);
+                input.focus();
+            }
+
+            function setOpen(open) {
+                panel.classList.toggle('open', open);
+                launcher.classList.toggle('open', open);
+                launcher.setAttribute('aria-expanded', String(open));
+                if (open) {
+                    if (!greeted) {
+                        greeted = true;
+                        addMsg('bot', "Hi! \uD83D\uDC4B I'm the ASL University assistant. Ask me anything about the membership, pricing, benefits, results or how to join.");
+                        renderChips();
+                    }
+                    setTimeout(function () { input.focus(); }, 220);
+                }
+            }
+
+            launcher.addEventListener('click', function () { setOpen(!panel.classList.contains('open')); });
+            document.addEventListener('keydown', function (e) { if (e.key === 'Escape') setOpen(false); });
+            form.addEventListener('submit', function (e) {
+                e.preventDefault();
+                var v = input.value;
+                input.value = '';
+                chips.style.display = 'none';
+                send(v);
+            });
+        })();
+    </script>
+
+    <!-- Member Login / Registration -->
+    <div class="asl-auth-modal" id="asl-auth-modal" aria-hidden="true">
+      <section class="asl-auth-card" role="dialog" aria-modal="true" aria-labelledby="asl-auth-title">
+        <button type="button" class="asl-auth-close" id="asl-auth-close" aria-label="Close login dialog">×</button>
+        <div class="asl-auth-kicker">ASL UNIVERSITY · MEMBERS</div>
+        <h2 class="asl-auth-title" id="asl-auth-title">Welcome Back</h2>
+        <p class="asl-auth-subtitle">Sign in to access your private member area.</p>
+        <div class="asl-auth-tabs" role="tablist" aria-label="Member access">
+          <button type="button" class="asl-auth-tab active" data-asl-auth-tab="login" role="tab" aria-selected="true">SIGN IN</button>
+          <button type="button" class="asl-auth-tab" data-asl-auth-tab="register" role="tab" aria-selected="false">CREATE ACCOUNT</button>
+        </div>
+        <div class="asl-auth-message" id="asl-auth-message" role="status" aria-live="polite"></div>
+        <form class="asl-auth-form active" id="asl-login-form">
+          <div class="asl-auth-field"><label for="asl-login-username">Username / Your Name</label><input id="asl-login-username" name="username" autocomplete="username" required="" minlength="2"></div>
+          <div class="asl-auth-field"><label for="asl-login-password">Password</label><input id="asl-login-password" name="password" type="password" autocomplete="current-password" required=""></div>
+          <button class="asl-auth-submit" type="submit">SIGN IN SECURELY</button>
+        </form>
+        <form class="asl-auth-form" id="asl-register-form">
+          <div class="asl-auth-field"><label for="asl-register-name">Your Name / Username</label><input id="asl-register-name" name="name" autocomplete="name" required="" minlength="2" maxlength="80"></div>
+          <div class="asl-auth-field"><label for="asl-register-password">Create Password</label><input id="asl-register-password" name="password" type="password" autocomplete="new-password" required="" minlength="8"></div>
+          <div class="asl-auth-field"><label for="asl-register-confirm">Confirm Password</label><input id="asl-register-confirm" name="password-confirm" type="password" autocomplete="new-password" required="" minlength="8"></div>
+          <button class="asl-auth-submit" type="submit">CREATE MEMBER ACCOUNT</button>
+          <p class="asl-auth-note">Use at least 8 characters. Keep your password private.</p>
+        </form>
+        <p class="asl-auth-note">Your member account is managed by the ASL University secure backend.</p>
+      </section>
+    </div>
+
+
+    <script>
+    (function () {
+      'use strict';
+      const API = ''; // same site: the Cloudflare Worker serves /api/*
+      const modal = document.getElementById('asl-auth-modal');
+      const openBtn = document.getElementById('asl-auth-open');
+      const closeBtn = document.getElementById('asl-auth-close');
+      const message = document.getElementById('asl-auth-message');
+      const title = document.getElementById('asl-auth-title');
+      const subtitle = modal.querySelector('.asl-auth-subtitle');
+      const tabs = Array.from(modal.querySelectorAll('[data-asl-auth-tab]'));
+      const forms = {
+        login: document.getElementById('asl-login-form'),
+        register: document.getElementById('asl-register-form')
+      };
+
+      function showMessage(text, kind) {
+        message.textContent = text;
+        message.className = 'asl-auth-message show ' + kind;
+      }
+      function clearMessage() {
+        message.textContent = '';
+        message.className = 'asl-auth-message';
+      }
+      function switchTab(tab) {
+        clearMessage();
+        tabs.forEach(function (button) {
+          const active = button.dataset.aslAuthTab === tab;
+          button.classList.toggle('active', active);
+          button.setAttribute('aria-selected', String(active));
+        });
+        Object.keys(forms).forEach(function (key) {
+          forms[key].classList.toggle('active', key === tab);
+        });
+        title.textContent = tab === 'login' ? 'Welcome Back' : 'Join ASL University';
+        subtitle.textContent = tab === 'login'
+          ? 'Sign in to access your private member area.'
+          : 'Create your personal account to become a member.';
+      }
+      let isAuthenticated = false;
+      function openModal(tab) {
+        switchTab(tab || 'login');
+        modal.classList.add('open');
+        modal.setAttribute('aria-hidden', 'false');
+        document.body.style.overflow = 'hidden';
+        const first = forms[tab || 'login'].querySelector('input');
+        if (first) setTimeout(function () { first.focus(); }, 50);
+      }
+      function closeModal() {
+        modal.classList.remove('open');
+        modal.setAttribute('aria-hidden', 'true');
+        document.body.style.overflow = '';
+        openBtn.focus();
+      }
+      async function request(path, payload) {
+        let response;
+        try {
+          response = await fetch(API + path, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'include',
+            body: JSON.stringify(payload)
+          });
+        } catch (error) {
+          throw new Error('Cannot connect to the member server. Please try again in a moment.');
+        }
+        let data = {};
+        try { data = await response.json(); }
+        catch (error) { throw new Error('The server returned an invalid response. Please contact support.'); }
+        if (!response.ok) throw new Error(data.error || data.message || ('Request failed (' + response.status + ').'));
+        return data;
+      }
+      openBtn.addEventListener('click', function () {
+        if (isAuthenticated) window.location.href = API + '/member.html';
+        else openModal('login');
+      });
+      closeBtn.addEventListener('click', closeModal);
+      modal.addEventListener('click', function (event) { if (event.target === modal) closeModal(); });
+      document.addEventListener('keydown', function (event) { if (event.key === 'Escape' && modal.classList.contains('open')) closeModal(); });
+      tabs.forEach(function (button) { button.addEventListener('click', function () { switchTab(button.dataset.aslAuthTab); }); });
+
+      forms.login.addEventListener('submit', async function (event) {
+        event.preventDefault();
+        clearMessage();
+        const button = forms.login.querySelector('button[type="submit"]');
+        button.disabled = true;
+        try {
+          const data = await request('/api/login', {
+            username: document.getElementById('asl-login-username').value.trim(),
+            password: document.getElementById('asl-login-password').value
+          });
+          showMessage('Login successful. Opening your member area…', 'success');
+          if (data.user) {
+            try { sessionStorage.setItem('asl-member-name', data.user.name || data.user.username || 'Member'); } catch (e) {}
+          }
+          setTimeout(function () {
+            window.location.href = API + '/member.html';
+          }, 450);
+        } catch (error) {
+          showMessage(error.message || 'Login failed. Please check your details.', 'error');
+        } finally {
+          button.disabled = false;
+        }
+      });
+
+      forms.register.addEventListener('submit', async function (event) {
+        event.preventDefault();
+        clearMessage();
+        const name = document.getElementById('asl-register-name').value.trim();
+        const password = document.getElementById('asl-register-password').value;
+        const confirm = document.getElementById('asl-register-confirm').value;
+        if (password.length < 8) return showMessage('Your password must contain at least 8 characters.', 'error');
+        if (password !== confirm) return showMessage('The passwords do not match.', 'error');
+        const button = forms.register.querySelector('button[type="submit"]');
+        button.disabled = true;
+        try {
+          const data = await request('/api/register', { name: name, password: password });
+          showMessage('Account created successfully. Opening your member area…', 'success');
+          if (data.user) {
+            try { sessionStorage.setItem('asl-member-name', data.user.name || data.user.username || name); } catch (e) {}
+          }
+          setTimeout(function () {
+            window.location.href = API + '/member.html';
+          }, 450);
+        } catch (error) {
+          showMessage(error.message || 'Registration failed. Please try again.', 'error');
+        } finally {
+          button.disabled = false;
+        }
+      });
+
+      /* Open registration from any existing Join Now link/button. */
+      document.querySelectorAll('a[href="#join"]').forEach(function (link) {
+        link.addEventListener('click', function (event) {
+          event.preventDefault();
+          openModal('register');
+        });
+      });
+      /* Opened from a protected page: show the login box. */
+      if (/[?&]login=1/.test(location.search)) { openModal('login'); try { history.replaceState(null, '', location.pathname); } catch (e) {} }
+      /* Check existing session without preventing the page from loading. */
+      fetch(API + '/api/me', { credentials: 'include' }).then(function (r) {
+        if (!r.ok) return null;
+        return r.json();
+      }).then(function (data) {
+        if (data && data.authenticated && data.user) {
+          isAuthenticated = true;
+          openBtn.textContent = 'MY MEMBER AREA';
+        }
+      }).catch(function () {});
+    })();
+    </script>
+
+
+
+</body></html>
