@@ -3,29 +3,43 @@ const enc = new TextEncoder();
 const COOKIE = 'asl_session';
 const SESSION_MS = 30 * 24 * 3600 * 1000;
 const PLANS = { '1m': 1, '3m': 3, '12m': 12 };
-// /member needs a login. The tools below can be SEEN by everyone,
-// but they are covered by a "subscribe to use" screen unless the subscription is active.
+// /member needs a login. The Account Journal page is visible to everyone;
+// uploading a statement needs an ACTIVE subscription (otherwise a "subscribe" box appears).
+// All other pages (analysis, growth program, ...) are fully public.
 const LOGIN_ONLY = new Set(['/member']);
-const PREVIEW = new Set(['/growth-program', '/asl-xauusd-analysis', '/asl-account-journal']);
+const PREVIEW = new Set(['/asl-account-journal']);
 
-function paywall(user) {
-  const title = user ? 'Your subscription is not active' : 'Subscribers only';
+function uploadGate(user) {
   const text = user
-    ? 'Activate a plan to start using this tool.'
-    : 'You can preview this page. Subscribe to start using it.';
-  const btns = user
-    ? '<a class="b1" href="/?plans=1">View plans</a><a class="b2" href="/member">My account</a>'
-    : '<a class="b1" href="/?plans=1">View plans</a><a class="b2" href="/?login=1">Sign in</a>';
+    ? 'Your subscription is not active. Activate a plan to upload your statement and get your full account analysis.'
+    : 'Uploading your statement is for subscribers. Subscribe to get your full account analysis.';
+  const second = user ? '<a class="b2" href="/member">My account</a>' : '<a class="b2" href="/?login=1">Sign in</a>';
   return `<style>
-#asl-wall{position:fixed;inset:0;z-index:2147483000;display:flex;align-items:center;justify-content:center;padding:18px;background:rgba(6,17,22,.58);-webkit-backdrop-filter:blur(5px);backdrop-filter:blur(5px);font-family:system-ui,-apple-system,Segoe UI,sans-serif}
-#asl-wall .c{max-width:380px;width:100%;text-align:center;padding:30px 24px;border-radius:10px;background:#122630;color:#dceef4;border:1px solid rgba(11,177,210,.35);border-top:3px solid #0BB1D2;box-shadow:0 20px 70px rgba(0,0,0,.55)}
-#asl-wall .k{font-size:34px;margin-bottom:6px}
-#asl-wall h2{font-size:21px;margin:0 0 8px;color:#fff}
-#asl-wall p{font-size:14px;line-height:1.6;margin:0 0 20px;color:#9fc3cf}
-#asl-wall a{display:block;padding:13px;margin-top:9px;border-radius:5px;text-decoration:none;font-weight:700;font-size:14px}
-#asl-wall .b1{background:linear-gradient(135deg,#0BB1D2,#1eb3cc);color:#061116}
-#asl-wall .b2{border:1px solid rgba(11,177,210,.5);color:#0BB1D2}
-</style><div id="asl-wall"><div class="c"><div class="k">🔒</div><h2>${title}</h2><p>${text}</p>${btns}</div></div><script>document.documentElement.style.overflow='hidden';document.body&&(document.body.style.overflow='hidden')</script>`;
+#asl-gate{position:fixed;inset:0;z-index:2147483000;display:flex;align-items:center;justify-content:center;padding:18px;background:rgba(6,17,22,.66);-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px);font-family:system-ui,-apple-system,Segoe UI,sans-serif}
+#asl-gate[hidden]{display:none}
+#asl-gate .c{position:relative;max-width:380px;width:100%;text-align:center;padding:30px 24px;border-radius:10px;background:#122630;color:#dceef4;border:1px solid rgba(11,177,210,.35);border-top:3px solid #0BB1D2;box-shadow:0 20px 70px rgba(0,0,0,.55)}
+#asl-gate .x{position:absolute;top:8px;right:10px;width:32px;height:32px;border:0;background:none;color:#9fc3cf;font-size:24px;cursor:pointer}
+#asl-gate .k{font-size:34px;margin-bottom:6px}
+#asl-gate h2{font-size:21px;margin:0 0 8px;color:#fff}
+#asl-gate p{font-size:14px;line-height:1.6;margin:0 0 20px;color:#9fc3cf}
+#asl-gate a{display:block;padding:13px;margin-top:9px;border-radius:5px;text-decoration:none;font-weight:700;font-size:14px}
+#asl-gate .b1{background:linear-gradient(135deg,#0BB1D2,#1eb3cc);color:#061116}
+#asl-gate .b2{border:1px solid rgba(11,177,210,.5);color:#0BB1D2}
+</style>
+<div id="asl-gate" hidden><div class="c"><button class="x" id="asl-gate-x" aria-label="Close">&times;</button><div class="k">🔒</div><h2>Subscription required</h2><p>${text}</p><a class="b1" href="/?plans=1">Subscribe now</a>${second}</div></div>
+<script>(function(){
+  var g=document.getElementById('asl-gate');
+  function show(){g.hidden=false}
+  function isFile(t){return t&&t.matches&&t.matches('input[type=file]')}
+  document.addEventListener('click',function(e){if(isFile(e.target)){e.preventDefault();e.stopPropagation();show()}},true);
+  document.addEventListener('change',function(e){if(isFile(e.target)){e.stopPropagation();e.stopImmediatePropagation();try{e.target.value=''}catch(x){}show()}},true);
+  ['dragover','drop'].forEach(function(n){document.addEventListener(n,function(e){
+    var ty=e.dataTransfer&&e.dataTransfer.types?Array.prototype.slice.call(e.dataTransfer.types):[];
+    if(ty.indexOf('Files')>-1){e.preventDefault();e.stopPropagation();if(n==='drop')show()}
+  },true)});
+  document.getElementById('asl-gate-x').onclick=function(){g.hidden=true};
+  g.addEventListener('click',function(e){if(e.target===g)g.hidden=true});
+})();</script>`;
 }
 
 // Always ask the static assets for an exact file (html_handling is "none"), so there are no redirect hops.
@@ -117,7 +131,7 @@ export default {
         const res = new Response(r.body, { status: r.status, headers: h });
         if (isActive(user) || !isHtml || r.status !== 200) return res;
         return new HTMLRewriter()
-          .on('body', { element(el) { el.append(paywall(user), { html: true }); } })
+          .on('body', { element(el) { el.append(uploadGate(user), { html: true }); } })
           .transform(res);
       }
 
