@@ -3,9 +3,30 @@ const enc = new TextEncoder();
 const COOKIE = 'asl_session';
 const SESSION_MS = 30 * 24 * 3600 * 1000;
 const PLANS = { '1m': 1, '3m': 3, '12m': 12 };
-// pages that need a login (member.html) or an ACTIVE subscription (the rest)
+// /member needs a login. The tools below can be SEEN by everyone,
+// but they are covered by a "subscribe to use" screen unless the subscription is active.
 const LOGIN_ONLY = new Set(['/member']);
-const MEMBERS_ONLY = new Set(['/growth-program', '/asl-xauusd-analysis', '/asl-account-journal']);
+const PREVIEW = new Set(['/growth-program', '/asl-xauusd-analysis', '/asl-account-journal']);
+
+function paywall(user) {
+  const title = user ? 'Your subscription is not active' : 'Subscribers only';
+  const text = user
+    ? 'Activate a plan to start using this tool.'
+    : 'You can preview this page. Subscribe to start using it.';
+  const btns = user
+    ? '<a class="b1" href="/?plans=1">View plans</a><a class="b2" href="/member">My account</a>'
+    : '<a class="b1" href="/?plans=1">View plans</a><a class="b2" href="/?login=1">Sign in</a>';
+  return `<style>
+#asl-wall{position:fixed;inset:0;z-index:2147483000;display:flex;align-items:center;justify-content:center;padding:18px;background:rgba(6,17,22,.58);-webkit-backdrop-filter:blur(5px);backdrop-filter:blur(5px);font-family:system-ui,-apple-system,Segoe UI,sans-serif}
+#asl-wall .c{max-width:380px;width:100%;text-align:center;padding:30px 24px;border-radius:10px;background:#122630;color:#dceef4;border:1px solid rgba(11,177,210,.35);border-top:3px solid #0BB1D2;box-shadow:0 20px 70px rgba(0,0,0,.55)}
+#asl-wall .k{font-size:34px;margin-bottom:6px}
+#asl-wall h2{font-size:21px;margin:0 0 8px;color:#fff}
+#asl-wall p{font-size:14px;line-height:1.6;margin:0 0 20px;color:#9fc3cf}
+#asl-wall a{display:block;padding:13px;margin-top:9px;border-radius:5px;text-decoration:none;font-weight:700;font-size:14px}
+#asl-wall .b1{background:linear-gradient(135deg,#0BB1D2,#1eb3cc);color:#061116}
+#asl-wall .b2{border:1px solid rgba(11,177,210,.5);color:#0BB1D2}
+</style><div id="asl-wall"><div class="c"><div class="k">🔒</div><h2>${title}</h2><p>${text}</p>${btns}</div></div><script>document.documentElement.style.overflow='hidden';document.body&&(document.body.style.overflow='hidden')</script>`;
+}
 
 const json = (data, status = 200, headers = {}) =>
   new Response(JSON.stringify(data), {
@@ -72,14 +93,25 @@ export default {
 
       /* ---------- protected pages ---------- */
       const key = path.replace(/\.html$/, '').replace(/\/$/, '');
-      if (LOGIN_ONLY.has(key) || MEMBERS_ONLY.has(key)) {
+      if (LOGIN_ONLY.has(key)) {
         const user = await getUser(request, env);
         if (!user) return Response.redirect(url.origin + '/?login=1', 302);
-        if (MEMBERS_ONLY.has(key) && !isActive(user)) return Response.redirect(url.origin + '/member', 302);
         const r = await env.ASSETS.fetch(request);
         const h = new Headers(r.headers);
         h.set('Cache-Control', 'private, no-store');
         return new Response(r.body, { status: r.status, headers: h });
+      }
+      if (PREVIEW.has(key)) {
+        const user = await getUser(request, env);
+        const r = await env.ASSETS.fetch(request);
+        const h = new Headers(r.headers);
+        h.set('Cache-Control', 'private, no-store');
+        const isHtml = (r.headers.get('Content-Type') || '').includes('text/html');
+        const res = new Response(r.body, { status: r.status, headers: h });
+        if (isActive(user) || !isHtml || r.status !== 200) return res;
+        return new HTMLRewriter()
+          .on('body', { element(el) { el.append(paywall(user), { html: true }); } })
+          .transform(res);
       }
 
       if (!path.startsWith('/api/')) return env.ASSETS.fetch(request);
