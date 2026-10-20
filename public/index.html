@@ -2669,7 +2669,7 @@
             try { sessionStorage.setItem('asl-member-name', data.user.name || data.user.username || 'Member'); } catch (e) {}
           }
           setTimeout(function () {
-            window.location.href = API + '/member.html';
+            window.location.href = NEXT || '/member.html';
           }, 450);
         } catch (error) {
           showMessage(error.message || 'Login failed. Please check your details.', 'error');
@@ -2695,7 +2695,7 @@
             try { sessionStorage.setItem('asl-member-name', data.user.name || data.user.username || name); } catch (e) {}
           }
           setTimeout(function () {
-            window.location.href = API + '/member.html';
+            window.location.href = NEXT || '/member.html';
           }, 450);
         } catch (error) {
           showMessage(error.message || 'Registration failed. Please try again.', 'error');
@@ -2712,7 +2712,17 @@
         });
       });
       /* Opened from a protected page: show the login box. */
-      if (/[?&]login=1/.test(location.search)) { openModal('login'); try { history.replaceState(null, '', location.pathname); } catch (e) {} }
+      var NEXT = null;
+      (function () {
+        var m = location.search.match(/[?&]next=([^&]+)/);
+        if (!m) return;
+        try { var v = decodeURIComponent(m[1]); if (v.charAt(0) === '/' && v.charAt(1) !== '/' && v.indexOf('\\') < 0) NEXT = v; } catch (e) {}
+      })();
+      if (/[?&]login=1/.test(location.search)) {
+        openModal('login');
+        if (NEXT) showMessage('Please sign in or create an account to open this section.', 'success');
+        try { history.replaceState(null, '', location.pathname); } catch (e) {}
+      }
       /* Coming from a locked tool: jump to the plans. */
       if (/[?&]plans=1/.test(location.search)) { window.addEventListener('load', function () { setTimeout(function () { var el = document.getElementById('pricing'); if (el) el.scrollIntoView({ behavior: 'smooth' }); try { history.replaceState(null, '', location.pathname); } catch (e) {} }, 700); }); }
       /* Check existing session without preventing the page from loading. */
