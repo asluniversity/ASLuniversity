@@ -3,11 +3,13 @@ const enc = new TextEncoder();
 const COOKIE = 'asl_session';
 const SESSION_MS = 30 * 24 * 3600 * 1000;
 const PLANS = { '1m': 1, '3m': 3, '12m': 12 };
-// /member needs a login. The Account Journal page is visible to everyone;
-// uploading a statement needs an ACTIVE subscription (otherwise a "subscribe" box appears).
-// All other pages (analysis, growth program, ...) are fully public.
-const LOGIN_ONLY = new Set(['/member']);
+// Every section needs a LOGIN first (visitors are sent to the sign-in box, then come back here).
+// - LOGIN_ONLY: logged-in users can open it.
+// - PREVIEW: logged-in users can open it, but uploading a statement needs an ACTIVE subscription.
+const LOGIN_ONLY = new Set(['/member', '/asl-xauusd-analysis', '/growth-program']);
 const PREVIEW = new Set(['/asl-account-journal']);
+const loginRedirect = (url, key) =>
+  Response.redirect(url.origin + '/?login=1&next=' + encodeURIComponent(key + '.html'), 302);
 
 function uploadGate(user) {
   const text = user
@@ -116,7 +118,7 @@ export default {
       const key = path.replace(/\.html$/, '').replace(/\/$/, '');
       if (LOGIN_ONLY.has(key)) {
         const user = await getUser(request, env);
-        if (!user) return Response.redirect(url.origin + '/?login=1', 302);
+        if (!user) return loginRedirect(url, key);
         const r = await getAsset(env, request, url, key + '.html');
         const h = new Headers(r.headers);
         h.set('Cache-Control', 'private, no-store');
@@ -124,6 +126,7 @@ export default {
       }
       if (PREVIEW.has(key)) {
         const user = await getUser(request, env);
+        if (!user) return loginRedirect(url, key);
         const r = await getAsset(env, request, url, key + '.html');
         const h = new Headers(r.headers);
         h.set('Cache-Control', 'private, no-store');
