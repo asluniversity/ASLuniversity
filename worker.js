@@ -28,6 +28,13 @@ function paywall(user) {
 </style><div id="asl-wall"><div class="c"><div class="k">🔒</div><h2>${title}</h2><p>${text}</p>${btns}</div></div><script>document.documentElement.style.overflow='hidden';document.body&&(document.body.style.overflow='hidden')</script>`;
 }
 
+// Always ask the static assets for an exact file (html_handling is "none"), so there are no redirect hops.
+async function getAsset(env, request, url, p) {
+  const r = await env.ASSETS.fetch(new Request(url.origin + p + url.search, request));
+  if (r.status === 404) return new Response('404 - file not found in site assets: ' + p, { status: 404, headers: { 'Content-Type': 'text/plain; charset=utf-8' } });
+  return r;
+}
+
 const json = (data, status = 200, headers = {}) =>
   new Response(JSON.stringify(data), {
     status,
@@ -96,14 +103,14 @@ export default {
       if (LOGIN_ONLY.has(key)) {
         const user = await getUser(request, env);
         if (!user) return Response.redirect(url.origin + '/?login=1', 302);
-        const r = await env.ASSETS.fetch(request);
+        const r = await getAsset(env, request, url, key + '.html');
         const h = new Headers(r.headers);
         h.set('Cache-Control', 'private, no-store');
         return new Response(r.body, { status: r.status, headers: h });
       }
       if (PREVIEW.has(key)) {
         const user = await getUser(request, env);
-        const r = await env.ASSETS.fetch(request);
+        const r = await getAsset(env, request, url, key + '.html');
         const h = new Headers(r.headers);
         h.set('Cache-Control', 'private, no-store');
         const isHtml = (r.headers.get('Content-Type') || '').includes('text/html');
@@ -114,7 +121,7 @@ export default {
           .transform(res);
       }
 
-      if (!path.startsWith('/api/')) return env.ASSETS.fetch(request);
+      if (!path.startsWith('/api/')) return getAsset(env, request, url, path === '/' ? '/index.html' : path);
 
       /* ---------- API ---------- */
       if (path === '/api/me' && request.method === 'GET') {
