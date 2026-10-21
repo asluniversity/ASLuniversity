@@ -44,6 +44,46 @@ function uploadGate(user) {
 })();</script>`;
 }
 
+// Cinematic "Welcome <name>" intro (fade in, then the page is revealed). Shown once per tab per page.
+function welcome(name) {
+  const n = JSON.stringify(String(name || '')).replace(/</g, '\\u003c');
+  return `<style>
+#asl-wel{display:none;position:fixed;inset:0;z-index:2147483600;align-items:center;justify-content:center;flex-direction:column;text-align:center;cursor:pointer;
+  background:radial-gradient(ellipse 60% 55% at 50% 50%,rgba(11,177,210,.20),transparent 70%),#050d11;animation:aslWelOut 1s ease 3.3s forwards}
+#asl-wel .a{font:600 clamp(12px,2.6vw,16px) system-ui,sans-serif;color:#7fe6f7;text-transform:uppercase;opacity:0;letter-spacing:.7em;animation:aslWelA 1.5s ease .3s forwards}
+#asl-wel .b{margin-top:16px;padding:0 20px;font:700 clamp(36px,9vw,84px) 'Space Grotesk',system-ui,sans-serif;line-height:1.15;color:#fff;max-width:100%;overflow-wrap:anywhere;
+  opacity:0;filter:blur(12px);transform:translateY(16px) scale(.97);text-shadow:0 0 40px rgba(11,177,210,.55);animation:aslWelB 1.6s cubic-bezier(.2,.7,.2,1) 1s forwards}
+#asl-wel .c{margin-top:26px;height:2px;width:0;background:linear-gradient(90deg,transparent,#0BB1D2,transparent);animation:aslWelC 1.4s ease 1.6s forwards}
+@keyframes aslWelA{to{opacity:1;letter-spacing:.38em}}
+@keyframes aslWelB{to{opacity:1;filter:blur(0);transform:none}}
+@keyframes aslWelC{to{width:min(240px,60vw)}}
+@keyframes aslWelOut{to{opacity:0;visibility:hidden}}
+@media (prefers-reduced-motion:reduce){#asl-wel{display:none!important}}
+</style>
+<div id="asl-wel"><div class="a">Welcome</div><div class="b" id="asl-wel-n"></div><div class="c"></div></div>
+<script>(function(){
+  var el=document.getElementById('asl-wel'),k='asl-wel:'+location.pathname.replace(/\\.html$/,'');
+  try{if(sessionStorage.getItem(k)||(window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches)){el.remove();return}sessionStorage.setItem(k,'1')}catch(e){}
+  document.getElementById('asl-wel-n').textContent=${n};
+  el.style.display='flex';
+  function done(){if(el.parentNode)el.remove()}
+  el.addEventListener('animationend',function(e){if(e.animationName==='aslWelOut')done()});
+  el.addEventListener('click',function(){el.style.transition='opacity .5s';el.style.opacity='0';setTimeout(done,520)});
+  setTimeout(done,5000);
+})();</script>`;
+}
+
+function withExtras(res, user, gate) {
+  return new HTMLRewriter()
+    .on('body', {
+      element(el) {
+        el.prepend(welcome(user.display_name), { html: true });
+        if (gate) el.append(uploadGate(user), { html: true });
+      }
+    })
+    .transform(res);
+}
+
 // Always ask the static assets for an exact file (html_handling is "none"), so there are no redirect hops.
 async function getAsset(env, request, url, p) {
   const r = await env.ASSETS.fetch(new Request(url.origin + p + url.search, request));
@@ -122,7 +162,9 @@ export default {
         const r = await getAsset(env, request, url, key + '.html');
         const h = new Headers(r.headers);
         h.set('Cache-Control', 'private, no-store');
-        return new Response(r.body, { status: r.status, headers: h });
+        const isHtml1 = (r.headers.get('Content-Type') || '').includes('text/html');
+        const res1 = new Response(r.body, { status: r.status, headers: h });
+        return isHtml1 && r.status === 200 ? withExtras(res1, user, false) : res1;
       }
       if (PREVIEW.has(key)) {
         const user = await getUser(request, env);
@@ -132,10 +174,8 @@ export default {
         h.set('Cache-Control', 'private, no-store');
         const isHtml = (r.headers.get('Content-Type') || '').includes('text/html');
         const res = new Response(r.body, { status: r.status, headers: h });
-        if (isActive(user) || !isHtml || r.status !== 200) return res;
-        return new HTMLRewriter()
-          .on('body', { element(el) { el.append(uploadGate(user), { html: true }); } })
-          .transform(res);
+        if (!isHtml || r.status !== 200) return res;
+        return withExtras(res, user, !isActive(user));
       }
 
       if (!path.startsWith('/api/')) return getAsset(env, request, url, path === '/' ? '/index.html' : path);
