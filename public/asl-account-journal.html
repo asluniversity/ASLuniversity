@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- saved from url=(0070)https://asluniversity.github.io/ASLuniversity/asl-account-journal.html -->
+<!-- saved from url=(0070)asl-account-journal.html -->
 <html lang="en" data-theme="dark"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -21,7 +21,8 @@
 </script>
 <link rel="preconnect" href="https://fonts.googleapis.com/">
 <link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin="">
-<link href="./ASL University - Account Journal &amp; Analysis_files/css2" rel="stylesheet">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" media="print" onload="this.media='all'">
+<noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap"></noscript>
 <style>
 * { margin: 0; padding: 0; box-sizing: border-box; }
 :root {
@@ -277,8 +278,8 @@ footer .disclaimer { font-size: 11.5px; color: var(--footer-text); max-width: 82
 
 <nav>
   <div class="nav-container">
-    <a class="brand" href="https://asluniversity.github.io/ASLuniversity/" aria-label="ASL University">
-      <img class="brand-logo" src="./ASL University - Account Journal &amp; Analysis_files/asl-logo-transparent.png" alt="ASL University logo" width="46" height="46" decoding="async" onerror="if(!this.dataset.f){this.dataset.f=1;this.src=&#39;https://asluniversity.github.io/ASLuniversity/asl-logo-transparent.png&#39;;}else{this.style.display=&#39;none&#39;;}">
+    <a class="brand" href="/" aria-label="ASL University">
+      <img class="brand-logo" src="asl-logo-transparent.png" alt="ASL University logo" width="46" height="46" decoding="async" onerror="if(!this.dataset.f){this.dataset.f=1;this.src=&#39;asl-logo-transparent.png&#39;;}else{this.style.display=&#39;none&#39;;}">
       <span class="brand-text"><span class="logo">ASL UNIVERSITY</span><span class="logo-sub">ACCOUNT JOURNAL &amp; ANALYSIS</span></span>
     </a>
     <div class="tabs" id="tabs" role="tablist">
@@ -2009,7 +2010,7 @@ async function guardCall(action) {
   try { const r = await fetch(UPLOAD_GUARD_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action, device: deviceId() }) }); const j = await r.json(); return j.allowed !== false; }
   catch (e) { return true; }
 }
-const SITE_PRICING_URL = 'https://asluniversity.github.io/ASLuniversity/#pricing';
+const SITE_PRICING_URL = '/?plans=1';
 function lockedModal() {
   openModal('<button class="x" data-close="1" aria-label="Close">×</button><h2>Statement already uploaded</h2>' +
     '<p class="muted">Each device can upload an account statement <b>one time only</b>, and this device has already used it. Your journal and analysis stay available here as before.</p>' +
