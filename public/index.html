@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <!-- saved from url=(0046) -->
 <html lang="en" data-theme="dark"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
@@ -5,6 +6,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ASL University - Premium Trading Membership</title>
     <meta name="color-scheme" content="dark light">
+    <link rel="manifest" href="/manifest.webmanifest">
+    <meta name="theme-color" content="#0B1416">
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-title" content="ASL">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <script>
         /* apply the saved theme before first paint (default = dark) */
         try { document.documentElement.setAttribute('data-theme', localStorage.getItem('asl-theme') === 'light' ? 'light' : 'dark'); }
@@ -1824,6 +1832,10 @@
                             <span class="smi">🌱</span>
                             <span class="smt"><b>Personal Growth Program</b><span>Personalizing the strategy to match your mindset</span></span>
                         </a>
+                        <button type="button" class="site-menu-link" id="install-app" role="menuitem" style="background:none;border:0;width:100%;text-align:left;cursor:pointer;font:inherit;color:inherit">
+                            <span class="smi">📲</span>
+                            <span class="smt"><b>Install the App</b><span>Add ASL University to your phone's home screen</span></span>
+                        </button>
                         <div class="site-menu-sep"></div>
                         <a class="site-menu-link" role="menuitem" href="https://t.me/mrasltl" target="_blank" rel="noopener">
                             <span class="smi">✉️</span>
@@ -2141,7 +2153,12 @@
                 <li>Accredited trader certificate</li>
                 <li>$1,000 prop account opportunity</li>
                 <li>Expert training courses</li>
-                <li>Journal and Account Analysis Panel</li>
+                <li>Personal Risk Management Guide</li>
+                <li>24/7 support access</li>
+                <li>Cancel anytime, no lock-in</li>
+            </ul>
+        </div>
+    </section>
 
     <!-- Final CTA Section -->
     <section class="final-cta">
@@ -2736,4 +2753,27 @@
 
 
 
+
+    <script>
+    /* ===== App install (PWA) ===== */
+    (function () {
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', function () { navigator.serviceWorker.register('/sw.js').catch(function () {}); });
+        }
+        var btn = document.getElementById('install-app');
+        if (!btn) return;
+        var standalone = (window.matchMedia && matchMedia('(display-mode: standalone)').matches) || window.navigator.standalone;
+        if (standalone) { btn.style.display = 'none'; return; }
+        var deferred = null;
+        window.addEventListener('beforeinstallprompt', function (e) { e.preventDefault(); deferred = e; });
+        window.addEventListener('appinstalled', function () { btn.style.display = 'none'; });
+        btn.addEventListener('click', function () {
+            if (deferred) { deferred.prompt(); deferred.userChoice.finally(function () { deferred = null; }); return; }
+            var ios = /iphone|ipad|ipod/i.test(navigator.userAgent);
+            alert(ios
+                ? 'On iPhone: tap the Share button in Safari, then choose "Add to Home Screen".'
+                : 'Open your browser menu (the three dots) and choose "Install app" or "Add to Home screen".');
+        });
+    })();
+    </script>
 </body></html>
