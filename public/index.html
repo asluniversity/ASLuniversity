@@ -1778,6 +1778,13 @@
         .plan-includes li::before { width:20px; height:20px; font-size:12px; }
       }
     </style>
+<style>
+        /* Download-the-App submenu */
+        .app-chev { width: 16px; height: 16px; margin-left: auto; flex-shrink: 0; fill: none; stroke: var(--muted-color); stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round; transition: transform .25s ease; }
+        #app-toggle[aria-expanded="true"] .app-chev { transform: rotate(180deg); stroke: var(--accent); }
+        .app-sub { display: none; margin: 2px 0 4px 18px; padding-left: 10px; border-left: 1px solid var(--hairline); }
+        .app-sub.open { display: block; }
+    </style>
 </head>
 <body>
     <!-- Navigation -->
@@ -1831,10 +1838,23 @@
                             <span class="smi">🌱</span>
                             <span class="smt"><b>Personal Growth Program</b><span>Personalizing the strategy to match your mindset</span></span>
                         </a>
-                        <a class="site-menu-link" id="install-app" role="menuitem" href="asl-app.apk" download="ASL-University.apk">
-                            <span class="smi">📲</span>
-                            <span class="smt"><b>Download the App</b><span>Download the ASL University app (Android)</span></span>
-                        </a>
+                        <div id="app-install">
+                            <button type="button" class="site-menu-link" id="app-toggle" data-keep-open aria-expanded="false" aria-controls="app-sub" style="background:none;border:0;width:100%;text-align:left;cursor:pointer;font:inherit;color:inherit">
+                                <span class="smi">📲</span>
+                                <span class="smt"><b>Download the App</b><span>Choose Android or iPhone</span></span>
+                                <svg class="app-chev" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"></path></svg>
+                            </button>
+                            <div class="app-sub" id="app-sub">
+                                <a class="site-menu-link" id="install-android" role="menuitem" href="asl-app.apk" download="ASL-University.apk">
+                                    <span class="smi">🤖</span>
+                                    <span class="smt"><b>For Android</b><span>Download the app (APK)</span></span>
+                                </a>
+                                <button type="button" class="site-menu-link" id="install-ios" role="menuitem" style="background:none;border:0;width:100%;text-align:left;cursor:pointer;font:inherit;color:inherit">
+                                    <span class="smi">🍎</span>
+                                    <span class="smt"><b>For iPhone</b><span>Get the app on your iPhone</span></span>
+                                </button>
+                            </div>
+                        </div>
                         <div class="site-menu-sep"></div>
                         <a class="site-menu-link" role="menuitem" href="https://t.me/mrasltl" target="_blank" rel="noopener">
                             <span class="smi">✉️</span>
@@ -2241,7 +2261,7 @@
                 setOpen(!wrap.classList.contains('open'));
             });
             wrap.querySelectorAll('.site-menu-link').forEach(function (link) {
-                link.addEventListener('click', function () { setOpen(false); });
+                link.addEventListener('click', function () { if (link.hasAttribute('data-keep-open')) return; setOpen(false); });
             });
             document.addEventListener('click', function (e) {
                 if (!wrap.contains(e.target)) setOpen(false);
@@ -2754,23 +2774,49 @@
 
 
     <script>
-    /* ===== App download ===== */
+    /* ===== App download (Android APK + iPhone) ===== */
     (function () {
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', function () { navigator.serviceWorker.register('/sw.js').catch(function () {}); });
         }
-        var btn = document.getElementById('install-app');
-        if (!btn) return;
+
+        /* When your iPhone app is on TestFlight or the App Store, paste its link here.
+           While this is empty, iPhone users get the "Add to Home Screen" guide. */
+        var IOS_APP_URL = '';
+
+        var wrap = document.getElementById('app-install');
+        var toggle = document.getElementById('app-toggle');
+        var sub = document.getElementById('app-sub');
+        var android = document.getElementById('install-android');
+        var iosBtn = document.getElementById('install-ios');
+        if (!wrap || !toggle || !sub) return;
+
         var standalone = (window.matchMedia && matchMedia('(display-mode: standalone)').matches) || window.navigator.standalone;
-        if (standalone) { btn.style.display = 'none'; return; }
-        var ios = /iphone|ipad|ipod/i.test(navigator.userAgent);
-        btn.addEventListener('click', function (e) {
-            if (ios) {
-                e.preventDefault();
-                alert('On iPhone: tap the Share button in Safari, then choose "Add to Home Screen".');
-            }
-            /* Android / desktop: the browser downloads asl-app.apk automatically */
+        if (standalone) { wrap.style.display = 'none'; return; }
+
+        toggle.addEventListener('click', function () {
+            var open = !sub.classList.contains('open');
+            sub.classList.toggle('open', open);
+            toggle.setAttribute('aria-expanded', String(open));
         });
+
+        var isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
+        if (iosBtn) {
+            iosBtn.addEventListener('click', function () {
+                if (IOS_APP_URL) { window.open(IOS_APP_URL, '_blank', 'noopener'); return; }
+                alert(isIOS
+                    ? 'On iPhone: tap the Share button in Safari, then choose "Add to Home Screen".'
+                    : 'Open this website in Safari on your iPhone, tap the Share button, then choose "Add to Home Screen".');
+            });
+        }
+        if (android) {
+            android.addEventListener('click', function (e) {
+                if (isIOS) {
+                    e.preventDefault();
+                    alert('The Android app works on Android phones only. On iPhone, please choose "For iPhone".');
+                }
+            });
+        }
     })();
     </script>
 </body></html>
