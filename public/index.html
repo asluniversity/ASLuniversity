@@ -1838,6 +1838,10 @@
                             <span class="smi">🌱</span>
                             <span class="smt"><b>Personal Growth Program</b><span>Personalizing the strategy to match your mindset</span></span>
                         </a>
+                        <a class="site-menu-link" role="menuitem" href="asl-market-sessions.html" target="_blank" rel="noopener">
+                            <span class="smi">🕒</span>
+                            <span class="smt"><b>Market Sessions &amp; Timing</b><span>Live session clocks, open/close countdowns &amp; volume</span></span>
+                        </a>
                         <div id="app-install">
                             <button type="button" class="site-menu-link" id="app-toggle" data-keep-open aria-expanded="false" aria-controls="app-sub" style="background:none;border:0;width:100%;text-align:left;cursor:pointer;font:inherit;color:inherit">
                                 <span class="smi">📲</span>
@@ -2780,9 +2784,10 @@
             window.addEventListener('load', function () { navigator.serviceWorker.register('/sw.js').catch(function () {}); });
         }
 
-        /* When your iPhone app is on TestFlight or the App Store, paste its link here.
-           While this is empty, iPhone users get the "Add to Home Screen" guide. */
-        var IOS_APP_URL = '';
+        /* iPhone install link (uses asl-app.plist + asl-app.ipa uploaded next to index.html).
+           You can replace it with a TestFlight / App Store link later.
+           If it is empty, iPhone users get the "Add to Home Screen" guide. */
+        var IOS_APP_URL = 'itms-services://?action=download-manifest&url=https://asluniversity.github.io/ASLuniversity/asl-app.plist';
 
         var wrap = document.getElementById('app-install');
         var toggle = document.getElementById('app-toggle');
@@ -2803,7 +2808,8 @@
         var isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
         if (iosBtn) {
             iosBtn.addEventListener('click', function () {
-                if (IOS_APP_URL) { window.open(IOS_APP_URL, '_blank', 'noopener'); return; }
+                if (IOS_APP_URL && isIOS) { window.location.href = IOS_APP_URL; return; }
+                if (IOS_APP_URL && !isIOS) { alert('Open this website on your iPhone (Safari) and tap "For iPhone" to install the app.'); return; }
                 alert(isIOS
                     ? 'On iPhone: tap the Share button in Safari, then choose "Add to Home Screen".'
                     : 'Open this website in Safari on your iPhone, tap the Share button, then choose "Add to Home Screen".');
