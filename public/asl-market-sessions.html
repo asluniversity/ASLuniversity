@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Market Sessions & Timing - ASL University</title>
+<meta name="color-scheme" content="dark light">
+<script>
+try { document.documentElement.setAttribute('data-theme', localStorage.getItem('asl-theme') === 'light' ? 'light' : 'dark'); } catch (e) {}
+</script>
+<link rel="preconnect" href="https://fonts.googleapis.com/">
+<link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{color-scheme:dark;--page-bg:linear-gradient(135deg,#0B1416 0%,#122630 100%);--text:#dceef4;--head:#F5F7F8;--muted:#9fc3cf;--surface:#16323d;--card:linear-gradient(165deg,#1a3a46 0%,#16323d 70%);--hair:rgba(11,177,210,.22);--accent:#0BB1D2;--nav:linear-gradient(135deg,#0d1f26 0%,#0A0A0B 100%);--navtext:#fff;--glow:0 0 30px rgba(11,177,210,.35);--tbg:rgba(255,255,255,.08);--tact:rgba(11,177,210,.22);--good:#2FBE7A;--sans:'IBM Plex Sans',sans-serif;--display:'Space Grotesk',sans-serif;--mono:'JetBrains Mono',monospace}
+:root[data-theme="light"]{color-scheme:light;--page-bg:linear-gradient(135deg,#F6FAFB 0%,#E5EFF3 100%);--text:#1E2F36;--head:#0B1A20;--muted:#4F6670;--surface:#FFFFFF;--card:linear-gradient(165deg,#FFFFFF 0%,#F3F8FA 70%);--hair:rgba(6,135,162,.24);--accent:#0687A2;--nav:linear-gradient(135deg,#FFFFFF 0%,#EAF4F7 100%);--navtext:#0B1A20;--glow:none;--tbg:rgba(15,28,34,.05);--tact:rgba(6,135,162,.14);--good:#14935a}
+html{overflow-x:hidden}
+body{font-family:var(--sans);background:var(--page-bg);color:var(--text);line-height:1.6;min-height:100vh;overflow-x:hidden}
+body::before{content:"";position:fixed;inset:0;background:radial-gradient(ellipse 1100px 600px at 10% -10%,rgba(11,177,210,.14),transparent 60%),radial-gradient(ellipse 900px 550px at 100% 100%,rgba(11,177,210,.10),transparent 60%);pointer-events:none;z-index:0}
+nav,main,footer{position:relative;z-index:1}
+nav{background:var(--nav);padding:16px 0;border-bottom:1px solid var(--hair);position:sticky;top:0;z-index:100}
+.wrap{max-width:1200px;margin:0 auto;padding:0 20px}
+.nav-in{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+.logo{font-family:var(--display);font-size:22px;font-weight:700;color:var(--navtext);letter-spacing:2px;text-decoration:none}
+.nav-r{display:flex;align-items:center;gap:10px}
+.back{font:500 12px var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--navtext);text-decoration:none;border:1px solid var(--hair);border-radius:999px;padding:8px 14px}
+.back:hover{color:var(--accent);border-color:var(--accent)}
+.tt{display:inline-flex;padding:3px;gap:2px;border:1px solid var(--hair);border-radius:999px;background:var(--tbg)}
+.tt button{font:11px var(--mono);color:var(--muted);background:transparent;border:0;border-radius:999px;padding:7px 12px;cursor:pointer}
+.tt button[aria-pressed="true"]{color:var(--accent);background:var(--tact);box-shadow:inset 0 0 0 1px var(--accent)}
+.hero{text-align:center;padding:44px 0 26px}
+.eyebrow{font:11.5px var(--mono);letter-spacing:.22em;text-transform:uppercase;color:var(--accent);margin-bottom:12px}
+h1{font:700 clamp(28px,4.5vw,44px)/1.2 var(--display);color:var(--head);text-shadow:var(--glow)}
+h1 span{color:var(--accent)}
+.bigclock{font:700 clamp(40px,8vw,76px)/1.1 var(--mono);color:var(--head);margin-top:22px;text-shadow:var(--glow);font-variant-numeric:tabular-nums}
+.dateline{font:13px var(--mono);color:var(--muted);margin-top:4px;letter-spacing:.04em}
+.tzrow{display:flex;gap:10px;justify-content:center;align-items:center;flex-wrap:wrap;margin-top:16px;font:12px var(--mono);color:var(--muted)}
+select{font:12px var(--mono);color:var(--text);background:var(--surface);border:1px solid var(--hair);border-radius:6px;padding:8px 10px;cursor:pointer}
+.panel{background:var(--card);border:1px solid var(--hair);border-radius:6px;padding:22px}
+.status{display:grid;grid-template-columns:1.4fr 1fr 1fr;gap:16px;margin:10px 0 26px}
+.lbl{font:10.5px var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin-bottom:8px}
+.val{font:700 20px var(--display);color:var(--head)}
+.val.sm{font-size:16px}
+.mono{font-family:var(--mono);font-variant-numeric:tabular-nums}
+.big{font:600 26px var(--mono);color:var(--accent);font-variant-numeric:tabular-nums;margin-top:4px}
+.dot{display:inline-block;width:9px;height:9px;border-radius:50%;background:var(--good);box-shadow:0 0 10px var(--good);margin-right:8px;animation:bl 1.3s infinite}
+.dot.off{background:#c25b5b;box-shadow:none;animation:none}
+@keyframes bl{50%{opacity:.35}}
+h2{font:700 24px var(--display);color:var(--head);margin:34px 0 16px}
+.sub2{font-size:13px;color:var(--muted);margin:-8px 0 16px}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:18px}
+.card{background:var(--card);border:1px solid var(--hair);border-top:3px solid var(--sc);border-radius:6px;padding:20px;transition:.3s}
+.card.on{border-color:var(--sc);box-shadow:0 0 38px -8px var(--sc)}
+.ch{display:flex;align-items:center;gap:12px}
+.ic{font-size:28px}
+.ch b{display:block;font:700 18px var(--display);color:var(--head)}
+.ch small{font:10.5px var(--mono);color:var(--muted)}
+.st{margin-left:auto;font:600 10.5px var(--mono);letter-spacing:.1em;padding:5px 10px;border-radius:999px;border:1px solid var(--hair);color:var(--muted)}
+.card.on .st{color:var(--good);border-color:var(--good);background:rgba(47,190,122,.1)}
+.clk{font:600 30px var(--mono);color:var(--head);margin-top:14px;font-variant-numeric:tabular-nums}
+.cs{font-size:11.5px;color:var(--muted);margin-bottom:12px}
+.row{display:flex;justify-content:space-between;gap:10px;font-size:13px;padding:7px 0;border-top:1px solid var(--hair)}
+.row span{color:var(--muted)}.row b{font:600 12.5px var(--mono);color:var(--head);text-align:right}
+.bar{height:6px;border-radius:99px;background:var(--tbg);overflow:hidden;margin:8px 0 4px}
+.bar i{display:block;height:100%;width:0;border-radius:99px;background:var(--sc)}
+.note{font-size:12.5px;color:var(--muted);margin-top:10px;line-height:1.55}
+.tl{padding:20px 20px 14px}
+.trow{display:grid;grid-template-columns:90px 1fr;align-items:center;gap:10px;margin-bottom:10px}
+.trow>b{font:600 12px var(--mono);color:var(--head)}
+.track{position:relative;height:26px;border-radius:4px;background:var(--tbg);overflow:hidden}
+.seg{position:absolute;top:0;bottom:0;background:var(--sc);opacity:.85;border-radius:3px}
+.now{position:absolute;top:0;bottom:0;width:2px;background:#fff;box-shadow:0 0 8px #fff;z-index:3}
+:root[data-theme="light"] .now{background:#0B1A20;box-shadow:none}
+.axis{display:grid;grid-template-columns:90px 1fr;gap:10px}
+.ticks{position:relative;height:18px}
+.ticks span{position:absolute;transform:translateX(-50%);font:10px var(--mono);color:var(--muted)}
+.liq{display:flex;align-items:flex-end;gap:3px;height:150px;margin-top:6px}
+.liq div{flex:1;border-radius:3px 3px 0 0;background:linear-gradient(to top,#0687A2,#0BB1D2);opacity:.55;min-height:3px}
+.liq div.cur{opacity:1;box-shadow:0 0 12px rgba(11,177,210,.8)}
+.liql{display:flex;gap:3px;margin-top:6px}
+.liql span{flex:1;text-align:center;font:9px var(--mono);color:var(--muted)}
+.legend{display:flex;gap:16px;flex-wrap:wrap;margin-top:14px;font:11px var(--mono);color:var(--muted)}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:6px;vertical-align:-1px}
+.tip{border-left:3px solid var(--accent);padding:14px 18px;margin-top:18px;background:var(--tbg);border-radius:0 6px 6px 0;font-size:14px}
+.tip b{color:var(--head)}
+footer{margin-top:50px;padding:30px 20px;text-align:center;border-top:1px solid var(--hair);background:rgba(0,0,0,.12)}
+footer p{font-size:12px;color:var(--muted);max-width:800px;margin:0 auto;line-height:1.8}
+@media(max-width:860px){.status{grid-template-columns:1fr}}
+@media(max-width:640px){.wrap{padding:0 12px}.logo{font-size:16px;letter-spacing:1px}.back span{display:none}.trow,.axis{grid-template-columns:62px 1fr}.trow>b{font-size:10.5px}.liql span{font-size:7px}.panel{padding:16px}h2{font-size:20px}}
+</style>
+</head>
+<body>
+<nav><div class="wrap nav-in">
+  <a class="logo" href="index.html">ASL UNIVERSITY</a>
+  <div class="nav-r">
+    <div class="tt" role="group" aria-label="Color theme"><button data-th="dark" aria-pressed="true">DARK</button><button data-th="light" aria-pressed="false">LIGHT</button></div>
+    <a class="back" href="index.html">&larr; <span>Back to Home</span></a>
+  </div>
+</div></nav>
+
+<main class="wrap">
+  <section class="hero">
+    <div class="eyebrow">Market Timing &middot; Live</div>
+    <h1>Global <span>Market Sessions</span></h1>
+    <div class="bigclock" id="bigclock">--:--:--</div>
+    <div class="dateline" id="dateline"></div>
+    <div class="tzrow">
+      <label for="tzsel">Show times in:</label>
+      <select id="tzsel">
+        <option value="auto">My time zone (auto)</option>
+        <option value="UTC">UTC</option>
+        <option value="Asia/Tehran">Tehran</option>
+        <option value="Asia/Dubai">Dubai</option>
+        <option value="Europe/London">London</option>
+        <option value="America/New_York">New York</option>
+        <option value="Asia/Tokyo">Tokyo</option>
+        <option value="Australia/Sydney">Sydney</option>
+      </select>
+      <span id="tzname"></span>
+    </div>
+  </section>
+
+  <section class="status">
+    <div class="panel"><div class="lbl">Right now</div><div class="val" id="now-title"></div><div class="note" id="now-desc"></div></div>
+    <div class="panel"><div class="lbl">Next session event</div><div class="val sm" id="nx-title"></div><div class="big" id="nx-cd">--</div></div>
+    <div class="panel"><div class="lbl">Weekly market (FX / Gold)</div><div class="val sm" id="wk-title"></div><div class="big" id="wk-cd">--</div></div>
+  </section>
+
+  <h2>Trading Sessions</h2>
+  <p class="sub2">Each session shows its exchange-city clock, its hours converted to your chosen time zone, and a live countdown. Daylight saving is handled automatically.</p>
+  <div class="cards" id="cards"></div>
+
+  <h2>24-Hour Timeline</h2>
+  <div class="panel tl">
+    <div id="tl"></div>
+    <div class="axis"><span></span><div class="ticks" id="ticks"></div></div>
+    <div class="legend"><span><i style="background:#fff;width:3px;height:12px"></i>Now</span><span>Where bars overlap, liquidity and volatility are highest</span></div>
+  </div>
+
+  <h2>Liquidity &amp; Volume Profile</h2>
+  <p class="sub2">Relative trading activity for each hour of today, built from which sessions are open. It is a typical-pattern estimate, not live exchange volume.</p>
+  <div class="panel">
+    <div class="liq" id="liq"></div>
+    <div class="liql" id="liql"></div>
+    <div class="tip" id="peak"></div>
+    <div class="tip"><b>Gold (XAU/USD) tip:</b> the biggest moves usually come during the London session and the London&ndash;New York overlap (roughly 13:00&ndash;17:00 London time), especially around US news releases. The late Sydney and early Tokyo hours are typically quieter.</div>
+  </div>
+</main>
+
+<footer><p><strong>Disclaimer:</strong> Session hours are typical forex dealing hours and may differ by broker and holiday. Volume figures are approximate patterns for education only, not live data. Trading carries risk and this is not financial advice.</p></footer>
+
+<script>
+(function(){
+'use strict';
+var SESS=[
+ {id:'syd',name:'Sydney',tz:'Australia/Sydney',o:'07:00',c:'16:00',w:25,col:'#8f7bff',ic:'🦘',note:'Starts the trading week. Thin liquidity; AUD and NZD pairs are the most active.'},
+ {id:'tok',name:'Tokyo',tz:'Asia/Tokyo',o:'09:00',c:'18:00',w:45,col:'#ff8a5c',ic:'🗼',note:'Asian flow. JPY pairs lead, with moderate moves in gold.'},
+ {id:'lon',name:'London',tz:'Europe/London',o:'08:00',c:'17:00',w:100,col:'#0BB1D2',ic:'🎡',note:'The largest FX hub. Highest liquidity and the day\'s main trends.'},
+ {id:'ny',name:'New York',tz:'America/New_York',o:'08:00',c:'17:00',w:85,col:'#ffd700',ic:'🗽',note:'US data and news drive strong moves, biggest when it overlaps London.'}
+];
+var NYTZ='America/New_York', $=function(i){return document.getElementById(i)};
+var DN=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'], fc={};
+function parts(t,tz){var f=fc[tz]||(fc[tz]=new Intl.DateTimeFormat('en-US',{timeZone:tz,hourCycle:'h23',year:'numeric',month:'numeric',day:'numeric',hour:'numeric',minute:'numeric',second:'numeric',weekday:'short'}));var o={};f.formatToParts(new Date(t)).forEach(function(p){o[p.type]=p.value});return{y:+o.year,m:+o.month,d:+o.day,h:+o.hour,mi:+o.minute,s:+o.second,wd:DN.indexOf(o.weekday)}}
+function offs(t,tz){var p=parts(t,tz);return Date.UTC(p.y,p.m-1,p.d,p.h,p.mi,p.s)-Math.floor(t/1000)*1000}
+function zoned(y,m,d,h,mi,tz){var g=Date.UTC(y,m-1,d,h,mi),t=g-offs(g,tz);return g-offs(t,tz)}
+function T(t,tz,o){o.timeZone=tz;o.hourCycle='h23';return new Intl.DateTimeFormat('en-GB',o).format(new Date(t))}
+function hm(t,tz){return T(t,tz,{hour:'2-digit',minute:'2-digit'})}
+function dur(ms){if(ms<0)ms=0;var s=Math.floor(ms/1000),d=Math.floor(s/86400),h=Math.floor(s%86400/3600),m=Math.floor(s%3600/60),x=s%60,p=function(n){return n<10?'0'+n:''+n};return(d?d+'d ':'')+p(h)+':'+p(m)+':'+p(x)}
+function wins(s,now){var p=parts(now,s.tz),a=s.o.split(':').map(Number),b=s.c.split(':').map(Number),out=[];for(var k=-1;k<=4;k++){var dt=new Date(Date.UTC(p.y,p.m-1,p.d+k)),wd=dt.getUTCDay();if(wd===0||wd===6)continue;var y=dt.getUTCFullYear(),m=dt.getUTCMonth()+1,d=dt.getUTCDate();out.push([zoned(y,m,d,a[0],a[1],s.tz),zoned(y,m,d,b[0],b[1],s.tz)])}return out}
+function stat(s,now){var w=wins(s,now),cur=null,nx=null,i;for(i=0;i<w.length;i++){if(now>=w[i][0]&&now<w[i][1]){cur=w[i];break}if(w[i][0]>now&&!nx)nx=w[i]}return cur?{open:true,w:cur}:{open:false,w:nx}}
+function isOpen(s,t,cache){var w=cache[s.id];for(var i=0;i<w.length;i++)if(t>=w[i][0]&&t<w[i][1])return true;return false}
+function weekly(now){var p=parts(now,NYTZ),ev=[];for(var k=-8;k<=8;k++){var dt=new Date(Date.UTC(p.y,p.m-1,p.d+k)),wd=dt.getUTCDay();if(wd===0||wd===5)ev.push({t:zoned(dt.getUTCFullYear(),dt.getUTCMonth()+1,dt.getUTCDate(),17,0,NYTZ),open:wd===0})}ev.sort(function(a,b){return a.t-b.t});var last=null,nx=null;for(var i=0;i<ev.length;i++){if(ev[i].t<=now)last=ev[i];else{nx=ev[i];break}}return{open:!!(last&&last.open),next:nx}}
+function vtz(){var v=$('tzsel').value;return v==='auto'?Intl.DateTimeFormat().resolvedOptions().timeZone:v}
+function tzLabel(tz,now){try{var x=new Intl.DateTimeFormat('en-US',{timeZone:tz,timeZoneName:'longOffset'}).formatToParts(new Date(now)).filter(function(p){return p.type==='timeZoneName'})[0];return tz.replace(/_/g,' ')+' ('+x.value+')'}catch(e){return tz}}
+
+/* build cards once */
+$('cards').innerHTML=SESS.map(function(s){return '<div class="card" id="c-'+s.id+'" style="--sc:'+s.col+'"><div class="ch"><span class="ic">'+s.ic+'</span><div><b>'+s.name+'</b><small>'+s.tz.replace(/_/g,' ')+'</small></div><span class="st" id="st-'+s.id+'">CLOSED</span></div><div class="clk" id="clk-'+s.id+'">--:--:--</div><div class="cs">local time in '+s.name+'</div><div class="row"><span>Local hours</span><b>'+s.o+' &ndash; '+s.c+'</b></div><div class="row"><span>In your view</span><b id="hrs-'+s.id+'">--</b></div><div class="row"><span id="cl-'+s.id+'">Opens in</span><b id="cd-'+s.id+'">--</b></div><div class="bar"><i id="pg-'+s.id+'"></i></div><div class="row"><span>Relative volume</span><b>'+s.w+'%</b></div><div class="bar"><i style="width:'+s.w+'%"></i></div><p class="note">'+s.note+'</p></div>'}).join('');
+
+var lastKey='';
+function build(now,tz){
+  var p=parts(now,tz),ds=zoned(p.y,p.m,p.d,0,0,tz),de=zoned(p.y,p.m,p.d+1,0,0,tz),span=de-ds,cache={};
+  SESS.forEach(function(s){cache[s.id]=wins(s,now)});
+  $('tl').innerHTML=SESS.map(function(s){var h='';cache[s.id].forEach(function(w){var a=Math.max(w[0],ds),b=Math.min(w[1],de);if(b>a)h+='<div class="seg" style="left:'+((a-ds)/span*100)+'%;width:'+((b-a)/span*100)+'%"></div>'});return '<div class="trow" style="--sc:'+s.col+'"><b>'+s.name+'</b><div class="track">'+h+'<i class="now"></i></div></div>'}).join('');
+  var tk='';for(var i=0;i<=24;i+=3)tk+='<span style="left:'+(i/24*100)+'%">'+hm(ds+i*span/24,tz)+'</span>';$('ticks').innerHTML=tk;
+  var vals=[],mx=0,pk=0,hr;
+  for(hr=0;hr<24;hr++){var mid=ds+(hr+.5)*span/24,v=0;SESS.forEach(function(s){if(isOpen(s,mid,cache))v+=s.w});vals.push(v);if(v>mx){mx=v;pk=hr}}
+  $('liq').innerHTML=vals.map(function(v,i){return '<div id="lb'+i+'" style="height:'+Math.max(2,v/Math.max(mx,1)*100)+'%" title="'+hm(ds+i*span/24,tz)+'"></div>'}).join('');
+  $('liql').innerHTML=vals.map(function(v,i){return '<span>'+hm(ds+i*span/24,tz).slice(0,2)+'</span>'}).join('');
+  $('peak').innerHTML='<b>Peak activity today:</b> around '+hm(ds+pk*span/24,tz)+' &ndash; '+hm(ds+(pk+1)*span/24,tz)+' ('+tz.replace(/_/g,' ')+' time).';
+  build.ds=ds;build.de=de;build.span=span;
+}
+function tick(){
+  var now=Date.now(),tz=vtz(),p=parts(now,tz),key=tz+'|'+p.y+'-'+p.m+'-'+p.d+'|'+p.h;
+  if(key!==lastKey){lastKey=key;build(now,tz)}
+  $('bigclock').textContent=T(now,tz,{hour:'2-digit',minute:'2-digit',second:'2-digit'});
+  $('dateline').textContent=T(now,tz,{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+  $('tzname').textContent=tzLabel(tz,now);
+  var open=[],ev=[];
+  SESS.forEach(function(s){
+    var st=stat(s,now),w=st.w,c=$('c-'+s.id);
+    c.classList.toggle('on',st.open);
+    $('st-'+s.id).textContent=st.open?'OPEN':'CLOSED';
+    $('clk-'+s.id).textContent=T(now,s.tz,{hour:'2-digit',minute:'2-digit',second:'2-digit'});
+    if(w){
+      var nd=parts(w[1],tz).d!==parts(w[0],tz).d;
+      $('hrs-'+s.id).textContent=hm(w[0],tz)+' – '+hm(w[1],tz)+(nd?' (+1d)':'');
+      if(st.open){open.push(s);$('cl-'+s.id).textContent='Closes in';$('cd-'+s.id).textContent=dur(w[1]-now);$('pg-'+s.id).style.width=((now-w[0])/(w[1]-w[0])*100)+'%';ev.push({t:w[1],txt:s.name+' closes'})}
+      else{$('cl-'+s.id).textContent='Opens in';$('cd-'+s.id).textContent=dur(w[0]-now);$('pg-'+s.id).style.width='0%';ev.push({t:w[0],txt:s.name+' opens'})}
+    }
+  });
+  var ids=open.map(function(s){return s.id}).join(',');
+  var title,desc;
+  if(!open.length){title='<span class="dot off"></span>Quiet market';desc='No major session is open right now (weekend or between sessions). Liquidity is thin.'}
+  else{title='<span class="dot"></span>'+open.map(function(s){return s.name}).join(' · ')+' open';
+    if(/lon/.test(ids)&&/ny/.test(ids))desc='London–New York overlap: peak liquidity and volatility. The best time for gold and major pairs.';
+    else if(/tok/.test(ids)&&/lon/.test(ids))desc='Tokyo–London overlap: liquidity is building ahead of the main European session.';
+    else if(/syd/.test(ids)&&/tok/.test(ids))desc='Sydney–Tokyo overlap: Asian session activity, moderate liquidity.';
+    else if(open.length===1&&open[0].id==='lon')desc='London session: strong liquidity and clear trends.';
+    else if(open.length===1&&open[0].id==='ny')desc='Late New York session: liquidity fades as the day winds down.';
+    else desc='Single session active: liquidity depends on the session (see volume bar below).'}
+  $('now-title').innerHTML=title;$('now-desc').textContent=desc;
+  ev.sort(function(a,b){return a.t-b.t});
+  if(ev[0]){$('nx-title').textContent=ev[0].txt;$('nx-cd').textContent=dur(ev[0].t-now)}
+  var wk=weekly(now);
+  if(wk.next){
+    $('wk-title').innerHTML='<span class="dot'+(wk.open?'':' off')+'"></span>'+(wk.open?'Open · closes Fri 17:00 New York':'Closed · opens Sun 17:00 New York');
+    $('wk-cd').textContent=dur(wk.next.t-now);
+  }
+  var bs=build.ds,sp=build.span;
+  if(bs){var pos=(now-bs)/sp*100;document.querySelectorAll('.now').forEach(function(n){n.style.left=pos+'%'});var cur=Math.min(23,Math.max(0,Math.floor((now-bs)/sp*24)));for(var i=0;i<24;i++){var b=$('lb'+i);if(b)b.classList.toggle('cur',i===cur)}}
+}
+$('tzsel').addEventListener('change',function(){lastKey='';tick()});
+function theme(t,save){document.documentElement.setAttribute('data-theme',t);document.querySelectorAll('[data-th]').forEach(function(b){b.setAttribute('aria-pressed',String(b.dataset.th===t))});if(save){try{localStorage.setItem('asl-theme',t)}catch(e){}}}
+document.querySelectorAll('[data-th]').forEach(function(b){b.addEventListener('click',function(){theme(b.dataset.th,true)})});
+theme(document.documentElement.getAttribute('data-theme')==='light'?'light':'dark',false);
+tick();setInterval(tick,1000);
+})();
+</script>
+</body>
+</html>
