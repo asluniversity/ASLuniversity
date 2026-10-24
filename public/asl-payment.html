@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Membership Payment - ASL University</title>
+<meta name="color-scheme" content="dark light">
+<script>
+try { document.documentElement.setAttribute('data-theme', localStorage.getItem('asl-theme') === 'light' ? 'light' : 'dark'); } catch (e) {}
+</script>
+<link rel="preconnect" href="https://fonts.googleapis.com/">
+<link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{color-scheme:dark;--page-bg:linear-gradient(135deg,#0B1416 0%,#122630 100%);--text:#dceef4;--head:#F5F7F8;--muted:#9fc3cf;--surface:#16323d;--card:linear-gradient(165deg,#1a3a46 0%,#16323d 70%);--hair:rgba(11,177,210,.22);--accent:#0BB1D2;--nav:linear-gradient(135deg,#0d1f26 0%,#0A0A0B 100%);--navtext:#fff;--glow:0 0 30px rgba(11,177,210,.35);--tbg:rgba(255,255,255,.08);--tact:rgba(11,177,210,.22);--good:#2FBE7A;--warn:#ffb86b;--sans:'IBM Plex Sans',sans-serif;--display:'Space Grotesk',sans-serif;--mono:'JetBrains Mono',monospace}
+:root[data-theme="light"]{color-scheme:light;--page-bg:linear-gradient(135deg,#F6FAFB 0%,#E5EFF3 100%);--text:#1E2F36;--head:#0B1A20;--muted:#4F6670;--surface:#FFFFFF;--card:linear-gradient(165deg,#FFFFFF 0%,#F3F8FA 70%);--hair:rgba(6,135,162,.24);--accent:#0687A2;--nav:linear-gradient(135deg,#FFFFFF 0%,#EAF4F7 100%);--navtext:#0B1A20;--glow:none;--tbg:rgba(15,28,34,.05);--tact:rgba(6,135,162,.14);--good:#14935a;--warn:#a85f00}
+html{overflow-x:hidden}
+body{font-family:var(--sans);background:var(--page-bg);color:var(--text);line-height:1.6;min-height:100vh;overflow-x:hidden}
+body::before{content:"";position:fixed;inset:0;background:radial-gradient(ellipse 1100px 600px at 10% -10%,rgba(11,177,210,.14),transparent 60%),radial-gradient(ellipse 900px 550px at 100% 100%,rgba(11,177,210,.10),transparent 60%);pointer-events:none;z-index:0}
+nav,main,footer{position:relative;z-index:1}
+nav{background:var(--nav);padding:16px 0;border-bottom:1px solid var(--hair);position:sticky;top:0;z-index:100}
+.wrap{max-width:1100px;margin:0 auto;padding:0 20px}
+.nav-in{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+.logo{font:700 22px var(--display);color:var(--navtext);letter-spacing:2px;text-decoration:none}
+.nav-r{display:flex;align-items:center;gap:10px}
+.back{font:500 12px var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--navtext);text-decoration:none;border:1px solid var(--hair);border-radius:999px;padding:8px 14px}
+.back:hover{color:var(--accent);border-color:var(--accent)}
+.tt{display:inline-flex;padding:3px;gap:2px;border:1px solid var(--hair);border-radius:999px;background:var(--tbg)}
+.tt button{font:11px var(--mono);color:var(--muted);background:transparent;border:0;border-radius:999px;padding:7px 12px;cursor:pointer}
+.tt button[aria-pressed="true"]{color:var(--accent);background:var(--tact);box-shadow:inset 0 0 0 1px var(--accent)}
+.hero{text-align:center;padding:42px 0 24px}
+.eyebrow{font:11.5px var(--mono);letter-spacing:.22em;text-transform:uppercase;color:var(--accent);margin-bottom:12px}
+h1{font:700 clamp(28px,4.5vw,42px)/1.2 var(--display);color:var(--head);text-shadow:var(--glow)}
+h1 span{color:var(--accent)}
+.hero p{color:var(--muted);margin-top:10px;font-size:15px}
+.grid{display:grid;grid-template-columns:1fr 1.1fr;gap:22px;align-items:start}
+.panel{background:var(--card);border:1px solid var(--hair);border-top:3px solid var(--accent);border-radius:6px;padding:24px}
+.panel+.panel{margin-top:22px}
+h2{font:700 19px var(--display);color:var(--head);margin-bottom:14px}
+.step{display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;border-radius:50%;background:var(--tact);color:var(--accent);font:600 13px var(--mono);margin-right:10px}
+.plan{display:flex;align-items:center;gap:14px;padding:14px;margin-bottom:10px;border:1px solid var(--hair);border-radius:6px;cursor:pointer;background:var(--tbg);transition:.2s}
+.plan:hover{border-color:var(--accent)}
+.plan.sel{border-color:var(--accent);background:var(--tact);box-shadow:0 0 24px rgba(11,177,210,.18)}
+.plan input{accent-color:var(--accent);width:18px;height:18px}
+.plan b{font:700 16px var(--display);color:var(--head);display:block}
+.plan small{font:11.5px var(--mono);color:var(--muted)}
+.plan .pr{margin-left:auto;text-align:right;font:700 22px var(--display);color:var(--accent)}
+.plan .pr s{display:block;font:11px var(--mono);color:var(--muted)}
+.tag{font:600 9.5px var(--mono);letter-spacing:.06em;color:#0A0A0B;background:linear-gradient(135deg,#ffd700,#ffb800);padding:3px 8px;border-radius:999px;margin-left:8px;vertical-align:2px}
+.lbl{font:10.5px var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin:14px 0 6px}
+.amount{font:700 36px var(--mono);color:var(--head);text-shadow:var(--glow)}
+.amount small{font-size:16px;color:var(--accent)}
+.net{display:inline-block;font:600 12px var(--mono);color:var(--accent);border:1px solid var(--accent);background:var(--tact);border-radius:999px;padding:5px 12px}
+.addr{display:flex;gap:8px;align-items:stretch}
+.addr code{flex:1;min-width:0;font:500 13px var(--mono);color:var(--head);background:var(--tbg);border:1px dashed var(--accent);border-radius:6px;padding:12px;word-break:break-all}
+.btn{font:600 12px var(--mono);letter-spacing:.06em;text-transform:uppercase;border:0;border-radius:6px;padding:0 16px;cursor:pointer;color:#061116;background:linear-gradient(135deg,#0BB1D2,#1eb3cc);transition:.2s}
+.btn:hover{box-shadow:0 0 24px rgba(11,177,210,.45)}
+.btn:disabled{opacity:.5;cursor:not-allowed;box-shadow:none}
+.btn.wide{width:100%;padding:15px;margin-top:6px}
+.qr{display:flex;justify-content:center;margin:16px 0 4px}
+#qr{background:#fff;padding:10px;border-radius:8px;display:none}
+.warn{border-left:3px solid var(--warn);background:var(--tbg);border-radius:0 6px 6px 0;padding:12px 14px;font-size:13px;margin-top:14px}
+.warn b{color:var(--warn)}
+.setup{display:none;border:1px solid #c25b5b;background:rgba(200,30,50,.12);color:#ffb4b4;border-radius:6px;padding:12px;font-size:13px;margin-bottom:14px}
+.setup.show{display:block}
+:root[data-theme="light"] .setup{color:#9b1c1c}
+.field{margin-bottom:14px}
+.field label{display:block;font:11px var(--mono);letter-spacing:.07em;text-transform:uppercase;margin-bottom:6px}
+.field input{width:100%;padding:12px 13px;border:1px solid var(--hair);border-radius:4px;background:var(--tbg);color:var(--head);font:14px var(--sans);outline:none}
+.field input:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(11,177,210,.1)}
+.msg{display:none;margin-top:10px;padding:10px 12px;border-radius:4px;font-size:12.5px;color:#ffb4b4;background:rgba(200,30,50,.12);border:1px solid rgba(255,80,100,.3)}
+:root[data-theme="light"] .msg{color:#9b1c1c}
+.msg.show{display:block}
+.steps{list-style:none;font-size:13.5px;color:var(--muted)}
+.steps li{padding:5px 0}
+.steps b{color:var(--head)}
+.inc{margin-top:22px;font-size:13px;color:var(--muted);text-align:center}
+footer{margin-top:44px;padding:28px 20px;text-align:center;border-top:1px solid var(--hair);background:rgba(0,0,0,.12)}
+footer p{font-size:12px;color:var(--muted);max-width:800px;margin:0 auto;line-height:1.8}
+.nets{display:flex;gap:8px;flex-wrap:wrap}.netb{font:600 12px var(--mono);color:var(--muted);background:var(--tbg);border:1px solid var(--hair);border-radius:6px;padding:10px 14px;cursor:pointer;transition:.2s}.netb:hover{border-color:var(--accent)}.netb[aria-pressed="true"]{color:var(--accent);border-color:var(--accent);background:var(--tact);box-shadow:0 0 18px rgba(11,177,210,.2)}.netfull{font:11.5px var(--mono);color:var(--muted);margin-top:8px}
+@media(max-width:860px){.grid{grid-template-columns:1fr}.grid>div:first-child{display:contents}.grid .panel{margin-top:0!important}.grid>div:first-child>.panel:nth-child(1){order:1}.grid>.panel{order:2}.grid>div:first-child>.panel:nth-child(2){order:3}}
+@media(max-width:640px){.wrap{padding:0 12px}.logo{font-size:16px;letter-spacing:1px}.back span{display:none}.panel{padding:18px 14px}.amount{font-size:28px}.addr{flex-direction:column}.btn{padding:12px}.plan .pr{font-size:19px}}
+</style>
+</head>
+<body>
+<nav><div class="wrap nav-in">
+  <a class="logo" href="index.html">ASL UNIVERSITY</a>
+  <div class="nav-r">
+    <div class="tt" role="group" aria-label="Color theme"><button data-th="dark" aria-pressed="true">DARK</button><button data-th="light" aria-pressed="false">LIGHT</button></div>
+    <a class="back" href="index.html">&larr; <span>Back to Home</span></a>
+  </div>
+</div></nav>
+
+<main class="wrap">
+  <section class="hero">
+    <div class="eyebrow">Secure Crypto Payment</div>
+    <h1>Complete Your <span>Membership</span></h1>
+    <p>Choose a plan, send the exact amount to our wallet, then send us your transaction ID to activate your access.</p>
+  </section>
+
+  <div class="setup" id="setup"><b>Owner notice:</b> a wallet address is not set. Open this file and fill <code>CONFIG.networks</code>. Customers cannot pay on that network until you do.</div>
+
+  <div class="grid">
+    <div>
+      <div class="panel">
+        <h2><span class="step">1</span>Choose your plan</h2>
+        <label class="plan" data-plan="1"><input type="radio" name="plan" value="1"><div><b>Monthly</b><small>30 days access</small></div><div class="pr">$49</div></label>
+        <label class="plan" data-plan="3"><input type="radio" name="plan" value="3"><div><b>3 Months <span class="tag">POPULAR</span></b><small>20% OFF &middot; $39 / month</small></div><div class="pr">$117<s>$147</s></div></label>
+        <label class="plan" data-plan="12"><input type="radio" name="plan" value="12"><div><b>12 Months <span class="tag">BEST VALUE</span></b><small>30% OFF &middot; $34 / month</small></div><div class="pr">$411<s>$588</s></div></label>
+        <p class="inc">Every plan includes signals, growth program, training, custom robot, certificate and Personal Panel.</p>
+      </div>
+      <div class="panel">
+        <h2><span class="step">3</span>Confirm your payment</h2>
+        <div class="field"><label for="uname">Your ASL username</label><input id="uname" autocomplete="username" placeholder="The name you registered with" maxlength="80"></div>
+        <div class="field"><label for="txid">Transaction ID (TXID / hash)</label><input id="txid" autocomplete="off" placeholder="Paste the transaction hash" maxlength="200"></div>
+        <button class="btn wide" id="send" type="button">Send payment proof on Telegram</button>
+        <div class="msg" id="msg"></div>
+        <p class="inc">We verify the transaction on the blockchain, then activate your membership.</p>
+      </div>
+    </div>
+
+    <div class="panel">
+      <h2><span class="step">2</span>Send the payment</h2>
+      <div class="lbl">Amount to send</div>
+      <div class="amount" id="amount">$49 <small id="coin">USDT</small></div>
+      <div class="lbl">Choose network</div>
+      <div class="nets" id="nets"></div>
+      <div class="netfull" id="netfull"></div>
+      <div class="lbl">Wallet address</div>
+      <div class="addr"><code id="addr">--</code><button class="btn" id="copy" type="button">Copy</button></div>
+      <div class="qr"><div id="qr"></div></div>
+      <div class="warn"><b>Important:</b> send only <span id="wnet">USDT</span> on the selected network. Funds sent on a different network or to a wrong address cannot be recovered. Send the exact amount, and make sure network fees are paid by you so the full amount arrives.</div>
+      <ul class="steps" style="margin-top:14px">
+        <li><b>1.</b> Copy the address (or scan the QR code).</li>
+        <li><b>2.</b> Send the exact amount from your wallet or exchange.</li>
+        <li><b>3.</b> Copy the transaction hash and submit it on the left.</li>
+      </ul>
+    </div>
+  </div>
+</main>
+
+<footer><p><strong>Disclaimer:</strong> Crypto payments are final and non-reversible. Membership is not financial advice, and historical results do not guarantee future performance. Questions? Contact support on Telegram: @mrasltl.</p></footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script>
+(function(){
+'use strict';
+/* ===== OWNER SETTINGS ===== */
+var CONFIG = {
+  coin: 'USDT',
+  telegram: 'mrasltl',   /* support username, no @ */
+  networks: [
+    { id: 'trc20', short: 'TRC20', label: 'USDT · TRC20 (Tron)',            wallet: 'TVQZ8iqLpAEea2osXFQk44XyX8uuGTa74m' },
+    { id: 'bep20', short: 'BEP20', label: 'USDT · BEP20 (BNB Smart Chain)', wallet: '0x8b307e530319e1540654a64a533db3bdab6757c8' }
+  ]
+};
+var PLANS = { '1': {name:'Monthly', usd:49}, '3': {name:'3 Months', usd:117}, '12': {name:'12 Months', usd:411} };
+var $ = function(i){ return document.getElementById(i); };
+var plan = '3', net = CONFIG.networks[0];
+function ready(n){ return n.wallet && n.wallet.indexOf('PASTE_') !== 0; }
+
+$('coin').textContent = CONFIG.coin;
+if (!CONFIG.networks.every(ready)) $('setup').classList.add('show');
+
+/* network buttons */
+$('nets').innerHTML = CONFIG.networks.map(function(n){ return '<button type="button" class="netb" data-net="' + n.id + '" aria-pressed="false">' + n.short + '</button>'; }).join('');
+document.querySelectorAll('.netb').forEach(function(b){ b.addEventListener('click', function(){ setNet(b.dataset.net); }); });
+
+function setNet(id){
+  net = CONFIG.networks.filter(function(n){ return n.id === id; })[0] || CONFIG.networks[0];
+  document.querySelectorAll('.netb').forEach(function(b){ b.setAttribute('aria-pressed', String(b.dataset.net === net.id)); });
+  var ok = ready(net);
+  $('addr').textContent = ok ? net.wallet : 'Not configured';
+  $('netfull').textContent = net.label;
+  $('wnet').textContent = net.label;
+  $('copy').disabled = !ok; $('send').disabled = !ok;
+  var q = $('qr'); q.innerHTML = '';
+  if (ok) {
+    try { q.style.display = 'block'; new QRCode(q, {text: net.wallet, width: 168, height: 168, colorDark: '#000000', colorLight: '#ffffff'}); }
+    catch (e) { q.style.display = 'none'; }
+  } else q.style.display = 'none';
+}
+
+function setPlan(p) {
+  if (!PLANS[p]) p = '3';
+  plan = p;
+  document.querySelectorAll('.plan').forEach(function(el){
+    var on = el.dataset.plan === p;
+    el.classList.toggle('sel', on);
+    el.querySelector('input').checked = on;
+  });
+  $('amount').firstChild.nodeValue = '$' + PLANS[p].usd + ' ';
+}
+document.querySelectorAll('.plan').forEach(function(el){ el.addEventListener('click', function(){ setPlan(el.dataset.plan); }); });
+try { var qp = new URLSearchParams(location.search).get('plan'); setPlan(qp); } catch (e) { setPlan('3'); }
+setNet(net.id);
+
+$('copy').addEventListener('click', function(){
+  var b = $('copy'), t = net.wallet;
+  function done(){ b.textContent = 'Copied!'; setTimeout(function(){ b.textContent = 'Copy'; }, 1600); }
+  function fallback(){ var ta = document.createElement('textarea'); ta.value = t; document.body.appendChild(ta); ta.select(); try { document.execCommand('copy'); done(); } catch (e) {} ta.remove(); }
+  if (navigator.clipboard && navigator.clipboard.writeText) { navigator.clipboard.writeText(t).then(done).catch(fallback); } else fallback();
+});
+
+function err(t){ var m = $('msg'); m.textContent = t; m.classList.add('show'); }
+$('send').addEventListener('click', function(){
+  $('msg').classList.remove('show');
+  var u = $('uname').value.trim(), tx = $('txid').value.trim();
+  if (u.length < 2) return err('Please enter your ASL username.');
+  if (tx.length < 20) return err('Please paste the full transaction ID (hash) from your wallet.');
+  var P = PLANS[plan];
+  var text = 'ASL University payment\n' +
+    'Plan: ' + P.name + ' ($' + P.usd + ')\n' +
+    'Network: ' + net.label + '\n' +
+    'Username: ' + u + '\n' +
+    'TXID: ' + tx;
+  window.open('https://t.me/' + CONFIG.telegram + '?text=' + encodeURIComponent(text), '_blank', 'noopener');
+});
+
+function theme(t, save){ document.documentElement.setAttribute('data-theme', t); document.querySelectorAll('[data-th]').forEach(function(b){ b.setAttribute('aria-pressed', String(b.dataset.th === t)); }); if (save) { try { localStorage.setItem('asl-theme', t); } catch (e) {} } }
+document.querySelectorAll('[data-th]').forEach(function(b){ b.addEventListener('click', function(){ theme(b.dataset.th, true); }); });
+theme(document.documentElement.getAttribute('data-theme') === 'light' ? 'light' : 'dark', false);
+})();
+</script>
+</body>
+</html>
