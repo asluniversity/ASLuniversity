@@ -23,6 +23,7 @@ nav{background:var(--nav);padding:16px 0;border-bottom:1px solid var(--hair);pos
 .wrap{max-width:1200px;margin:0 auto;padding:0 20px}
 .nav-in{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
 .logo{font-family:var(--display);font-size:22px;font-weight:700;color:var(--navtext);letter-spacing:2px;text-decoration:none}
+.logo{display:flex;align-items:center;gap:12px}.logo-icon{height:44px;width:44px;object-fit:contain;flex-shrink:0}
 .nav-r{display:flex;align-items:center;gap:10px}
 .back{font:500 12px var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--navtext);text-decoration:none;border:1px solid var(--hair);border-radius:999px;padding:8px 14px}
 .back:hover{color:var(--accent);border-color:var(--accent)}
@@ -87,12 +88,12 @@ h2{font:700 24px var(--display);color:var(--head);margin:34px 0 16px}
 footer{margin-top:50px;padding:30px 20px;text-align:center;border-top:1px solid var(--hair);background:rgba(0,0,0,.12)}
 footer p{font-size:12px;color:var(--muted);max-width:800px;margin:0 auto;line-height:1.8}
 @media(max-width:860px){.status{grid-template-columns:1fr}}
-@media(max-width:640px){.wrap{padding:0 12px}.logo{font-size:16px;letter-spacing:1px}.back span{display:none}.trow,.axis{grid-template-columns:62px 1fr}.trow>b{font-size:10.5px}.liql span{font-size:7px}.panel{padding:16px}h2{font-size:20px}}
+@media(max-width:640px){.wrap{padding:0 12px}.logo{font-size:16px;letter-spacing:1px;gap:6px}.logo-icon{height:30px;width:30px}.back span{display:none}.trow,.axis{grid-template-columns:62px 1fr}.trow>b{font-size:10.5px}.liql span{font-size:7px}.panel{padding:16px}h2{font-size:20px}}
 </style>
 </head>
 <body>
 <nav><div class="wrap nav-in">
-  <a class="logo" href="index.html">ASL UNIVERSITY</a>
+  <a class="logo" href="index.html"><img class="logo-icon" src="asl-logo-transparent.png" alt="ASL University logo" onerror="this.style.display='none'">ASL UNIVERSITY</a>
   <div class="nav-r">
     <div class="tt" role="group" aria-label="Color theme"><button data-th="dark" aria-pressed="true">DARK</button><button data-th="light" aria-pressed="false">LIGHT</button></div>
     <a class="back" href="index.html">&larr; <span>Back to Home</span></a>
