@@ -23,6 +23,7 @@ nav{background:var(--nav);padding:16px 0;border-bottom:1px solid var(--hair);pos
 .wrap{max-width:1100px;margin:0 auto;padding:0 20px}
 .nav-in{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
 .logo{font:700 22px var(--display);color:var(--navtext);letter-spacing:2px;text-decoration:none}
+.logo{display:flex;align-items:center;gap:12px}.logo-icon{height:44px;width:44px;object-fit:contain;flex-shrink:0}
 .nav-r{display:flex;align-items:center;gap:10px}
 .back{font:500 12px var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--navtext);text-decoration:none;border:1px solid var(--hair);border-radius:999px;padding:8px 14px}
 .back:hover{color:var(--accent);border-color:var(--accent)}
@@ -80,12 +81,12 @@ footer{margin-top:44px;padding:28px 20px;text-align:center;border-top:1px solid 
 footer p{font-size:12px;color:var(--muted);max-width:800px;margin:0 auto;line-height:1.8}
 .nets{display:flex;gap:8px;flex-wrap:wrap}.netb{font:600 12px var(--mono);color:var(--muted);background:var(--tbg);border:1px solid var(--hair);border-radius:6px;padding:10px 14px;cursor:pointer;transition:.2s}.netb:hover{border-color:var(--accent)}.netb[aria-pressed="true"]{color:var(--accent);border-color:var(--accent);background:var(--tact);box-shadow:0 0 18px rgba(11,177,210,.2)}.netfull{font:11.5px var(--mono);color:var(--muted);margin-top:8px}
 @media(max-width:860px){.grid{grid-template-columns:1fr}.grid>div:first-child{display:contents}.grid .panel{margin-top:0!important}.grid>div:first-child>.panel:nth-child(1){order:1}.grid>.panel{order:2}.grid>div:first-child>.panel:nth-child(2){order:3}}
-@media(max-width:640px){.wrap{padding:0 12px}.logo{font-size:16px;letter-spacing:1px}.back span{display:none}.panel{padding:18px 14px}.amount{font-size:28px}.addr{flex-direction:column}.btn{padding:12px}.plan .pr{font-size:19px}}
+@media(max-width:640px){.wrap{padding:0 12px}.logo{font-size:16px;letter-spacing:1px;gap:6px}.logo-icon{height:30px;width:30px}.back span{display:none}.panel{padding:18px 14px}.amount{font-size:28px}.addr{flex-direction:column}.btn{padding:12px}.plan .pr{font-size:19px}}
 </style>
 </head>
 <body>
 <nav><div class="wrap nav-in">
-  <a class="logo" href="index.html">ASL UNIVERSITY</a>
+  <a class="logo" href="index.html"><img class="logo-icon" src="asl-logo-transparent.png" alt="ASL University logo" onerror="this.style.display='none'">ASL UNIVERSITY</a>
   <div class="nav-r">
     <div class="tt" role="group" aria-label="Color theme"><button data-th="dark" aria-pressed="true">DARK</button><button data-th="light" aria-pressed="false">LIGHT</button></div>
     <a class="back" href="index.html">&larr; <span>Back to Home</span></a>
