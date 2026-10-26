@@ -69,6 +69,9 @@ nav { background: var(--nav-bg); border-bottom: 1px solid var(--hairline); box-s
 .nav-container { max-width: 1240px; margin: 0 auto; padding: 12px 22px; display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
 .brand { display: flex; flex-direction: row; align-items: center; gap: 12px; line-height: 1.1; text-decoration: none; flex-shrink: 0; }
 .brand-text { display: flex; flex-direction: column; }
+.back{font:500 11.5px var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--nav-text);text-decoration:none;border:1px solid var(--hairline);border-radius:999px;padding:8px 14px;white-space:nowrap;flex-shrink:0}
+.back:hover{color:var(--nav-hover);border-color:var(--accent)}
+@media (max-width:560px){.back{padding:8px 11px}.back span{display:none}}
 .brand-logo { width: 46px; height: 46px; object-fit: contain; flex-shrink: 0; display: block; }
 @media (max-width: 480px) { .brand-logo { width: 36px; height: 36px; } .brand { gap: 9px; } }
 .logo { font-family: var(--display); font-weight: 700; font-size: 21px; letter-spacing: 2px; color: var(--nav-text); }
@@ -278,7 +281,7 @@ footer .disclaimer { font-size: 11.5px; color: var(--footer-text); max-width: 82
 
 <nav>
   <div class="nav-container">
-    <a class="brand" href="/" aria-label="ASL University">
+    <a class="brand" href="index.html" aria-label="ASL University">
       <img class="brand-logo" src="asl-logo-transparent.png" alt="ASL University logo" width="46" height="46" decoding="async" onerror="if(!this.dataset.f){this.dataset.f=1;this.src=&#39;asl-logo-transparent.png&#39;;}else{this.style.display=&#39;none&#39;;}">
       <span class="brand-text"><span class="logo">ASL UNIVERSITY</span><span class="logo-sub">ACCOUNT JOURNAL &amp; ANALYSIS</span></span>
     </a>
@@ -294,6 +297,7 @@ footer .disclaimer { font-size: 11.5px; color: var(--footer-text); max-width: 82
     <div class="nav-right">
       <select id="acct-select" aria-label="Account"><option value="tmuo15dqg111">real account (demo)</option><option value="tmup9p7gc1r6io">MT5 ••••2326</option><option value="tmv9e78r71p4x4" selected="">MT5 ••••9968</option></select>
       <button class="nav-btn" id="btn-connect" type="button">+ Upload<span class="hide-s"> statement</span></button>
+      <a class="back" href="index.html">&larr; <span>Back to Home</span></a>
       <div class="theme-toggle" role="group" aria-label="Color theme">
         <button type="button" data-theme-btn="dark" aria-pressed="true" title="Dark mode"><svg viewBox="0 0 24 24"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"></path></svg><span>DARK</span></button>
         <button type="button" data-theme-btn="light" aria-pressed="false" title="Light mode"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"></path></svg><span>LIGHT</span></button>
