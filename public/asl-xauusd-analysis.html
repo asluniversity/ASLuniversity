@@ -1,3 +1,5 @@
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -81,11 +83,6 @@
 
   /* ===== Theme toggle ===== */
   .brand-banner{position:relative;}
-  .home-back{position:absolute; top:16px; left:0; display:inline-flex; align-items:center; gap:6px; padding:8px 14px;
-    border:1px solid var(--hairline); border-radius:999px; background:var(--panel); color:var(--muted);
-    font-family:var(--mono); font-size:11px; letter-spacing:0.06em; text-transform:uppercase; text-decoration:none; z-index:2;}
-  .home-back:hover{color:var(--blue); border-color:var(--blue);}
-  @media(max-width:480px){ .home-back{padding:8px 11px;} .home-back span{display:none;} }
   .theme-toggle{
     position:absolute; top:16px; right:0;
     display:inline-flex; padding:3px; gap:2px;
@@ -795,7 +792,6 @@ html,body{overflow-x:clip}
 <div class="wrap">
 
   <div class="brand-banner">
-    <a class="home-back" href="index.html">&larr; <span>Back to Home</span></a>
     <div class="theme-toggle" role="group" aria-label="Color theme">
       <button type="button" data-theme-btn="dark" aria-pressed="true" title="Dark mode">
         <svg viewBox="0 0 24 24"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>DARK
@@ -821,7 +817,7 @@ html,body{overflow-x:clip}
     </div>
   </div>
 
-  <nav class="asset-switch" aria-label="Markets"><a href="asl-xauusd-analysis.html" class="on">GOLD · XAU/USD</a><a href="asl-btcusd-analysis.html">BITCOIN · BTC/USDT</a></nav>
+  <nav class="asset-switch" aria-label="Markets"><a href="asl-xauusd-analysis.html" class="on">GOLD · XAU/USD</a><a href="asl-btcusd-analysis.html">BITCOIN · BTC/USDT</a><a href="asl-markets-pro.html?s=eurusd">FOREX · NASDAQ · OIL <span style="color:var(--blue);font-size:10px">PRO 🔒</span></a></nav>
 
   <header>
     <div class="hero">
