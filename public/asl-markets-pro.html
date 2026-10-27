@@ -885,6 +885,17 @@ html,body{overflow-x:clip}
   .asset-switch a:hover{color:var(--white); border-color:var(--muted);}
   .asset-switch a.on{color:var(--blue); border-color:var(--blue); pointer-events:none;}
 
+  .asset-switch{flex-direction:column; gap:10px; align-items:stretch;}
+  .asset-switch .sw-row{display:flex; flex-wrap:wrap; gap:8px; align-items:center;}
+  .asset-switch .sw-lbl{font-family:var(--mono); font-size:10px; letter-spacing:.2em; color:var(--muted); min-width:64px;}
+  .asset-switch a i{font-style:normal; color:var(--blue); font-size:10px; margin-left:6px;}
+  @media(max-width:640px){.asset-switch .sw-lbl{flex-basis:100%; min-width:0;}}
+  #pro-gate{position:fixed;inset:0;z-index:2147483000;display:flex;align-items:center;justify-content:center;padding:18px;background:rgba(6,17,22,.7);-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px)}
+  #pro-gate[hidden]{display:none}
+  #pro-gate .c{max-width:400px;width:100%;text-align:center;padding:30px 24px;border-radius:10px;background:#122630;color:#dceef4;border:1px solid rgba(11,177,210,.35);border-top:3px solid #0BB1D2;box-shadow:0 20px 70px rgba(0,0,0,.55);font-family:system-ui,-apple-system,sans-serif}
+  #pro-gate .k{font-size:34px;margin-bottom:6px} #pro-gate h2{font-size:21px;margin:0 0 8px;color:#fff} #pro-gate p{font-size:14px;line-height:1.6;margin:0 0 20px;color:#9fc3cf}
+  #pro-gate button{display:block;width:100%;padding:13px;border:0;border-radius:5px;font-weight:700;font-size:15px;cursor:pointer;background:linear-gradient(135deg,#0BB1D2,#1eb3cc);color:#061116}
+
   .comm-card{display:flex; justify-content:space-between; align-items:center; gap:18px; flex-wrap:wrap; padding:20px 22px; background:linear-gradient(165deg,var(--surface),var(--panel)); border:1px solid rgba(11,177,210,.18);}
   .comm-card p{font-size:14px; line-height:1.6; max-width:640px; margin:0;}
   .comm-links{display:flex; gap:8px; flex-wrap:wrap;}
@@ -1336,22 +1347,23 @@ html,body{overflow-x:clip}
   if(!MK.cot){ var cn=$('cot-note'); var sec=cn&&cn.closest('section'); if(sec) sec.style.display='none'; }
   var nav=$('asset-switch');
   if(nav){
-    var G=[['CURRENCIES',['eurusd','gbpusd','usdjpy']],['CRYPTO',['btc','eth','sol','bnb','xrp']],['INDICES &amp; ENERGY',['nasdaq','oil']]];
-    var h='<a href="asl-xauusd-analysis.html">GOLD · XAU/USD</a><a href="asl-btcusd-analysis.html">BITCOIN · BTC/USDT</a>';
+    var G=[['FOREX',['eurusd','gbpusd','usdjpy','nasdaq','oil']],['CRYPTO',['btc','eth','sol','bnb','xrp']]];
+    var h='<div class="sw-row"><span class="sw-lbl">FREE</span><a href="asl-xauusd-analysis.html">GOLD · XAU/USD</a><a href="asl-btcusd-analysis.html">BITCOIN · BTC/USDT</a></div>';
     G.forEach(function(g){
-      h+='<span class="sw-grp">'+g[0]+'</span>';
-      g[1].forEach(function(k){ var m=window.MKS[k]; h+='<a class="pro-sym'+(k===MK.id?' on':'')+'" href="asl-markets-pro.html?s='+k+'">'+m.tab+'<span style="color:var(--blue);margin-left:6px;font-size:10px">PRO 🔒</span></a>'; });
+      h+='<div class="sw-row"><span class="sw-lbl">'+g[0]+'</span>';
+      g[1].forEach(function(k){ var m=window.MKS[k]; h+='<a class="pro-sym'+(k===MK.id?' on':'')+'" href="asl-markets-pro.html?s='+k+'">'+m.tab+'<i>PRO 🔒</i></a>'; });
+      h+='</div>';
     });
     nav.innerHTML=h;
     var st=document.createElement('style');
-    st.textContent='.asset-switch{align-items:center}.sw-grp{font:600 10px var(--mono);letter-spacing:.18em;color:var(--muted);padding:0 4px 0 10px;border-left:1px solid var(--hairline);margin-left:4px}'
+    st.textContent='.asset-switch{align-items:center}.asset-switch{flex-direction:column;gap:10px;align-items:stretch}.asset-switch .sw-row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}.asset-switch .sw-lbl{font:10px var(--mono);letter-spacing:.2em;color:var(--muted);min-width:64px}.asset-switch a i{font-style:normal;color:var(--blue);font-size:10px;margin-left:6px}@media(max-width:640px){.asset-switch .sw-lbl{flex-basis:100%;min-width:0}}'
       +'#pro-gate{position:fixed;inset:0;z-index:2147483000;display:flex;align-items:center;justify-content:center;padding:18px;background:rgba(6,17,22,.7);-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px)}'
       +'#pro-gate[hidden]{display:none}#pro-gate .c{max-width:400px;width:100%;text-align:center;padding:30px 24px;border-radius:10px;background:#122630;color:#dceef4;border:1px solid rgba(11,177,210,.35);border-top:3px solid #0BB1D2;box-shadow:0 20px 70px rgba(0,0,0,.55);font-family:system-ui,-apple-system,sans-serif}'
       +'#pro-gate .k{font-size:34px;margin-bottom:6px}#pro-gate h2{font-size:21px;margin:0 0 8px;color:#fff}#pro-gate p{font-size:14px;line-height:1.6;margin:0 0 20px;color:#9fc3cf}'
       +'#pro-gate button{display:block;width:100%;padding:13px;border:0;border-radius:5px;font-weight:700;font-size:15px;cursor:pointer;background:linear-gradient(135deg,#0BB1D2,#1eb3cc);color:#061116}';
     document.head.appendChild(st);
     var gate=document.createElement('div'); gate.id='pro-gate'; gate.hidden=true;
-    gate.innerHTML='<div class="c" role="dialog" aria-modal="true"><div class="k">🔒</div><h2>Subscription required</h2><p>The Currencies and Crypto sections are for subscribers only. A plan is needed to open any of these symbols.</p><button type="button" id="pro-gate-ok">OK</button></div>';
+    gate.innerHTML='<div class="c" role="dialog" aria-modal="true"><div class="k">🔒</div><h2>Subscription required</h2><p>The Forex and Crypto sections are for subscribers only. A plan is needed to open any of these symbols.</p><button type="button" id="pro-gate-ok">OK</button></div>';
     document.body.appendChild(gate);
     var active=true, target='/?plans=1';
     fetch('/api/me',{credentials:'same-origin'}).then(function(r){return r.json();}).then(function(d){ active=!(d&&d.authenticated&&d.user&&d.user.active===false)&&!!(d&&d.authenticated); }).catch(function(){});
@@ -3216,6 +3228,16 @@ setInterval(tick, 1000);
       var tag=x.url?'a':'div', lnk=x.url?' href="'+esc(x.url)+'" target="_blank" rel="noopener noreferrer"':''; return '<'+tag+' class="comm-item"'+lnk+'><div class="comm-top"><span class="comm-side '+cls+'">'+esc((x.side||'IDEA').toUpperCase())+'</span><span>by '+esc(x.author||'ASL community')+'</span>'+(x.tf?'<span>· '+esc(x.tf)+'</span>':'')+'</div><h4>'+esc(x.title)+'</h4>'+(x.note?'<p>'+esc(x.note)+'</p>':'')+'</'+tag+'>';
     }).join('')+'<div class=\"comm-foot\">Last updated '+esc(j.updated||'—')+' · community opinions for educational purposes, not ASL recommendations or financial advice.</div>';
   }).catch(function(){});
+})();
+</script>
+<div id="pro-gate" hidden><div class="c" role="dialog" aria-modal="true"><div class="k">🔒</div><h2>Subscription required</h2><p>The Forex and Crypto sections are for subscribers only. A plan is needed to open any of these symbols.</p><button type="button" id="pro-gate-ok">OK</button></div></div>
+<script>
+(function(){
+  var g=document.getElementById('pro-gate'), active=false;
+  fetch('/api/me',{credentials:'same-origin'}).then(function(r){return r.json();}).then(function(d){active=!!(d&&d.authenticated&&d.user&&d.user.active);}).catch(function(){});
+  document.querySelectorAll('a.pro-sym').forEach(function(a){a.addEventListener('click',function(e){ if(active) return; e.preventDefault(); g.hidden=false; });});
+  document.getElementById('pro-gate-ok').onclick=function(){ location.href='/?plans=1'; };
+  g.addEventListener('click',function(e){ if(e.target===g) g.hidden=true; });
 })();
 </script>
 </body>
