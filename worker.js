@@ -148,6 +148,139 @@ async function isAdmin(request, env) {
   return same(await sha(given), await sha(env.ADMIN_KEY));
 }
 
+
+/* ---------- Pro Markets (EUR/USD, GBP/USD, USD/JPY, Nasdaq 100, WTI oil): subscribers only ---------- */
+const MKT = {
+  eurusd: 'EURUSD=X', gbpusd: 'GBPUSD=X', usdjpy: 'JPY=X', nasdaq: 'NQ=F', oil: 'CL=F',
+  dxy: 'DX-Y.NYB', sp500: '^GSPC', gold: 'GC=F', us10y: '^TNX',
+  btc: 'BTC-USD', eth: 'ETH-USD', sol: 'SOL-USD', bnb: 'BNB-USD', xrp: 'XRP-USD'
+};
+const MKT_RANGE = { '1d': '1d', '2d': '5d', '5d': '5d', '1mo': '1mo', '3mo': '3mo', '6mo': '6mo', '1y': '1y', '2y': '2y', '5y': '5y' };
+const MKT_INTERVAL = { '1m': '1m', '5m': '5m', '15m': '15m', '60m': '60m', '1h': '60m', '1d': '1d' };
+const YH = ['https://query1.finance.yahoo.com', 'https://query2.finance.yahoo.com'];
+const UA = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0 Safari/537.36';
+
+async function yahoo(sym, range, interval, ttl) {
+  let err;
+  for (const host of YH) {
+    try {
+      const r = await fetch(`${host}/v8/finance/chart/${encodeURIComponent(sym)}?range=${range}&interval=${interval}&includePrePost=false`, {
+        headers: { 'User-Agent': UA, Accept: 'application/json' },
+        cf: { cacheTtl: ttl, cacheEverything: true }
+      });
+      if (!r.ok) throw new Error('HTTP ' + r.status);
+      const j = await r.json();
+      const res = j && j.chart && j.chart.result && j.chart.result[0];
+      if (!res) throw new Error('no data');
+      return res;
+    } catch (e) { err = e; }
+  }
+  throw err;
+}
+function yRows(res, daily) {
+  const ts = res.timestamp || [];
+  const q = (res.indicators && res.indicators.quote && res.indicators.quote[0]) || {};
+  const off = (res.meta && res.meta.gmtoffset) || 0;
+  const out = [];
+  for (let i = 0; i < ts.length; i++) {
+    const c = q.close && q.close[i];
+    if (c == null || !isFinite(c)) continue;
+    const o = q.open && q.open[i], h = q.high && q.high[i], l = q.low && q.low[i];
+    const row = { o: o == null ? c : o, h: h == null ? c : h, l: l == null ? c : l, c };
+    if (daily) row.d = new Date((ts[i] + off) * 1000).toISOString().slice(0, 10);
+    else row.t = ts[i] * 1000;
+    out.push(row);
+  }
+  return out;
+}
+
+// short in-memory cache so the 1-second price polling does not hit the database every time
+const AUTH_CACHE = new Map();
+async function cachedUser(request, env) {
+  const token = getCookie(request, COOKIE);
+  if (!token) return null;
+  const hit = AUTH_CACHE.get(token);
+  if (hit && hit.until > Date.now()) return hit.user;
+  const user = await getUser(request, env);
+  if (AUTH_CACHE.size > 500) AUTH_CACHE.clear();
+  AUTH_CACHE.set(token, { user, until: Date.now() + 30000 });
+  return user;
+}
+
+async function proMarketApi(request, env, url) {
+  const user = await cachedUser(request, env);
+  if (!user) return json({ error: 'Sign in required.' }, 401);
+  if (!isActive(user)) return json({ error: 'Subscription required.' }, 403);
+  const kind = url.pathname.slice('/api/mkt/'.length);
+  const sym = MKT[String(url.searchParams.get('symbol') || '').toLowerCase()];
+  if (!sym) return json({ error: 'Unknown symbol.' }, 400);
+  try {
+    if (kind === 'spot') {
+      const res = await yahoo(sym, '1d', '1m', 3);
+      const rows = yRows(res, false);
+      const m = res.meta || {};
+      const price = isFinite(m.regularMarketPrice) ? m.regularMarketPrice : (rows.length ? rows[rows.length - 1].c : NaN);
+      if (!isFinite(price)) return json({ error: 'No price.' }, 502);
+      return json({ spot_usd_oz: price, updated_at: new Date((m.regularMarketTime || Date.now() / 1000) * 1000).toISOString() });
+    }
+    if (kind === 'history') {
+      const res = await yahoo(sym, '5y', '1d', 900);
+      return json({ data: yRows(res, true) });
+    }
+    if (kind === 'chart') {
+      const interval = MKT_INTERVAL[url.searchParams.get('interval')];
+      const range = MKT_RANGE[url.searchParams.get('range')];
+      if (!interval || !range) return json({ error: 'Bad range or interval.' }, 400);
+      const res = await yahoo(sym, range, interval, interval === '1d' ? 900 : interval === '1m' ? 5 : 20);
+      return json({ data: yRows(res, interval === '1d') });
+    }
+    if (kind === 'intraday') {
+      const hours = Math.max(1, Math.min(120, parseInt(url.searchParams.get('hours'), 10) || 48));
+      const res = await yahoo(sym, '5d', '1m', 15);
+      const from = Date.now() - hours * 3600e3;
+      return json({ data: yRows(res, false).filter((r) => r.t >= from).map((r) => ({ t: r.t, p: r.c })) });
+    }
+    return json({ error: 'Not found.' }, 404);
+  } catch (e) {
+    return json({ error: 'Market feed unavailable. Please try again.' }, 502);
+  }
+}
+
+function proLock(user) {
+  const second = user
+    ? '<a class="b2" href="/member">My account</a>'
+    : '<a class="b2" href="/?login=1&next=' + encodeURIComponent('asl-markets-pro.html') + '">Sign in</a>';
+  const lead = user
+    ? 'Your subscription is not active. Activate a plan to unlock the Pro Markets desk.'
+    : 'Pro Markets is for subscribers. Sign in or subscribe to unlock it.';
+  const cards = [['EUR/USD', 'Euro vs US Dollar'], ['GBP/USD', 'Pound vs US Dollar'], ['USD/JPY', 'Dollar vs Yen'], ['NASDAQ 100', 'US tech index'], ['WTI OIL', 'US crude oil']]
+    .map(([a, b]) => `<div class="m"><div class="k">🔒</div><b>${a}</b><span>${b}</span></div>`).join('');
+  const html = `<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ASL University — Pro Markets (members)</title><meta name="robots" content="noindex">
+<style>
+*{box-sizing:border-box}body{margin:0;min-height:100vh;background:#0A0A0B;color:#F5F7F8;font-family:system-ui,-apple-system,Segoe UI,sans-serif;display:flex;align-items:center;justify-content:center;padding:22px;
+background:radial-gradient(ellipse 60% 50% at 50% 0%,rgba(11,177,210,.16),transparent 70%),#0A0A0B}
+.w{max-width:760px;width:100%;text-align:center}
+.tag{font:600 12px ui-monospace,Menlo,monospace;letter-spacing:.32em;color:#0BB1D2}
+h1{font-size:clamp(28px,6vw,44px);margin:12px 0 10px;line-height:1.1}
+p{color:#9fb0b8;line-height:1.65;margin:0 auto 22px;max-width:560px;font-size:15px}
+.g{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;margin:0 0 26px}
+.m{border:1px solid #24272B;background:#111214;padding:16px 10px;border-radius:6px;display:flex;flex-direction:column;gap:4px}
+.m .k{font-size:20px}.m b{font-size:15px}.m span{font-size:12px;color:#8A9096}
+a{display:block;max-width:340px;margin:10px auto 0;padding:14px;border-radius:5px;text-decoration:none;font-weight:700;font-size:15px}
+.b1{background:linear-gradient(135deg,#0BB1D2,#1eb3cc);color:#061116}.b2{border:1px solid rgba(11,177,210,.5);color:#0BB1D2}
+.f{margin-top:20px;font-size:13px}.f a{display:inline;margin:0 8px;padding:0;color:#8A9096;font-weight:500}
+</style></head><body><div class="w">
+<div class="tag">ASL UNIVERSITY · PRO MARKETS</div>
+<h1>Forex, Nasdaq &amp; Oil desk</h1>
+<p>${lead} Same live engine as Gold and Bitcoin: signal, indicators, trade plan, key levels, correlations, COT, backtest and position calculator.</p>
+<div class="g">${cards}</div>
+<a class="b1" href="/?plans=1">Subscribe now</a>${second}
+<div class="f"><a href="/asl-xauusd-analysis.html">Gold desk</a><a href="/asl-btcusd-analysis.html">Bitcoin desk</a><a href="/">Home</a></div>
+</div></body></html>`;
+  return new Response(html, { status: 200, headers: { 'Content-Type': 'text/html; charset=utf-8', 'Cache-Control': 'private, no-store' } });
+}
+
 export default {
   async fetch(request, env) {
     try {
@@ -166,6 +299,15 @@ export default {
         const res1 = new Response(r.body, { status: r.status, headers: h });
         return isHtml1 && r.status === 200 ? withExtras(res1, user, false) : res1;
       }
+      if (key === '/asl-markets-pro') {
+        const user = await getUser(request, env);
+        if (!isActive(user)) return proLock(user);          // the page itself is never sent to non-subscribers
+        const r = await getAsset(env, request, url, key + '.html');
+        const h = new Headers(r.headers);
+        h.set('Cache-Control', 'private, no-store');
+        const res = new Response(r.body, { status: r.status, headers: h });
+        return (r.headers.get('Content-Type') || '').includes('text/html') && r.status === 200 ? withExtras(res, user, false) : res;
+      }
       if (PREVIEW.has(key)) {
         const user = await getUser(request, env);
         if (!user) return loginRedirect(url, key);
@@ -181,6 +323,8 @@ export default {
       if (!path.startsWith('/api/')) return getAsset(env, request, url, path === '/' ? '/index.html' : path);
 
       /* ---------- API ---------- */
+      if (path.startsWith('/api/mkt/') && request.method === 'GET') return proMarketApi(request, env, url);
+
       if (path === '/api/me' && request.method === 'GET') {
         const user = await getUser(request, env);
         return user ? json({ authenticated: true, user: publicUser(user) }) : json({ authenticated: false });
