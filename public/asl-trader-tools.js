@@ -169,8 +169,8 @@ const nav = $("#nav"), main = $("#main");
 TOOLS.forEach((t, i) => {
   const b = document.createElement("button");
   b.role = "tab"; b.dataset.i = i;
-  b.innerHTML = `<span class="ic">${t.icon}</span><span><b>${t.title}</b><small>${t.sub}${t.remote && !API_BASE ? " (needs server)" : ""}</small></span>`;
-  b.onclick = () => open(i);
+  b.innerHTML = `<span class="ic">${t.icon}</span><b>${t.title}</b><small>${t.sub}${t.remote && !API_BASE ? " (needs server)" : ""}</small>`;
+  b.onclick = () => { open(i); main.scrollIntoView({behavior: "smooth", block: "start"}); };
   nav.appendChild(b);
 });
 
@@ -204,3 +204,10 @@ function open(i) {
 }
 window.addEventListener("error", e => { const m = $("#main"); if (m) m.insertAdjacentHTML("afterbegin", note(`<span class="no">Script error:</span> ${String(e.message).replace(/</g, "&lt;")}`)); });
 open(0);
+
+/* theme toggle, same saved choice as the main site */
+(function () {
+  const set = m => { document.documentElement.setAttribute("data-theme", m); try { localStorage.setItem("asl-theme", m); } catch (e) {} document.querySelectorAll("[data-theme-btn]").forEach(b => b.setAttribute("aria-pressed", b.dataset.themeBtn == m)); };
+  document.querySelectorAll("[data-theme-btn]").forEach(b => b.addEventListener("click", () => set(b.dataset.themeBtn)));
+  set(document.documentElement.getAttribute("data-theme") || "dark");
+})();
