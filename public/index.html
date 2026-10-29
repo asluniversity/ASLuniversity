@@ -25,7 +25,8 @@
         window.addEventListener('pageshow', function () { window.scrollTo(0, 0); });
     </script>
     <noscript></noscript>
-    <link rel="preload" href="fonts/sora-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
+    <link rel="preload" href="fonts/playfair-display-latin-wght-italic.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="fonts/sora-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="fonts/manrope-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
 <script>
 /* blur-fade reveal: hide targets only when JS runs, with a safety switch if anything fails */
@@ -35,6 +36,8 @@
  setTimeout(function(){if(!window.__bfReady)d.classList.add('bf-off');},4000);})();
 </script>
 <style>
+@font-face{font-family:'Playfair Display';font-style:italic;font-weight:400 900;font-display:swap;src:url(fonts/playfair-display-latin-wght-italic.woff2) format('woff2')}
+@font-face{font-family:'Playfair Display';font-style:normal;font-weight:400 900;font-display:swap;src:url(fonts/playfair-display-latin-wght-normal.woff2) format('woff2')}
 @font-face{font-family:'Sora';font-style:normal;font-weight:100 800;font-display:swap;src:url(fonts/sora-latin-wght-normal.woff2) format('woff2')}
 @font-face{font-family:'Manrope';font-style:normal;font-weight:200 800;font-display:swap;src:url(fonts/manrope-latin-wght-normal.woff2) format('woff2')}
 @font-face{font-family:'JetBrains Mono';font-style:normal;font-weight:100 800;font-display:swap;src:url(fonts/jetbrains-mono-latin-wght-normal.woff2) format('woff2')}
@@ -89,7 +92,8 @@
 
             --sans: 'Manrope', 'IBM Plex Sans', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
             --display: 'Sora', 'Space Grotesk', system-ui, -apple-system, 'Segoe UI', sans-serif;
-            --mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+            --serif: 'Playfair Display', 'Times New Roman', Georgia, serif;
+    --mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
         }
 
         /* LIGHT */
@@ -1800,20 +1804,24 @@
 /* ===== typography: elegant, fluid between phone and desktop ===== */
 html{-webkit-text-size-adjust:100%;text-rendering:optimizeLegibility}
 body{font-family:var(--sans);-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;line-height:1.65}
-h1,h2,h3,.hero-content h1{font-family:var(--display);letter-spacing:-.022em;text-wrap:balance}
+h1,h2,h3{text-wrap:balance}
+.welcome-banner h1, .hero-content h1, .video-title, .benefits-section .section-title, .testimonial-section h2, .pricing-section h2, .final-cta h2{font-family:var(--serif);font-style:italic;font-weight:700;letter-spacing:-.005em;line-height:1.14}
+.wb-accent{font-weight:inherit;font-style:italic}
 p{text-wrap:pretty}
-.hero-content h1{font-size:clamp(26px,3.3vw + 10px,58px);line-height:1.12}
+.hero-content h1{font-size:clamp(28px,3.2vw + 12px,60px);line-height:1.1}
 .hero-content p{font-size:clamp(14px,.45vw + 12.3px,18.5px);line-height:1.7}
 .benefits-section .section-title,.testimonial-section h2,.pricing-section h2{font-size:clamp(24px,2.1vw + 15px,44px);line-height:1.15}
 .final-cta h2{font-size:clamp(22px,2vw + 14px,40px);line-height:1.2}
 .benefit-card h3{font-size:clamp(14.5px,.4vw + 13px,19px)}
 .benefit-card p,.testimonial-card p{line-height:1.7}
 /* ===== blur-fade reveal ===== */
-html.bf-js :is(.welcome-banner h1, .welcome-banner p, .stat-card, .hero-section .hero-image, .hero-section .hero-content > *, .benefits-section .section-title, .benefit-card, .testimonial-section h2, .testimonial-card, .testimonial-card img, .pricing-section h2, .pricing-grid .pricing-card, .final-cta h2, .final-cta p, .final-cta .btn):not(.bf-done){transition:opacity 1.05s cubic-bezier(.22,.7,.2,1) var(--bf-d,0ms),filter 1.05s cubic-bezier(.22,.7,.2,1) var(--bf-d,0ms),translate 1.05s cubic-bezier(.22,.7,.2,1) var(--bf-d,0ms),scale 1.25s cubic-bezier(.22,.7,.2,1) var(--bf-d,0ms);will-change:opacity,filter,translate}
-html.bf-js :is(.welcome-banner h1, .welcome-banner p, .stat-card, .hero-section .hero-image, .hero-section .hero-content > *, .benefits-section .section-title, .benefit-card, .testimonial-section h2, .testimonial-card, .testimonial-card img, .pricing-section h2, .pricing-grid .pricing-card, .final-cta h2, .final-cta p, .final-cta .btn):not(.bf-in):not(.bf-done){opacity:0;filter:blur(16px);translate:0 28px}
-html.bf-js :is(.testimonial-card img):not(.bf-in):not(.bf-done){filter:blur(22px) saturate(.8);scale:1.05;translate:0 0}
-html.bf-off :is(.welcome-banner h1, .welcome-banner p, .stat-card, .hero-section .hero-image, .hero-section .hero-content > *, .benefits-section .section-title, .benefit-card, .testimonial-section h2, .testimonial-card, .testimonial-card img, .pricing-section h2, .pricing-grid .pricing-card, .final-cta h2, .final-cta p, .final-cta .btn){opacity:1!important;filter:none!important;translate:none!important;scale:none!important;transition:none!important}
-@media (max-width:640px){html.bf-js :is(.welcome-banner h1, .welcome-banner p, .stat-card, .hero-section .hero-image, .hero-section .hero-content > *, .benefits-section .section-title, .benefit-card, .testimonial-section h2, .testimonial-card, .testimonial-card img, .pricing-section h2, .pricing-grid .pricing-card, .final-cta h2, .final-cta p, .final-cta .btn):not(.bf-in):not(.bf-done){filter:blur(10px);translate:0 18px}}
+html.bf-js :is(.welcome-banner h1, .welcome-banner p, .stat-card, .hero-section .hero-image, .hero-section .hero-content > *, .benefits-section .section-title, .benefit-card, .testimonial-section h2, .testimonial-card, .testimonial-card img, .hero-section img, .logo-icon, .video-title, .pricing-section h2, .pricing-grid .pricing-card, .final-cta h2, .final-cta p, .final-cta .btn):not(.bf-done){transition:opacity 1.05s cubic-bezier(.22,.7,.2,1) var(--bf-d,0ms),filter 1.05s cubic-bezier(.22,.7,.2,1) var(--bf-d,0ms),translate 1.05s cubic-bezier(.22,.7,.2,1) var(--bf-d,0ms),scale 1.25s cubic-bezier(.22,.7,.2,1) var(--bf-d,0ms);will-change:opacity,filter,translate}
+html.bf-js :is(.welcome-banner h1, .welcome-banner p, .stat-card, .hero-section .hero-image, .hero-section .hero-content > *, .benefits-section .section-title, .benefit-card, .testimonial-section h2, .testimonial-card, .testimonial-card img, .hero-section img, .logo-icon, .video-title, .pricing-section h2, .pricing-grid .pricing-card, .final-cta h2, .final-cta p, .final-cta .btn):not(.bf-in):not(.bf-done){opacity:0;filter:blur(16px);translate:0 28px}
+html.bf-js :is(.testimonial-card img, .hero-section img, .logo-icon):not(.bf-in):not(.bf-done){filter:blur(26px) saturate(.7);scale:1.06;translate:0 0}
+html.bf-js :is(.bf-first):not(.bf-done){transition-duration:2.1s,2.1s,2.1s,2.4s!important}
+html.bf-off :is(.welcome-banner h1, .welcome-banner p, .stat-card, .hero-section .hero-image, .hero-section .hero-content > *, .benefits-section .section-title, .benefit-card, .testimonial-section h2, .testimonial-card, .testimonial-card img, .hero-section img, .logo-icon, .video-title, .pricing-section h2, .pricing-grid .pricing-card, .final-cta h2, .final-cta p, .final-cta .btn){opacity:1!important;filter:none!important;translate:none!important;scale:none!important;transition:none!important}
+@media (max-width:640px){html.bf-js :is(.welcome-banner h1, .welcome-banner p, .stat-card, .hero-section .hero-image, .hero-section .hero-content > *, .benefits-section .section-title, .benefit-card, .testimonial-section h2, .testimonial-card, .testimonial-card img, .hero-section img, .logo-icon, .video-title, .pricing-section h2, .pricing-grid .pricing-card, .final-cta h2, .final-cta p, .final-cta .btn):not(.bf-in):not(.bf-done){filter:blur(10px);translate:0 18px}}
+@media (prefers-reduced-motion:reduce){.welcome-banner h1, .hero-content h1, .video-title, .benefits-section .section-title, .testimonial-section h2, .pricing-section h2, .final-cta h2{font-weight:800}}
 </style>
 </head>
 <body>
@@ -1859,10 +1867,6 @@ html.bf-off :is(.welcome-banner h1, .welcome-banner p, .stat-card, .hero-section
                         <a class="site-menu-link" role="menuitem" href="asl-xauusd-analysis.html" target="_blank" rel="noopener">
                             <span class="smi">📊</span>
                             <span class="smt"><b>Technical &amp; Fundamental Analysis</b><span>Live XAU/USD chart, daily outlook &amp; levels</span></span>
-                        </a>
-                        <a class="site-menu-link" role="menuitem" href="asl-markets-pro.html" target="_blank" rel="noopener">
-                            <span class="smi">💹</span>
-                            <span class="smt"><b>Pro Markets <span style="color:#0BB1D2;font-size:11px">🔒 Members</span></b><span>EUR/USD, GBP/USD, USD/JPY, Nasdaq &amp; Oil analysis</span></span>
                         </a>
                         <a class="site-menu-link" role="menuitem" href="asl-account-journal.html" target="_blank" rel="noopener">
                             <span class="smi">📓</span>
@@ -2470,13 +2474,13 @@ html.bf-off :is(.welcome-banner h1, .welcome-banner p, .stat-card, .hero-section
                 { k: ['panel', 'personal panel', 'dashboard', 'member area', 'portal'],
                   a: "The Personal Panel includes your Daily Analysis & Technical Outlook (live XAU/USD gold chart) and the Account Journal & Analysis page. Open the three-dot menu at the top of the page to reach them." },
                 { k: ['analysis', 'technical', 'fundamental', 'outlook', 'xau', 'gold', 'xauusd', 'chart', 'levels', 'pivot', 'support and resistance', 'daily analysis', 'market analysis'],
-                  a: "The Technical & Fundamental Analysis page shows a live XAU/USD (gold) chart, the daily outlook, key levels, indicators and news. Open it from the three-dot menu at the top of the page. Subscribers also get Pro Markets: the same analysis for EUR/USD, GBP/USD, USD/JPY, Nasdaq 100 and WTI oil." },
+                  a: "The Technical & Fundamental Analysis page shows a live XAU/USD (gold) chart, the daily outlook, key levels, indicators and news. Open it from the three-dot menu at the top of the page." },
                 { k: ['journal', 'account journal', 'statement', 'track', 'tracking', 'performance', 'my account', 'upload', 'metatrader', 'mt4', 'mt5', 'win/loss'],
                   a: "The Account Journal & Analysis page lets you review your trading account: profit and loss, win rate, equity curve, best and worst symbols, strengths and areas to improve. Open it from the three-dot menu at the top of the page." },
                 { k: ['personal growth', 'mindset', 'growth plan', 'strategy', 'personalize', 'personalise', 'growth-program'],
                   a: "The Personal Growth Program is about personalizing the strategy to match your mindset. You'll find it in the three-dot menu at the top of the page." },
                 { k: ['menu', 'three dot', 'three-dot', 'dots', 'where do i find', 'navigate', 'navigation', 'where is'],
-                  a: "The three-dot button at the top right of the page opens a menu with: Technical & Fundamental Analysis, Pro Markets (subscribers), Account Journal & Analysis, Personal Growth Program, and Support. On mobile it also lists Benefits, Pricing and Join Now." },
+                  a: "The three-dot button at the top right of the page opens a menu with: Technical & Fundamental Analysis, Account Journal & Analysis, Personal Growth Program, and Support. On mobile it also lists Benefits, Pricing and Join Now." },
 
                 { k: ['testimonial', 'review', 'reviews', 'members say', 'feedback', 'results', 'proof', 'verified', 'real', 'legit', 'scam', 'trust', 'trustworthy', 'fake', 'evidence'],
                   a: "In the \"What Our Members Say\" section you'll see member feedback with their verified result or certificate. Under each one, the \"Analyze Account\" button opens that member's account analysis so you can check their numbers yourself." },
@@ -2860,26 +2864,50 @@ html.bf-off :is(.welcome-banner h1, .welcome-banner p, .stat-card, .hero-section
     })();
     </script>
 <script>
-/* blur-fade reveal on scroll (text and images) */
+/* blur-fade reveal (text + images) and scroll-driven bold headlines */
 (function(){
-  var root=document.documentElement; if(!root.classList.contains('bf-js')) return;
-  var SEL='.welcome-banner h1, .welcome-banner p, .stat-card, .hero-section .hero-image, .hero-section .hero-content > *, .benefits-section .section-title, .benefit-card, .testimonial-section h2, .testimonial-card, .testimonial-card img, .pricing-section h2, .pricing-grid .pricing-card, .final-cta h2, .final-cta p, .final-cta .btn';
+  var root=document.documentElement;
+  var HEADS='.welcome-banner h1, .hero-content h1, .video-title, .benefits-section .section-title, .testimonial-section h2, .pricing-section h2, .final-cta h2';
+  var SEL='.welcome-banner h1, .welcome-banner p, .stat-card, .hero-section .hero-image, .hero-section .hero-content > *, .benefits-section .section-title, .benefit-card, .testimonial-section h2, .testimonial-card, .testimonial-card img, .hero-section img, .logo-icon, .video-title, .pricing-section h2, .pricing-grid .pricing-card, .final-cta h2, .final-cta p, .final-cta .btn';
+
+  /* headlines get bolder as they travel toward the middle of the screen */
+  var hs=[].slice.call(document.querySelectorAll(HEADS)), tick=false;
+  function weights(){
+    tick=false; var vh=window.innerHeight||800;
+    hs.forEach(function(h){
+      var r=h.getBoundingClientRect(); if(r.bottom<-50||r.top>vh+50) return;
+      var t=1-Math.abs((r.top+r.bottom)/2-vh*.48)/(vh*.62); t=Math.max(0,Math.min(1,t));
+      h.style.fontWeight=Math.round(660+t*240);
+    });
+  }
+  if(!(window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches)){
+    window.addEventListener('scroll',function(){ if(!tick){ tick=true; requestAnimationFrame(weights); } },{passive:true});
+    window.addEventListener('resize',weights); weights();
+  }
+
+  if(!root.classList.contains('bf-js')) return;
   var els=[].slice.call(document.querySelectorAll(SEL));
-  var seen=new Map();
+  var seen=new Map(), vh0=window.innerHeight||800, firstN=0;
   els.forEach(function(el){
-    var p=el.parentElement, n=(seen.get(p)||0); seen.set(p,n+1);
-    el.style.setProperty('--bf-d',Math.min(n*85,420)+'ms');
+    var r=el.getBoundingClientRect();
+    if(r.top<vh0*.92 && r.bottom>0){                    /* first screen: slower, calmer entrance */
+      el.classList.add('bf-first');
+      el.style.setProperty('--bf-d',(250+firstN*190)+'ms'); firstN++;
+    } else {
+      var p=el.parentElement, n=(seen.get(p)||0); seen.set(p,n+1);
+      el.style.setProperty('--bf-d',Math.min(n*85,420)+'ms');
+    }
   });
-  function done(el,d){ setTimeout(function(){ el.classList.add('bf-done'); el.style.removeProperty('--bf-d'); },1500+d); }
+  function done(el,d,first){ setTimeout(function(){ el.classList.add('bf-done'); el.style.removeProperty('--bf-d'); },(first?2600:1500)+d); }
   function show(el){
-    var d=parseInt(el.style.getPropertyValue('--bf-d'))||0;
-    var go=function(){ el.classList.add('bf-in'); done(el,d); };
+    var d=parseInt(el.style.getPropertyValue('--bf-d'))||0, first=el.classList.contains('bf-first');
+    var go=function(){ el.classList.add('bf-in'); done(el,d,first); };
     if(el.tagName==='IMG' && !el.complete){ el.addEventListener('load',go,{once:true}); el.addEventListener('error',go,{once:true}); }
     else go();
   }
   var io=new IntersectionObserver(function(es){
     es.forEach(function(e){ if(e.isIntersecting){ io.unobserve(e.target); show(e.target); } });
-  },{threshold:.12,rootMargin:'0px 0px -6% 0px'});
+  },{threshold:.12,rootMargin:'0px 0px -6%'});
   els.forEach(function(el){ io.observe(el); });
   window.__bfReady=true;
 })();
