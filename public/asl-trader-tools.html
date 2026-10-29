@@ -227,11 +227,12 @@ const TOOLS = [
 ];
 
 /* ============ RENDERING ============ */
+TOOLS.sort((a, b) => !!a.remote - !!b.remote); /* working tools first, server tools last */
 const nav = $("#nav"), main = $("#main");
 TOOLS.forEach((t, i) => {
   const b = document.createElement("button");
   b.role = "tab"; b.dataset.i = i;
-  b.innerHTML = `<span class="ic">${t.icon}</span><span><b>${t.title}</b><small>${t.sub}</small></span>`;
+  b.innerHTML = `<span class="ic">${t.icon}</span><span><b>${t.title}</b><small>${t.sub}${t.remote && !API_BASE ? " (needs server)" : ""}</small></span>`;
   b.onclick = () => open(i);
   nav.appendChild(b);
 });
@@ -253,7 +254,7 @@ function open(i) {
     const out = $("#out");
     try {
       if (t.remote) {
-        if (!API_BASE) { out.innerHTML = note(`This tool reads SEC, House Clerk or news data, which browsers cannot fetch directly. Set <code>API_BASE</code> at the top of this file to a Worker that answers <code>/api/${t.id}</code> with JSON, then it will run here.`); return; }
+        if (!API_BASE) { out.innerHTML = note(`<b class=no>Not connected yet.</b> This tool reads SEC, House Clerk or news data, which browsers cannot fetch directly. The other tools work without a server. Set <code>API_BASE</code> at the top of this file to a Worker that answers <code>/api/${t.id}</code> with JSON, then it will run here.`); return; }
         out.textContent = "Loading...";
         const r = await fetch(`${API_BASE}/api/${t.id}?` + new URLSearchParams(v)); if (!r.ok) throw new Error("Server answered " + r.status);
         out.innerHTML = `<pre>${JSON.stringify(await r.json(), null, 2).replace(/</g, "&lt;")}</pre>`;
