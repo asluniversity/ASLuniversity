@@ -756,6 +756,20 @@ html,body{overflow-x:clip}
   .asset-switch .sw-lbl{font-family:var(--mono); font-size:10px; letter-spacing:.2em; color:var(--muted); min-width:64px;}
   .asset-switch a i{font-style:normal; color:var(--blue); font-size:10px; margin-left:6px;}
   @media(max-width:640px){.asset-switch .sw-lbl{flex-basis:100%; min-width:0;}}
+
+  /* collapsible market groups */
+  .asset-switch{gap:0;}
+  .asset-switch .sw-tabs{display:flex; flex-wrap:wrap; gap:8px;}
+  .asset-switch .sw-tab{font-family:var(--mono); font-size:11px; letter-spacing:.2em; padding:8px 16px; background:transparent; color:var(--muted); border:1px solid var(--hairline); cursor:pointer; display:inline-flex; align-items:center; gap:8px; transition:color .25s, border-color .25s;}
+  .asset-switch .sw-tab:hover{color:var(--white); border-color:var(--muted);}
+  .asset-switch .sw-tab.on{color:var(--blue); border-color:var(--blue);}
+  .asset-switch .sw-caret{display:inline-block; font-size:10px; transition:transform .3s ease;}
+  .asset-switch .sw-tab.on .sw-caret{transform:rotate(180deg);}
+  .asset-switch .sw-panel{display:grid; grid-template-rows:0fr; opacity:0; visibility:hidden; transition:grid-template-rows .35s ease, opacity .35s ease, visibility 0s linear .35s;}
+  .asset-switch .sw-panel.open{grid-template-rows:1fr; opacity:1; visibility:visible; transition:grid-template-rows .35s ease, opacity .35s ease, visibility 0s;}
+  .asset-switch .sw-inner{overflow:hidden; min-height:0; display:flex; flex-wrap:wrap; gap:8px; padding-top:0; transition:padding .35s ease;}
+  .asset-switch .sw-panel.open .sw-inner{padding-top:10px;}
+  @media(prefers-reduced-motion:reduce){.asset-switch .sw-panel,.asset-switch .sw-caret,.asset-switch .sw-inner{transition:none;}}
   #pro-gate{position:fixed;inset:0;z-index:2147483000;display:flex;align-items:center;justify-content:center;padding:18px;background:rgba(6,17,22,.7);-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px)}
   #pro-gate[hidden]{display:none}
   #pro-gate .c{max-width:400px;width:100%;text-align:center;padding:30px 24px;border-radius:10px;background:#122630;color:#dceef4;border:1px solid rgba(11,177,210,.35);border-top:3px solid #0BB1D2;box-shadow:0 20px 70px rgba(0,0,0,.55);font-family:system-ui,-apple-system,sans-serif}
@@ -826,7 +840,16 @@ html,body{overflow-x:clip}
     </div>
   </div>
 
-  <nav class="asset-switch" aria-label="Markets"><div class="sw-row"><span class="sw-lbl">FREE</span><a href="asl-xauusd-analysis.html" class="on">GOLD · XAU/USD</a><a href="asl-btcusd-analysis.html">BITCOIN · BTC/USDT</a></div><div class="sw-row"><span class="sw-lbl">FOREX</span><a class="pro-sym" href="asl-markets-pro.html?s=eurusd">EUR/USD<i>PRO 🔒</i></a><a class="pro-sym" href="asl-markets-pro.html?s=gbpusd">GBP/USD<i>PRO 🔒</i></a><a class="pro-sym" href="asl-markets-pro.html?s=usdjpy">USD/JPY<i>PRO 🔒</i></a><a class="pro-sym" href="asl-markets-pro.html?s=nasdaq">NASDAQ<i>PRO 🔒</i></a><a class="pro-sym" href="asl-markets-pro.html?s=oil">OIL<i>PRO 🔒</i></a></div><div class="sw-row"><span class="sw-lbl">CRYPTO</span><a class="pro-sym" href="asl-markets-pro.html?s=btc">BTC<i>PRO 🔒</i></a><a class="pro-sym" href="asl-markets-pro.html?s=eth">ETH<i>PRO 🔒</i></a><a class="pro-sym" href="asl-markets-pro.html?s=sol">SOL<i>PRO 🔒</i></a><a class="pro-sym" href="asl-markets-pro.html?s=bnb">BNB<i>PRO 🔒</i></a><a class="pro-sym" href="asl-markets-pro.html?s=xrp">XRP<i>PRO 🔒</i></a></div></nav>
+  <nav class="asset-switch" aria-label="Markets">
+  <div class="sw-tabs" role="tablist">
+    <button type="button" class="sw-tab on" role="tab" aria-selected="true" aria-controls="sw-free" data-target="sw-free">FREE<span class="sw-caret">▾</span></button>
+    <button type="button" class="sw-tab" role="tab" aria-selected="false" aria-controls="sw-forex" data-target="sw-forex">FOREX<span class="sw-caret">▾</span></button>
+    <button type="button" class="sw-tab" role="tab" aria-selected="false" aria-controls="sw-crypto" data-target="sw-crypto">CRYPTO<span class="sw-caret">▾</span></button>
+  </div>
+  <div class="sw-panel open" id="sw-free"><div class="sw-inner"><a href="asl-xauusd-analysis.html" class="on">GOLD · XAU/USD</a></div></div>
+  <div class="sw-panel" id="sw-forex"><div class="sw-inner"><a class="pro-sym" href="asl-markets-pro.html?s=eurusd">EUR/USD<i>PRO 🔒</i></a><a class="pro-sym" href="asl-markets-pro.html?s=gbpusd">GBP/USD<i>PRO 🔒</i></a><a class="pro-sym" href="asl-markets-pro.html?s=usdjpy">USD/JPY<i>PRO 🔒</i></a><a class="pro-sym" href="asl-markets-pro.html?s=nasdaq">NASDAQ<i>PRO 🔒</i></a><a class="pro-sym" href="asl-markets-pro.html?s=oil">OIL<i>PRO 🔒</i></a></div></div>
+  <div class="sw-panel" id="sw-crypto"><div class="sw-inner"><a class="pro-sym" href="asl-markets-pro.html?s=btc">BTC<i>PRO 🔒</i></a><a class="pro-sym" href="asl-markets-pro.html?s=eth">ETH<i>PRO 🔒</i></a><a class="pro-sym" href="asl-markets-pro.html?s=sol">SOL<i>PRO 🔒</i></a><a class="pro-sym" href="asl-markets-pro.html?s=bnb">BNB<i>PRO 🔒</i></a><a class="pro-sym" href="asl-markets-pro.html?s=xrp">XRP<i>PRO 🔒</i></a></div></div>
+</nav>
 
   <header>
     <div class="hero">
@@ -3034,6 +3057,22 @@ setInterval(tick, 1000);
   document.querySelectorAll('a.pro-sym').forEach(function(a){a.addEventListener('click',function(e){ if(active) return; e.preventDefault(); g.hidden=false; });});
   document.getElementById('pro-gate-ok').onclick=function(){ location.href='/?plans=1'; };
   g.addEventListener('click',function(e){ if(e.target===g) g.hidden=true; });
+})();
+</script>
+<script>
+(function(){
+  var tabs=document.querySelectorAll('.asset-switch .sw-tab');
+  tabs.forEach(function(t){
+    t.addEventListener('click',function(){
+      var panel=document.getElementById(t.getAttribute('data-target'));
+      var wasOpen=panel.classList.contains('open');
+      tabs.forEach(function(x){
+        x.classList.remove('on'); x.setAttribute('aria-selected','false');
+        document.getElementById(x.getAttribute('data-target')).classList.remove('open');
+      });
+      if(!wasOpen){ t.classList.add('on'); t.setAttribute('aria-selected','true'); panel.classList.add('open'); }
+    });
+  });
 })();
 </script>
 </body>
