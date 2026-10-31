@@ -3,7 +3,7 @@ const enc = new TextEncoder();
 const COOKIE = 'asl_session';
 const SESSION_MS = 30 * 24 * 3600 * 1000;
 // TEST_OPEN: true = Pro Markets open to everyone (testing only). Set to false to lock it again.
-const TEST_OPEN = true;
+const TEST_OPEN = false;
 const PLANS = { '1m': 1, '3m': 3, '12m': 12 };
 // Every section needs a LOGIN first (visitors are sent to the sign-in box, then come back here).
 // - LOGIN_ONLY: logged-in users can open it.
