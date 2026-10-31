@@ -82,6 +82,13 @@ footer p{font-size:12px;color:var(--muted);max-width:800px;margin:0 auto;line-he
 .nets{display:flex;gap:8px;flex-wrap:wrap}.netb{font:600 12px var(--mono);color:var(--muted);background:var(--tbg);border:1px solid var(--hair);border-radius:6px;padding:10px 14px;cursor:pointer;transition:.2s}.netb:hover{border-color:var(--accent)}.netb[aria-pressed="true"]{color:var(--accent);border-color:var(--accent);background:var(--tact);box-shadow:0 0 18px rgba(11,177,210,.2)}.netfull{font:11.5px var(--mono);color:var(--muted);margin-top:8px}
 @media(max-width:860px){.grid{grid-template-columns:1fr}.grid>div:first-child{display:contents}.grid .panel{margin-top:0!important}.grid>div:first-child>.panel:nth-child(1){order:1}.grid>.panel{order:2}.grid>div:first-child>.panel:nth-child(2){order:3}}
 @media(max-width:640px){.wrap{padding:0 12px}.logo{font-size:16px;letter-spacing:1px;gap:6px}.logo-icon{height:30px;width:30px}.back span{display:none}.panel{padding:18px 14px}.amount{font-size:28px}.addr{flex-direction:column}.btn{padding:12px}.plan .pr{font-size:19px}}
+[hidden]{display:none !important}
+.btn.ghost{background:transparent;color:var(--head);border:1px solid var(--hair)}
+.pstat{display:flex;align-items:center;gap:10px;margin:14px 0 4px;padding:12px 14px;border:1px solid var(--hair);border-radius:6px;background:var(--tbg);font-size:13.5px}
+.pstat.ok{border-color:#2FBE7A;color:#2FBE7A}.pstat.bad{border-color:#E0A83A}
+.spin{width:12px;height:12px;border-radius:50%;border:2px solid var(--hair);border-top-color:var(--accent);animation:aslspin 1s linear infinite;flex:none}
+@keyframes aslspin{to{transform:rotate(360deg)}}
+.cd{font:600 12px var(--mono);letter-spacing:.08em;color:var(--muted);margin:6px 0 0}
 </style>
 </head>
 <body>
@@ -97,7 +104,7 @@ footer p{font-size:12px;color:var(--muted);max-width:800px;margin:0 auto;line-he
   <section class="hero">
     <div class="eyebrow">Secure Crypto Payment</div>
     <h1>Complete Your <span>Membership</span></h1>
-    <p>Choose a plan, send the exact amount to our wallet, then send us your transaction ID to activate your access.</p>
+    <p>Choose a plan and pay in USDT. On TRC20 your membership opens automatically as soon as the transfer is confirmed. BEP20 payments are activated manually after you send us the transaction ID.</p>
   </section>
 
   <div class="setup" id="setup"><b>Owner notice:</b> a wallet address is not set. Open this file and fill <code>CONFIG.networks</code>. Customers cannot pay on that network until you do.</div>
@@ -111,7 +118,7 @@ footer p{font-size:12px;color:var(--muted);max-width:800px;margin:0 auto;line-he
         <label class="plan" data-plan="12"><input type="radio" name="plan" value="12"><div><b>12 Months <span class="tag">BEST VALUE</span></b><small>30% OFF &middot; $34 / month</small></div><div class="pr">$411<s>$588</s></div></label>
         <p class="inc">Every plan includes signals, growth program, training, custom robot, certificate and Personal Panel.</p>
       </div>
-      <div class="panel">
+      <div class="panel" id="confirmpanel" hidden>
         <h2><span class="step">3</span>Confirm your payment</h2>
         <div class="field"><label for="uname">Your ASL username</label><input id="uname" autocomplete="username" placeholder="The name you registered with" maxlength="80"></div>
         <div class="field"><label for="txid">Transaction ID (TXID / hash)</label><input id="txid" autocomplete="off" placeholder="Paste the transaction hash" maxlength="200"></div>
@@ -123,20 +130,44 @@ footer p{font-size:12px;color:var(--muted);max-width:800px;margin:0 auto;line-he
 
     <div class="panel">
       <h2><span class="step">2</span>Send the payment</h2>
-      <div class="lbl">Amount to send</div>
-      <div class="amount" id="amount">$49 <small id="coin">USDT</small></div>
       <div class="lbl">Choose network</div>
       <div class="nets" id="nets"></div>
       <div class="netfull" id="netfull"></div>
-      <div class="lbl">Wallet address</div>
-      <div class="addr"><code id="addr">--</code><button class="btn" id="copy" type="button">Copy</button></div>
-      <div class="qr"><div id="qr"></div></div>
-      <div class="warn"><b>Important:</b> send only <span id="wnet">USDT</span> on the selected network. Funds sent on a different network or to a wrong address cannot be recovered. Send the exact amount, and make sure network fees are paid by you so the full amount arrives.</div>
-      <ul class="steps" style="margin-top:14px">
-        <li><b>1.</b> Copy the address (or scan the QR code).</li>
-        <li><b>2.</b> Send the exact amount from your wallet or exchange.</li>
-        <li><b>3.</b> Copy the transaction hash and submit it on the left.</li>
-      </ul>
+
+      <div id="autobox">
+        <div id="autostart">
+          <div class="lbl">Amount for your plan</div>
+          <div class="amount" id="amount">$117 <small>USDT</small></div>
+          <p class="inc">You will get an exact amount to send (the price plus a few thousandths of a dollar, so we can recognise your payment). When the transfer is confirmed on the blockchain, your membership opens by itself. No message to support is needed.</p>
+          <button class="btn wide" id="createpay" type="button">Pay with USDT &middot; TRC20</button>
+          <div class="msg" id="amsg"></div>
+        </div>
+        <div id="autolive" hidden>
+          <div class="lbl">Send exactly this amount (USDT)</div>
+          <div class="addr"><code id="exact">--</code><button class="btn" id="copyamt" type="button">Copy</button></div>
+          <div class="lbl">Wallet address (TRC20 / Tron)</div>
+          <div class="addr"><code id="aaddr">--</code><button class="btn" id="copyaddr" type="button">Copy</button></div>
+          <div class="qr"><div id="aqr"></div></div>
+          <div class="pstat" id="pstat"><span class="spin" id="spin"></span><span id="ptext">Waiting for your payment&hellip;</span></div>
+          <div class="cd" id="cd"></div>
+          <div class="warn"><b>Important:</b> send USDT on the <b>TRC20</b> network only, and send exactly the amount shown. Make sure fees are paid on top, so the full amount arrives (some exchanges subtract the withdrawal fee). A different amount or network cannot be matched automatically. This page updates by itself, you can keep it open.</div>
+          <button class="btn wide ghost" id="newpay" type="button" hidden>Create a new payment</button>
+        </div>
+      </div>
+
+      <div id="manualbox" hidden>
+        <div class="lbl">Amount to send</div>
+        <div class="amount" id="mamount">$117 <small>USDT</small></div>
+        <div class="lbl">Wallet address</div>
+        <div class="addr"><code id="maddr">--</code><button class="btn" id="mcopy" type="button">Copy</button></div>
+        <div class="qr"><div id="mqr"></div></div>
+        <div class="warn"><b>Important:</b> send only <span id="mwnet">USDT</span> on the selected network. Funds sent on a different network or to a wrong address cannot be recovered. Send the exact amount, and make sure network fees are paid by you so the full amount arrives.</div>
+        <ul class="steps" style="margin-top:14px">
+          <li><b>1.</b> Copy the address (or scan the QR code).</li>
+          <li><b>2.</b> Send the exact amount from your wallet or exchange.</li>
+          <li><b>3.</b> Copy the transaction hash and submit it on the left. We activate you after checking it.</li>
+        </ul>
+      </div>
     </div>
   </div>
 </main>
@@ -147,43 +178,45 @@ footer p{font-size:12px;color:var(--muted);max-width:800px;margin:0 auto;line-he
 <script>
 (function(){
 'use strict';
-/* ===== OWNER SETTINGS ===== */
 var CONFIG = {
-  coin: 'USDT',
   telegram: 'mrasltl',   /* support username, no @ */
   networks: [
-    { id: 'trc20', short: 'TRC20', label: 'USDT · TRC20 (Tron)',            wallet: 'TVQZ8iqLpAEea2osXFQk44XyX8uuGTa74m' },
-    { id: 'bep20', short: 'BEP20', label: 'USDT · BEP20 (BNB Smart Chain)', wallet: '0x8b307e530319e1540654a64a533db3bdab6757c8' }
+    { id: 'trc20', short: 'TRC20 · AUTO',   label: 'USDT · TRC20 (Tron)',            auto: true },
+    { id: 'bep20', short: 'BEP20 · MANUAL', label: 'USDT · BEP20 (BNB Smart Chain)', auto: false, wallet: '0x8b307e530319e1540654a64a533db3bdab6757c8' }
   ]
 };
-var PLANS = { '1': {name:'Monthly', usd:49}, '3': {name:'3 Months', usd:117}, '12': {name:'12 Months', usd:411} };
+var PLANS = { '1': {name:'Monthly', usd:49, key:'1m'}, '3': {name:'3 Months', usd:117, key:'3m'}, '12': {name:'12 Months', usd:411, key:'12m'} };
 var $ = function(i){ return document.getElementById(i); };
-var plan = '3', net = CONFIG.networks[0];
-function ready(n){ return n.wallet && n.wallet.indexOf('PASTE_') !== 0; }
+var plan = '3', net = CONFIG.networks[0], order = null, pollT = null, cdT = null;
+function show(id, on){ var e = $(id); if (e) e.hidden = !on; }
+function copyText(t, b){
+  function done(){ var o = b.textContent; b.textContent = 'Copied!'; setTimeout(function(){ b.textContent = o; }, 1600); }
+  function fallback(){ var ta = document.createElement('textarea'); ta.value = t; document.body.appendChild(ta); ta.select(); try { document.execCommand('copy'); done(); } catch (e) {} ta.remove(); }
+  if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(t).then(done).catch(fallback); else fallback();
+}
+function qr(id, text){
+  var q = $(id); q.innerHTML = '';
+  try { q.parentNode.style.display = 'flex'; new QRCode(q, {text: text, width: 168, height: 168, colorDark: '#000000', colorLight: '#ffffff'}); }
+  catch (e) { q.parentNode.style.display = 'none'; }
+}
 
-$('coin').textContent = CONFIG.coin;
-if (!CONFIG.networks.every(ready)) $('setup').classList.add('show');
-
-/* network buttons */
+/* ----- networks ----- */
 $('nets').innerHTML = CONFIG.networks.map(function(n){ return '<button type="button" class="netb" data-net="' + n.id + '" aria-pressed="false">' + n.short + '</button>'; }).join('');
 document.querySelectorAll('.netb').forEach(function(b){ b.addEventListener('click', function(){ setNet(b.dataset.net); }); });
-
 function setNet(id){
   net = CONFIG.networks.filter(function(n){ return n.id === id; })[0] || CONFIG.networks[0];
   document.querySelectorAll('.netb').forEach(function(b){ b.setAttribute('aria-pressed', String(b.dataset.net === net.id)); });
-  var ok = ready(net);
-  $('addr').textContent = ok ? net.wallet : 'Not configured';
   $('netfull').textContent = net.label;
-  $('wnet').textContent = net.label;
-  $('copy').disabled = !ok; $('send').disabled = !ok;
-  var q = $('qr'); q.innerHTML = '';
-  if (ok) {
-    try { q.style.display = 'block'; new QRCode(q, {text: net.wallet, width: 168, height: 168, colorDark: '#000000', colorLight: '#ffffff'}); }
-    catch (e) { q.style.display = 'none'; }
-  } else q.style.display = 'none';
+  show('autobox', net.auto); show('manualbox', !net.auto); show('confirmpanel', !net.auto);
+  if (!net.auto) {
+    $('maddr').textContent = net.wallet; $('mwnet').textContent = net.label;
+    qr('mqr', net.wallet);
+  }
 }
+$('mcopy').addEventListener('click', function(){ if (net.wallet) copyText(net.wallet, $('mcopy')); });
 
-function setPlan(p) {
+/* ----- plans ----- */
+function setPlan(p){
   if (!PLANS[p]) p = '3';
   plan = p;
   document.querySelectorAll('.plan').forEach(function(el){
@@ -192,18 +225,74 @@ function setPlan(p) {
     el.querySelector('input').checked = on;
   });
   $('amount').firstChild.nodeValue = '$' + PLANS[p].usd + ' ';
+  $('mamount').firstChild.nodeValue = '$' + PLANS[p].usd + ' ';
+  if (order && order.plan !== PLANS[p].key) resetOrder();
 }
 document.querySelectorAll('.plan').forEach(function(el){ el.addEventListener('click', function(){ setPlan(el.dataset.plan); }); });
-try { var qp = new URLSearchParams(location.search).get('plan'); setPlan(qp); } catch (e) { setPlan('3'); }
-setNet(net.id);
 
-$('copy').addEventListener('click', function(){
-  var b = $('copy'), t = net.wallet;
-  function done(){ b.textContent = 'Copied!'; setTimeout(function(){ b.textContent = 'Copy'; }, 1600); }
-  function fallback(){ var ta = document.createElement('textarea'); ta.value = t; document.body.appendChild(ta); ta.select(); try { document.execCommand('copy'); done(); } catch (e) {} ta.remove(); }
-  if (navigator.clipboard && navigator.clipboard.writeText) { navigator.clipboard.writeText(t).then(done).catch(fallback); } else fallback();
+/* ----- automatic TRC20 payment ----- */
+function amsg(t){ var m = $('amsg'); m.textContent = t; m.classList.add('show'); }
+function stopTimers(){ clearInterval(pollT); clearInterval(cdT); pollT = cdT = null; }
+function resetOrder(){ stopTimers(); order = null; show('autolive', false); show('autostart', true); $('newpay').hidden = true; }
+function setStatus(text, cls, spinning){
+  $('ptext').textContent = text; $('pstat').className = 'pstat' + (cls ? ' ' + cls : ''); $('spin').hidden = !spinning;
+}
+function fmtLeft(ms){ var s = Math.max(0, Math.floor(ms / 1000)), m = Math.floor(s / 60); return m + ':' + String(s % 60).padStart(2, '0'); }
+
+function startOrder(o){
+  stopTimers(); order = o;
+  $('exact').textContent = o.amount; $('aaddr').textContent = o.wallet;
+  qr('aqr', o.wallet);
+  show('autostart', false); show('autolive', true); $('newpay').hidden = true;
+  setStatus('Waiting for your payment\u2026', '', true);
+  function tick(){
+    var left = o.expires_at - Date.now();
+    $('cd').textContent = left > 0 ? 'Payment window: ' + fmtLeft(left) + ' left' : '';
+  }
+  tick(); cdT = setInterval(tick, 1000);
+  poll(); pollT = setInterval(poll, 5000);
+}
+function finish(kind){
+  stopTimers();
+  if (kind === 'paid') {
+    setStatus('Payment confirmed. Your membership is active. Opening your member area\u2026', 'ok', false);
+    $('cd').textContent = '';
+    setTimeout(function(){ location.href = '/member'; }, 2500);
+  } else {
+    setStatus(kind === 'review'
+      ? 'We saw a payment of this amount after the window closed. Please contact support on Telegram with your transaction hash.'
+      : 'This payment window has ended. If you already sent the transfer, contact support with your transaction hash. Otherwise create a new payment.', 'bad', false);
+    $('cd').textContent = ''; $('newpay').hidden = false;
+  }
+}
+function poll(){
+  if (!order) return;
+  var o = order;
+  fetch('/api/pay/status?id=' + encodeURIComponent(o.id), { credentials: 'same-origin', cache: 'no-store' })
+    .then(function(r){ if (r.status === 401) { location.href = '/?login=1&next=' + encodeURIComponent('/asl-payment.html?plan=' + plan); throw 0; } return r.json(); })
+    .then(function(j){
+      if (order !== o) return;
+      if (j.status === 'paid') finish('paid');
+      else if (j.status === 'expired' || j.status === 'review') finish(j.status);
+    }).catch(function(){ /* temporary network problem: next poll retries */ });
+}
+$('createpay').addEventListener('click', function(){
+  $('amsg').classList.remove('show');
+  var b = $('createpay'); b.disabled = true;
+  fetch('/api/pay/create', { method: 'POST', credentials: 'same-origin', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ plan: PLANS[plan].key }) })
+    .then(function(r){ return r.json().then(function(j){ return { s: r.status, j: j }; }); })
+    .then(function(x){
+      b.disabled = false;
+      if (x.s === 401) { location.href = '/?login=1&next=' + encodeURIComponent('/asl-payment.html?plan=' + plan); return; }
+      if (x.s !== 200) return amsg(x.j.error || 'Could not create the payment. Please try again.');
+      startOrder(x.j);
+    }).catch(function(){ b.disabled = false; amsg('Network error. Please try again.'); });
 });
+$('newpay').addEventListener('click', resetOrder);
+$('copyamt').addEventListener('click', function(){ if (order) copyText(order.amount, $('copyamt')); });
+$('copyaddr').addEventListener('click', function(){ if (order) copyText(order.wallet, $('copyaddr')); });
 
+/* ----- manual (BEP20) proof on Telegram ----- */
 function err(t){ var m = $('msg'); m.textContent = t; m.classList.add('show'); }
 $('send').addEventListener('click', function(){
   $('msg').classList.remove('show');
@@ -211,17 +300,16 @@ $('send').addEventListener('click', function(){
   if (u.length < 2) return err('Please enter your ASL username.');
   if (tx.length < 20) return err('Please paste the full transaction ID (hash) from your wallet.');
   var P = PLANS[plan];
-  var text = 'ASL University payment\n' +
-    'Plan: ' + P.name + ' ($' + P.usd + ')\n' +
-    'Network: ' + net.label + '\n' +
-    'Username: ' + u + '\n' +
-    'TXID: ' + tx;
+  var text = 'ASL University payment\n' + 'Plan: ' + P.name + ' ($' + P.usd + ')\n' + 'Network: ' + net.label + '\n' + 'Username: ' + u + '\n' + 'TXID: ' + tx;
   window.open('https://t.me/' + CONFIG.telegram + '?text=' + encodeURIComponent(text), '_blank', 'noopener');
 });
 
 function theme(t, save){ document.documentElement.setAttribute('data-theme', t); document.querySelectorAll('[data-th]').forEach(function(b){ b.setAttribute('aria-pressed', String(b.dataset.th === t)); }); if (save) { try { localStorage.setItem('asl-theme', t); } catch (e) {} } }
 document.querySelectorAll('[data-th]').forEach(function(b){ b.addEventListener('click', function(){ theme(b.dataset.th, true); }); });
 theme(document.documentElement.getAttribute('data-theme') === 'light' ? 'light' : 'dark', false);
+
+try { setPlan(new URLSearchParams(location.search).get('plan')); } catch (e) { setPlan('3'); }
+setNet('trc20');
 })();
 </script>
 </body>
