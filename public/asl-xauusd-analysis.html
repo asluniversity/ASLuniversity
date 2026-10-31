@@ -3052,8 +3052,7 @@ setInterval(tick, 1000);
 <div id="pro-gate" hidden><div class="c" role="dialog" aria-modal="true"><div class="k">🔒</div><h2>Subscription required</h2><p>The Forex and Crypto sections are for subscribers only. A plan is needed to open any of these symbols.</p><button type="button" id="pro-gate-ok">OK</button></div></div>
 <script>
 (function(){
-  var g=document.getElementById('pro-gate'), active=false;
-  fetch('/api/me',{credentials:'same-origin'}).then(function(r){return r.json();}).then(function(d){active=!!(d&&d.authenticated&&d.user&&d.user.active);}).catch(function(){});
+  var g=document.getElementById('pro-gate'), active=true; /* TEST_OPEN */
   document.querySelectorAll('a.pro-sym').forEach(function(a){a.addEventListener('click',function(e){ if(active) return; e.preventDefault(); g.hidden=false; });});
   document.getElementById('pro-gate-ok').onclick=function(){ location.href='/?plans=1'; };
   g.addEventListener('click',function(e){ if(e.target===g) g.hidden=true; });
