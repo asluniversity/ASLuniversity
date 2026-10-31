@@ -2,6 +2,8 @@
 const enc = new TextEncoder();
 const COOKIE = 'asl_session';
 const SESSION_MS = 30 * 24 * 3600 * 1000;
+// TEST_OPEN: true = Pro Markets open to everyone (testing only). Set to false to lock it again.
+const TEST_OPEN = true;
 const PLANS = { '1m': 1, '3m': 3, '12m': 12 };
 // Every section needs a LOGIN first (visitors are sent to the sign-in box, then come back here).
 // - LOGIN_ONLY: logged-in users can open it.
@@ -208,9 +210,11 @@ async function cachedUser(request, env) {
 }
 
 async function proMarketApi(request, env, url) {
-  const user = await cachedUser(request, env);
-  if (!user) return json({ error: 'Sign in required.' }, 401);
-  if (!isActive(user)) return json({ error: 'Subscription required.' }, 403);
+  if (!TEST_OPEN) {
+    const user = await cachedUser(request, env);
+    if (!user) return json({ error: 'Sign in required.' }, 401);
+    if (!isActive(user)) return json({ error: 'Subscription required.' }, 403);
+  }
   const kind = url.pathname.slice('/api/mkt/'.length);
   const sym = MKT[String(url.searchParams.get('symbol') || '').toLowerCase()];
   if (!sym) return json({ error: 'Unknown symbol.' }, 400);
@@ -301,12 +305,12 @@ export default {
       }
       if (key === '/asl-markets-pro') {
         const user = await getUser(request, env);
-        if (!isActive(user)) return proLock(user);          // the page itself is never sent to non-subscribers
+        if (!TEST_OPEN && !isActive(user)) return proLock(user);          // the page itself is never sent to non-subscribers
         const r = await getAsset(env, request, url, key + '.html');
         const h = new Headers(r.headers);
         h.set('Cache-Control', 'private, no-store');
         const res = new Response(r.body, { status: r.status, headers: h });
-        return (r.headers.get('Content-Type') || '').includes('text/html') && r.status === 200 ? withExtras(res, user, false) : res;
+        return user && (r.headers.get('Content-Type') || '').includes('text/html') && r.status === 200 ? withExtras(res, user, false) : res;
       }
       if (PREVIEW.has(key)) {
         const user = await getUser(request, env);
