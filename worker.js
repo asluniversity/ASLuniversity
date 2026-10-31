@@ -205,7 +205,7 @@ async function cachedUser(request, env) {
   if (hit && hit.until > Date.now()) return hit.user;
   const user = await getUser(request, env);
   if (AUTH_CACHE.size > 500) AUTH_CACHE.clear();
-  AUTH_CACHE.set(token, { user, until: Date.now() + 30000 });
+  if (isActive(user)) AUTH_CACHE.set(token, { user, until: Date.now() + 30000 });
   return user;
 }
 
@@ -283,6 +283,100 @@ a{display:block;max-width:340px;margin:10px auto 0;padding:14px;border-radius:5p
 <div class="f"><a href="/asl-xauusd-analysis.html">Gold desk</a><a href="/asl-btcusd-analysis.html">Bitcoin desk</a><a href="/">Home</a></div>
 </div></body></html>`;
   return new Response(html, { status: 200, headers: { 'Content-Type': 'text/html; charset=utf-8', 'Cache-Control': 'private, no-store' } });
+}
+
+/* ---------- Automatic USDT (TRC20) payments ----------
+   Every checkout gets its own exact amount (price + a few thousandths of a dollar).
+   A cron job (and the payment page itself) reads incoming USDT transfers on our TRC20 wallet from TronGrid
+   and activates the account whose order has that exact amount. No private keys are ever stored here. */
+const PRICES = { '1m': 49, '3m': 117, '12m': 411 };       // USD, same as the plans on the website
+const USDT_TRC20 = 'TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t';   // official USDT contract on Tron
+const DEFAULT_TRC20_WALLET = 'TVQZ8iqLpAEea2osXFQk44XyX8uuGTa74m';
+const ORDER_TTL = 90 * 60 * 1000;                           // an order stays open 90 minutes
+const trcWallet = (env) => env.TRC20_WALLET || DEFAULT_TRC20_WALLET;
+const usdt = (micro) => (micro / 1e6).toFixed(3);
+
+async function extendUser(env, userId, plan) {
+  const u = await env.DB.prepare('SELECT expires_at FROM users WHERE id = ?').bind(userId).first();
+  const d = new Date(Math.max(Date.now(), (u && u.expires_at) || 0)); // renewing extends the current period
+  d.setUTCMonth(d.getUTCMonth() + PLANS[plan]);
+  await env.DB.prepare('UPDATE users SET plan = ?, expires_at = ? WHERE id = ?').bind(plan, d.getTime(), userId).run();
+  return d.getTime();
+}
+
+let lastTronCheck = 0, tronBusy = false;
+async function checkTron(env) {
+  if (tronBusy) return;
+  tronBusy = true;
+  try {
+    const now = Date.now();
+    await env.DB.prepare("UPDATE orders SET status = 'expired' WHERE status = 'pending' AND expires_at < ?").bind(now).run();
+    const row = await env.DB.prepare(
+      "SELECT MIN(created_at) AS t FROM orders WHERE status = 'pending' OR (status = 'expired' AND expires_at > ?)"
+    ).bind(now - 24 * 3600e3).first();
+    if (!row || !row.t) return;                                // nothing is waiting for money
+    const wallet = trcWallet(env);
+    const url = 'https://api.trongrid.io/v1/accounts/' + wallet + '/transactions/trc20' +
+      '?only_confirmed=true&limit=200&contract_address=' + USDT_TRC20 + '&min_timestamp=' + (row.t - 120000);
+    const ctrl = new AbortController();
+    const timer = setTimeout(() => ctrl.abort(), 8000);
+    let list = [];
+    try {
+      const r = await fetch(url, { signal: ctrl.signal, headers: env.TRONGRID_API_KEY ? { 'TRON-PRO-API-KEY': env.TRONGRID_API_KEY } : {} });
+      if (!r.ok) return;
+      const j = await r.json();
+      list = Array.isArray(j.data) ? j.data : [];
+    } finally { clearTimeout(timer); }
+
+    for (const t of list.slice().sort((a, b) => a.block_timestamp - b.block_timestamp)) {
+      if (!t || t.to !== wallet || !t.token_info || t.token_info.address !== USDT_TRC20) continue;
+      if (Number(t.token_info.decimals) !== 6) continue;
+      const micro = Number(t.value), ts = Number(t.block_timestamp), txid = String(t.transaction_id || '');
+      if (!Number.isSafeInteger(micro) || !txid || !ts) continue;
+      const ins = await env.DB.prepare(
+        "INSERT OR IGNORE INTO seen_tx (tx_id, amount_micro, from_addr, block_ts, result, created_at) VALUES (?, ?, ?, ?, 'processing', ?)"
+      ).bind(txid, micro, String(t.from || ''), ts, Date.now()).run();
+      if (!ins.meta.changes) continue;                         // this transfer was handled before
+      const done = (res) => env.DB.prepare('UPDATE seen_tx SET result = ? WHERE tx_id = ?').bind(res, txid).run();
+
+      // paid inside the order window (even if we noticed it a little late)
+      const o = await env.DB.prepare(
+        "SELECT * FROM orders WHERE amount_micro = ? AND status IN ('pending','expired') AND created_at <= ? AND expires_at >= ? ORDER BY created_at DESC LIMIT 1"
+      ).bind(micro, ts + 60000, ts).first();
+      if (o) {
+        const w = await env.DB.prepare(
+          "UPDATE orders SET status = 'paid', tx_id = ?, paid_at = ? WHERE id = ? AND status IN ('pending','expired')"
+        ).bind(txid, Date.now(), o.id).run();
+        if (w.meta.changes === 1) { await extendUser(env, o.user_id, o.plan); await done('paid:' + o.id); continue; }
+      }
+      // right amount but the order had already run out: keep it for a human to look at
+      const late = await env.DB.prepare(
+        "SELECT id FROM orders WHERE amount_micro = ? AND status = 'expired' AND expires_at > ? ORDER BY expires_at DESC LIMIT 1"
+      ).bind(micro, now - 24 * 3600e3).first();
+      if (late) { await env.DB.prepare("UPDATE orders SET status = 'review', tx_id = ? WHERE id = ?").bind(txid, late.id).run(); await done('review:' + late.id); continue; }
+      await done('unmatched');
+    }
+  } finally { tronBusy = false; lastTronCheck = Date.now(); }
+}
+
+async function createOrder(env, user, plan) {
+  const now = Date.now();
+  const open = await env.DB.prepare(
+    "SELECT * FROM orders WHERE user_id = ? AND plan = ? AND status = 'pending' AND expires_at > ? ORDER BY created_at DESC LIMIT 1"
+  ).bind(user.id, plan, now).first();
+  if (open) return open;
+  const cnt = await env.DB.prepare("SELECT COUNT(*) AS c FROM orders WHERE user_id = ? AND status = 'pending' AND expires_at > ?").bind(user.id, now).first();
+  if (cnt && cnt.c >= 5) return null;
+  for (let i = 0; i < 40; i++) {
+    const micro = PRICES[plan] * 1e6 + (1 + (crypto.getRandomValues(new Uint32Array(1))[0] % 99)) * 1000;   // +$0.001 .. +$0.099
+    const o = { id: rand(8), user_id: user.id, plan, amount_micro: micro, status: 'pending', created_at: now, expires_at: now + ORDER_TTL };
+    try {
+      await env.DB.prepare('INSERT INTO orders (id, user_id, plan, amount_micro, status, created_at, expires_at) VALUES (?, ?, ?, ?, ?, ?, ?)')
+        .bind(o.id, o.user_id, o.plan, o.amount_micro, o.status, o.created_at, o.expires_at).run();
+      return o;
+    } catch (e) { /* same amount already open: try another */ }
+  }
+  return null;
 }
 
 export default {
@@ -374,6 +468,44 @@ export default {
         return json({ user: publicUser(u) }, 200, { 'Set-Cookie': cookie });
       }
 
+      /* ---------- automatic payments ---------- */
+      if (path === '/api/pay/create' && request.method === 'POST') {
+        const user = await getUser(request, env);
+        if (!user) return json({ error: 'Sign in first.' }, 401);
+        const body = await request.json().catch(() => ({}));
+        const plan = String(body.plan || '');
+        if (!PRICES[plan]) return json({ error: 'Choose a plan.' }, 400);
+        const o = await createOrder(env, user, plan);
+        if (!o) return json({ error: 'Too many open payments. Please wait a few minutes and try again.' }, 429);
+        return json({ id: o.id, plan: o.plan, amount: usdt(o.amount_micro), wallet: trcWallet(env), network: 'TRC20', expires_at: o.expires_at });
+      }
+
+      if (path === '/api/pay/status' && request.method === 'GET') {
+        const user = await getUser(request, env);
+        if (!user) return json({ error: 'Sign in first.' }, 401);
+        const id = String(url.searchParams.get('id') || '');
+        let o = await env.DB.prepare('SELECT * FROM orders WHERE id = ? AND user_id = ?').bind(id, user.id).first();
+        if (!o) return json({ error: 'Order not found.' }, 404);
+        if (o.status === 'pending' && Date.now() - lastTronCheck > 8000) {
+          await checkTron(env).catch(() => {});
+          o = await env.DB.prepare('SELECT * FROM orders WHERE id = ? AND user_id = ?').bind(id, user.id).first();
+        }
+        if (o.status === 'paid') { const tk = getCookie(request, COOKIE); if (tk) AUTH_CACHE.delete(tk); }
+        const fresh = await getUser(request, env);
+        return json({ status: o.status, plan: o.plan, expires_at: o.expires_at, active: isActive(fresh), access_until: fresh ? fresh.expires_at : null });
+      }
+
+      if (path === '/api/admin/payments' && request.method === 'GET') {
+        if (!(await isAdmin(request, env))) return json({ error: 'Unauthorized.' }, 401);
+        const orders = await env.DB.prepare(
+          'SELECT o.id, u.username, o.plan, o.amount_micro, o.status, o.created_at, o.paid_at, o.tx_id FROM orders o JOIN users u ON u.id = o.user_id ORDER BY o.created_at DESC LIMIT 100'
+        ).all();
+        const seen = await env.DB.prepare(
+          "SELECT tx_id, amount_micro, from_addr, block_ts, result FROM seen_tx WHERE result NOT LIKE 'paid:%' ORDER BY block_ts DESC LIMIT 100"
+        ).all();
+        return json({ orders: orders.results, needs_review: seen.results });
+      }
+
       /* ---------- admin (needs ADMIN_KEY secret) ---------- */
       if (path === '/api/admin/users' && request.method === 'GET') {
         if (!(await isAdmin(request, env))) return json({ error: 'Unauthorized.' }, 401);
@@ -406,5 +538,8 @@ export default {
     } catch (e) {
       return json({ error: 'Server error. Please try again.' }, 500);
     }
+  },
+  async scheduled(event, env, ctx) {
+    ctx.waitUntil(checkTron(env).catch(() => {}));
   }
 };
