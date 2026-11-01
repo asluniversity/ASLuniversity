@@ -1,16 +1,23 @@
-CREATE TABLE IF NOT EXISTS users (
-  id INTEGER PRIMARY KEY AUTOINCREMENT,
-  username TEXT NOT NULL UNIQUE,
-  display_name TEXT NOT NULL,
-  salt TEXT NOT NULL,
-  password_hash TEXT NOT NULL,
-  plan TEXT,
-  expires_at INTEGER,
-  created_at INTEGER NOT NULL
+-- Run once:  npx wrangler d1 execute asl-db --remote --file=schema-orders.sql
+CREATE TABLE IF NOT EXISTS orders (
+  id           TEXT PRIMARY KEY,
+  user_id      INTEGER NOT NULL,
+  plan         TEXT NOT NULL,            -- 1m | 3m | 12m
+  network      TEXT NOT NULL DEFAULT 'trc20',  -- trc20 | bep20
+  amount_micro INTEGER NOT NULL,         -- USDT x 1,000,000 (unique per open order)
+  status       TEXT NOT NULL,            -- pending | paid | expired | review
+  created_at   INTEGER NOT NULL,
+  expires_at   INTEGER NOT NULL,
+  tx_id        TEXT,
+  paid_at      INTEGER
 );
-CREATE TABLE IF NOT EXISTS sessions (
-  token_hash TEXT PRIMARY KEY,
-  user_id INTEGER NOT NULL,
-  expires_at INTEGER NOT NULL
+CREATE UNIQUE INDEX IF NOT EXISTS orders_open_amount ON orders(amount_micro) WHERE status = 'pending';
+CREATE INDEX IF NOT EXISTS orders_user ON orders(user_id, status);
+CREATE TABLE IF NOT EXISTS seen_tx (
+  tx_id        TEXT PRIMARY KEY,
+  amount_micro INTEGER,
+  from_addr    TEXT,
+  block_ts     INTEGER,
+  result       TEXT,                     -- processing | paid:<order> | review:<order> | unmatched
+  created_at   INTEGER
 );
-CREATE INDEX IF NOT EXISTS idx_sessions_user ON sessions(user_id);
