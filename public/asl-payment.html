@@ -104,7 +104,7 @@ footer p{font-size:12px;color:var(--muted);max-width:800px;margin:0 auto;line-he
   <section class="hero">
     <div class="eyebrow">Secure Crypto Payment</div>
     <h1>Complete Your <span>Membership</span></h1>
-    <p>Choose a plan and pay in USDT. On TRC20 your membership opens automatically as soon as the transfer is confirmed. BEP20 payments are activated manually after you send us the transaction ID.</p>
+    <p>Choose a plan and pay in USDT. Your membership opens automatically as soon as the transfer is confirmed on the blockchain. If a network is marked MANUAL, send us the transaction ID and we activate you after checking it.</p>
   </section>
 
   <div class="setup" id="setup"><b>Owner notice:</b> a wallet address is not set. Open this file and fill <code>CONFIG.networks</code>. Customers cannot pay on that network until you do.</div>
@@ -139,18 +139,18 @@ footer p{font-size:12px;color:var(--muted);max-width:800px;margin:0 auto;line-he
           <div class="lbl">Amount for your plan</div>
           <div class="amount" id="amount">$117 <small>USDT</small></div>
           <p class="inc">You will get an exact amount to send (the price plus a few thousandths of a dollar, so we can recognise your payment). When the transfer is confirmed on the blockchain, your membership opens by itself. No message to support is needed.</p>
-          <button class="btn wide" id="createpay" type="button">Pay with USDT &middot; TRC20</button>
+          <button class="btn wide" id="createpay" type="button">Pay with USDT &middot; <span id="paynet">TRC20</span></button>
           <div class="msg" id="amsg"></div>
         </div>
         <div id="autolive" hidden>
           <div class="lbl">Send exactly this amount (USDT)</div>
           <div class="addr"><code id="exact">--</code><button class="btn" id="copyamt" type="button">Copy</button></div>
-          <div class="lbl">Wallet address (TRC20 / Tron)</div>
+          <div class="lbl" id="awl">Wallet address (TRC20 / Tron)</div>
           <div class="addr"><code id="aaddr">--</code><button class="btn" id="copyaddr" type="button">Copy</button></div>
           <div class="qr"><div id="aqr"></div></div>
           <div class="pstat" id="pstat"><span class="spin" id="spin"></span><span id="ptext">Waiting for your payment&hellip;</span></div>
           <div class="cd" id="cd"></div>
-          <div class="warn"><b>Important:</b> send USDT on the <b>TRC20</b> network only, and send exactly the amount shown. Make sure fees are paid on top, so the full amount arrives (some exchanges subtract the withdrawal fee). A different amount or network cannot be matched automatically. This page updates by itself, you can keep it open.</div>
+          <div class="warn"><b>Important:</b> send USDT on the <b id="wn1">TRC20</b> network only, and send exactly the amount shown. Make sure fees are paid on top, so the full amount arrives (some exchanges subtract the withdrawal fee). A different amount or network cannot be matched automatically. This page updates by itself, you can keep it open.</div>
           <button class="btn wide ghost" id="newpay" type="button" hidden>Create a new payment</button>
         </div>
       </div>
@@ -181,8 +181,8 @@ footer p{font-size:12px;color:var(--muted);max-width:800px;margin:0 auto;line-he
 var CONFIG = {
   telegram: 'mrasltl',   /* support username, no @ */
   networks: [
-    { id: 'trc20', short: 'TRC20 · AUTO',   label: 'USDT · TRC20 (Tron)',            auto: true },
-    { id: 'bep20', short: 'BEP20 · MANUAL', label: 'USDT · BEP20 (BNB Smart Chain)', auto: false, wallet: '0x8b307e530319e1540654a64a533db3bdab6757c8' }
+    { id: 'trc20', name: 'TRC20', label: 'USDT · TRC20 (Tron)',            auto: true,  wallet: 'TVQZ8iqLpAEea2osXFQk44XyX8uuGTa74m' },
+    { id: 'bep20', name: 'BEP20', label: 'USDT · BEP20 (BNB Smart Chain)', auto: false, wallet: '0x8b307e530319e1540654a64a533db3bdab6757c8' }
   ]
 };
 var PLANS = { '1': {name:'Monthly', usd:49, key:'1m'}, '3': {name:'3 Months', usd:117, key:'3m'}, '12': {name:'12 Months', usd:411, key:'12m'} };
@@ -201,12 +201,16 @@ function qr(id, text){
 }
 
 /* ----- networks ----- */
-$('nets').innerHTML = CONFIG.networks.map(function(n){ return '<button type="button" class="netb" data-net="' + n.id + '" aria-pressed="false">' + n.short + '</button>'; }).join('');
-document.querySelectorAll('.netb').forEach(function(b){ b.addEventListener('click', function(){ setNet(b.dataset.net); }); });
+function drawNets(){
+  $('nets').innerHTML = CONFIG.networks.map(function(n){ return '<button type="button" class="netb" data-net="' + n.id + '" aria-pressed="' + (n.id === net.id) + '">' + n.name + ' · ' + (n.auto ? 'AUTO' : 'MANUAL') + '</button>'; }).join('');
+  document.querySelectorAll('.netb').forEach(function(b){ b.addEventListener('click', function(){ setNet(b.dataset.net); }); });
+}
 function setNet(id){
   net = CONFIG.networks.filter(function(n){ return n.id === id; })[0] || CONFIG.networks[0];
-  document.querySelectorAll('.netb').forEach(function(b){ b.setAttribute('aria-pressed', String(b.dataset.net === net.id)); });
+  drawNets();
   $('netfull').textContent = net.label;
+  $('paynet').textContent = net.name;
+  if (order && order.network !== net.name) resetOrder();
   show('autobox', net.auto); show('manualbox', !net.auto); show('confirmpanel', !net.auto);
   if (!net.auto) {
     $('maddr').textContent = net.wallet; $('mwnet').textContent = net.label;
@@ -242,6 +246,8 @@ function fmtLeft(ms){ var s = Math.max(0, Math.floor(ms / 1000)), m = Math.floor
 function startOrder(o){
   stopTimers(); order = o;
   $('exact').textContent = o.amount; $('aaddr').textContent = o.wallet;
+  $('awl').textContent = 'Wallet address (' + (o.network === 'BEP20' ? 'BEP20 / BNB Smart Chain' : 'TRC20 / Tron') + ')';
+  $('wn1').textContent = o.network;
   qr('aqr', o.wallet);
   show('autostart', false); show('autolive', true); $('newpay').hidden = true;
   setStatus('Waiting for your payment\u2026', '', true);
@@ -279,7 +285,7 @@ function poll(){
 $('createpay').addEventListener('click', function(){
   $('amsg').classList.remove('show');
   var b = $('createpay'); b.disabled = true;
-  fetch('/api/pay/create', { method: 'POST', credentials: 'same-origin', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ plan: PLANS[plan].key }) })
+  fetch('/api/pay/create', { method: 'POST', credentials: 'same-origin', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ plan: PLANS[plan].key, network: net.id }) })
     .then(function(r){ return r.json().then(function(j){ return { s: r.status, j: j }; }); })
     .then(function(x){
       b.disabled = false;
@@ -310,6 +316,11 @@ theme(document.documentElement.getAttribute('data-theme') === 'light' ? 'light' 
 
 try { setPlan(new URLSearchParams(location.search).get('plan')); } catch (e) { setPlan('3'); }
 setNet('trc20');
+/* ask the server which networks are automatic (BEP20 needs its blockchain endpoint set up) */
+fetch('/api/pay/config', { cache: 'no-store' }).then(function(r){ return r.json(); }).then(function(c){
+  CONFIG.networks.forEach(function(n){ if (c && c.networks && n.id in c.networks) n.auto = !!c.networks[n.id]; });
+  setNet(net.id);
+}).catch(function(){});
 })();
 </script>
 </body>
