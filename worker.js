@@ -285,15 +285,20 @@ a{display:block;max-width:340px;margin:10px auto 0;padding:14px;border-radius:5p
   return new Response(html, { status: 200, headers: { 'Content-Type': 'text/html; charset=utf-8', 'Cache-Control': 'private, no-store' } });
 }
 
-/* ---------- Automatic USDT (TRC20) payments ----------
+/* ---------- Automatic USDT payments (TRC20 + BEP20) ----------
    Every checkout gets its own exact amount (price + a few thousandths of a dollar).
-   A cron job (and the payment page itself) reads incoming USDT transfers on our TRC20 wallet from TronGrid
-   and activates the account whose order has that exact amount. No private keys are ever stored here. */
+   A cron job (and the payment page itself) reads incoming USDT transfers on our wallet and activates the account
+   whose order has that exact amount on that exact network. No private keys are ever stored here.
+   TRC20 reads TronGrid. BEP20 reads a BNB Smart Chain RPC endpoint that you set as the secret BSC_RPC_URL. */
 const PRICES = { '1m': 49, '3m': 117, '12m': 411 };       // USD, same as the plans on the website
-const USDT_TRC20 = 'TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t';   // official USDT contract on Tron
-const DEFAULT_TRC20_WALLET = 'TVQZ8iqLpAEea2osXFQk44XyX8uuGTa74m';
-const ORDER_TTL = 90 * 60 * 1000;                           // an order stays open 90 minutes
-const trcWallet = (env) => env.TRC20_WALLET || DEFAULT_TRC20_WALLET;
+const ORDER_TTL = 30 * 60 * 1000;                           // an order stays open 30 minutes
+const NETWORKS = ['trc20', 'bep20'];
+const USDT_TRC20 = 'TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t';   // official USDT contract on Tron (6 decimals)
+const USDT_BEP20 = '0x55d398326f99059ff775485246999027b3197955';   // USDT on BNB Smart Chain (18 decimals)
+const TRANSFER_TOPIC = '0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef';
+const DEFAULT_WALLET = { trc20: 'TVQZ8iqLpAEea2osXFQk44XyX8uuGTa74m', bep20: '0x8b307e530319e1540654a64a533db3bdab6757c8' };
+const walletOf = (env, net) => net === 'bep20' ? (env.BEP20_WALLET || DEFAULT_WALLET.bep20) : (env.TRC20_WALLET || DEFAULT_WALLET.trc20);
+const netEnabled = (env, net) => net === 'trc20' || (net === 'bep20' && !!env.BSC_RPC_URL);
 const usdt = (micro) => (micro / 1e6).toFixed(3);
 
 async function extendUser(env, userId, plan) {
@@ -304,75 +309,149 @@ async function extendUser(env, userId, plan) {
   return d.getTime();
 }
 
-let lastTronCheck = 0, tronBusy = false;
-async function checkTron(env) {
-  if (tronBusy) return;
-  tronBusy = true;
-  try {
-    const now = Date.now();
-    await env.DB.prepare("UPDATE orders SET status = 'expired' WHERE status = 'pending' AND expires_at < ?").bind(now).run();
-    const row = await env.DB.prepare(
-      "SELECT MIN(created_at) AS t FROM orders WHERE status = 'pending' OR (status = 'expired' AND expires_at > ?)"
-    ).bind(now - 24 * 3600e3).first();
-    if (!row || !row.t) return;                                // nothing is waiting for money
-    const wallet = trcWallet(env);
-    const url = 'https://api.trongrid.io/v1/accounts/' + wallet + '/transactions/trc20' +
-      '?only_confirmed=true&limit=200&contract_address=' + USDT_TRC20 + '&min_timestamp=' + (row.t - 120000);
-    const ctrl = new AbortController();
-    const timer = setTimeout(() => ctrl.abort(), 8000);
-    let list = [];
-    try {
-      const r = await fetch(url, { signal: ctrl.signal, headers: env.TRONGRID_API_KEY ? { 'TRON-PRO-API-KEY': env.TRONGRID_API_KEY } : {} });
-      if (!r.ok) return;
-      const j = await r.json();
-      list = Array.isArray(j.data) ? j.data : [];
-    } finally { clearTimeout(timer); }
-
-    for (const t of list.slice().sort((a, b) => a.block_timestamp - b.block_timestamp)) {
-      if (!t || t.to !== wallet || !t.token_info || t.token_info.address !== USDT_TRC20) continue;
-      if (Number(t.token_info.decimals) !== 6) continue;
-      const micro = Number(t.value), ts = Number(t.block_timestamp), txid = String(t.transaction_id || '');
-      if (!Number.isSafeInteger(micro) || !txid || !ts) continue;
-      const ins = await env.DB.prepare(
-        "INSERT OR IGNORE INTO seen_tx (tx_id, amount_micro, from_addr, block_ts, result, created_at) VALUES (?, ?, ?, ?, 'processing', ?)"
-      ).bind(txid, micro, String(t.from || ''), ts, Date.now()).run();
-      if (!ins.meta.changes) continue;                         // this transfer was handled before
-      const done = (res) => env.DB.prepare('UPDATE seen_tx SET result = ? WHERE tx_id = ?').bind(res, txid).run();
-
-      // paid inside the order window (even if we noticed it a little late)
-      const o = await env.DB.prepare(
-        "SELECT * FROM orders WHERE amount_micro = ? AND status IN ('pending','expired') AND created_at <= ? AND expires_at >= ? ORDER BY created_at DESC LIMIT 1"
-      ).bind(micro, ts + 60000, ts).first();
-      if (o) {
-        const w = await env.DB.prepare(
-          "UPDATE orders SET status = 'paid', tx_id = ?, paid_at = ? WHERE id = ? AND status IN ('pending','expired')"
-        ).bind(txid, Date.now(), o.id).run();
-        if (w.meta.changes === 1) { await extendUser(env, o.user_id, o.plan); await done('paid:' + o.id); continue; }
-      }
-      // right amount but the order had already run out: keep it for a human to look at
-      const late = await env.DB.prepare(
-        "SELECT id FROM orders WHERE amount_micro = ? AND status = 'expired' AND expires_at > ? ORDER BY expires_at DESC LIMIT 1"
-      ).bind(micro, now - 24 * 3600e3).first();
-      if (late) { await env.DB.prepare("UPDATE orders SET status = 'review', tx_id = ? WHERE id = ?").bind(txid, late.id).run(); await done('review:' + late.id); continue; }
-      await done('unmatched');
-    }
-  } finally { tronBusy = false; lastTronCheck = Date.now(); }
+/* one incoming transfer -> the matching order (same network, exact amount, inside the order window) */
+async function settleTransfer(env, net, txid, micro, ts, from) {
+  const now = Date.now();
+  const ins = await env.DB.prepare(
+    "INSERT OR IGNORE INTO seen_tx (tx_id, amount_micro, from_addr, block_ts, result, created_at) VALUES (?, ?, ?, ?, 'processing', ?)"
+  ).bind(txid, micro, String(from || ''), ts, now).run();
+  if (!ins.meta.changes) return;                               // this transfer was handled before
+  const done = (res) => env.DB.prepare('UPDATE seen_tx SET result = ? WHERE tx_id = ?').bind(res, txid).run();
+  const o = await env.DB.prepare(
+    "SELECT * FROM orders WHERE network = ? AND amount_micro = ? AND status IN ('pending','expired') AND created_at <= ? AND expires_at >= ? ORDER BY created_at DESC LIMIT 1"
+  ).bind(net, micro, ts + 60000, ts).first();
+  if (o) {
+    const w = await env.DB.prepare(
+      "UPDATE orders SET status = 'paid', tx_id = ?, paid_at = ? WHERE id = ? AND status IN ('pending','expired')"
+    ).bind(txid, Date.now(), o.id).run();
+    if (w.meta.changes === 1) { await extendUser(env, o.user_id, o.plan); await done('paid:' + o.id); return; }
+  }
+  // right amount but the order had already run out: keep it for a human to look at
+  const late = await env.DB.prepare(
+    "SELECT id FROM orders WHERE network = ? AND amount_micro = ? AND status = 'expired' AND expires_at > ? ORDER BY expires_at DESC LIMIT 1"
+  ).bind(net, micro, now - 24 * 3600e3).first();
+  if (late) { await env.DB.prepare("UPDATE orders SET status = 'review', tx_id = ? WHERE id = ?").bind(txid, late.id).run(); await done('review:' + late.id); return; }
+  await done('unmatched');
 }
 
-async function createOrder(env, user, plan) {
+async function scanTron(env) {
+  const now = Date.now();
+  const row = await env.DB.prepare(
+    "SELECT MIN(created_at) AS t FROM orders WHERE network = 'trc20' AND (status = 'pending' OR (status = 'expired' AND expires_at > ?))"
+  ).bind(now - 24 * 3600e3).first();
+  if (!row || !row.t) return;                                  // nothing is waiting for money
+  const wallet = walletOf(env, 'trc20');
+  const url = 'https://api.trongrid.io/v1/accounts/' + wallet + '/transactions/trc20' +
+    '?only_confirmed=true&limit=200&contract_address=' + USDT_TRC20 + '&min_timestamp=' + (row.t - 120000);
+  const ctrl = new AbortController();
+  const timer = setTimeout(() => ctrl.abort(), 8000);
+  let list = [];
+  try {
+    const r = await fetch(url, { signal: ctrl.signal, headers: env.TRONGRID_API_KEY ? { 'TRON-PRO-API-KEY': env.TRONGRID_API_KEY } : {} });
+    if (!r.ok) return;
+    const j = await r.json();
+    list = Array.isArray(j.data) ? j.data : [];
+  } finally { clearTimeout(timer); }
+  for (const t of list.slice().sort((a, b) => a.block_timestamp - b.block_timestamp)) {
+    if (!t || t.to !== wallet || !t.token_info || t.token_info.address !== USDT_TRC20) continue;
+    if (Number(t.token_info.decimals) !== 6) continue;
+    const micro = Number(t.value), ts = Number(t.block_timestamp), txid = String(t.transaction_id || '');
+    if (!Number.isSafeInteger(micro) || !txid || !ts) continue;
+    await settleTransfer(env, 'trc20', txid, micro, ts, t.from);
+  }
+}
+
+async function rpc(url, method, params) {
+  const ctrl = new AbortController();
+  const timer = setTimeout(() => ctrl.abort(), 8000);
+  try {
+    const r = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, signal: ctrl.signal,
+      body: JSON.stringify({ jsonrpc: '2.0', id: 1, method, params }) });
+    if (!r.ok) throw new Error('RPC HTTP ' + r.status);
+    const j = await r.json();
+    if (j.error) throw new Error(j.error.message || 'RPC error');
+    return j.result;
+  } finally { clearTimeout(timer); }
+}
+const hexN = (n) => '0x' + n.toString(16);
+let bscStep = 2000;                                            // blocks per eth_getLogs call (shrinks if the provider limits it)
+async function scanBsc(env) {
+  const now = Date.now();
+  const row = await env.DB.prepare(
+    "SELECT MIN(created_at) AS t FROM orders WHERE network = 'bep20' AND (status = 'pending' OR (status = 'expired' AND expires_at > ?))"
+  ).bind(now - 2 * 3600e3).first();
+  if (!row || !row.t) return;
+  const url = env.BSC_RPC_URL, wallet = walletOf(env, 'bep20').toLowerCase();
+  const latest = parseInt(await rpc(url, 'eth_blockNumber', []), 16);
+  // BNB Chain block time keeps changing, so measure it instead of assuming it
+  const hNew = await rpc(url, 'eth_getBlockByNumber', [hexN(latest), false]);
+  const hOld = await rpc(url, 'eth_getBlockByNumber', [hexN(latest - 2000), false]);
+  let bt = (parseInt(hNew.timestamp, 16) - parseInt(hOld.timestamp, 16)) / 2000;
+  bt = Math.min(4, Math.max(0.2, bt || 0.75));
+  const sinceMs = row.t - 120000;
+  const from = Math.max(0, latest - Math.ceil(((now - sinceMs) / 1000) / bt * 1.3) - 100);
+  const to = latest - 20;                                      // ignore the newest blocks until they are settled
+  const topicTo = '0x' + '0'.repeat(24) + wallet.slice(2);
+  const logs = [];
+  let cur = from, chunks = 0;
+  while (cur <= to && chunks++ < 60) {
+    const end = Math.min(cur + bscStep - 1, to);
+    try {
+      const part = await rpc(url, 'eth_getLogs', [{ fromBlock: hexN(cur), toBlock: hexN(end), address: USDT_BEP20, topics: [TRANSFER_TOPIC, null, topicTo] }]);
+      logs.push(...(Array.isArray(part) ? part : []));
+      cur = end + 1;
+    } catch (e) {
+      if (bscStep > 100) { bscStep = bscStep > 500 ? 500 : 100; continue; }
+      throw e;
+    }
+  }
+  if (!logs.length) return;
+  const stamps = new Map();
+  for (const bn of [...new Set(logs.map((l) => l.blockNumber))].slice(0, 60)) {
+    const h = await rpc(url, 'eth_getBlockByNumber', [bn, false]);
+    if (h && h.timestamp) stamps.set(bn, parseInt(h.timestamp, 16) * 1000);
+  }
+  logs.sort((x, y) => parseInt(x.blockNumber, 16) - parseInt(y.blockNumber, 16) || parseInt(x.logIndex, 16) - parseInt(y.logIndex, 16));
+  const E12 = 10n ** 12n;
+  for (const l of logs) {
+    if (!l || !l.transactionHash || !l.data || String(l.address).toLowerCase() !== USDT_BEP20) continue;
+    const ts = stamps.get(l.blockNumber);
+    if (!ts) continue;
+    const value = BigInt(l.data);
+    if (value % E12 !== 0n) continue;                          // not a whole number of micro-dollars: cannot be one of our amounts
+    const micro = Number(value / E12);
+    if (!Number.isSafeInteger(micro)) continue;
+    const from = l.topics && l.topics[1] ? '0x' + l.topics[1].slice(26) : '';
+    await settleTransfer(env, 'bep20', l.transactionHash + ':' + parseInt(l.logIndex, 16), micro, ts, from);
+  }
+}
+
+const lastCheck = { trc20: 0, bep20: 0 }, checking = { trc20: false, bep20: false };
+async function checkNetwork(env, net) {
+  if (checking[net]) return;
+  checking[net] = true;
+  try {
+    await env.DB.prepare("UPDATE orders SET status = 'expired' WHERE status = 'pending' AND expires_at < ?").bind(Date.now()).run();
+    if (net === 'trc20') await scanTron(env);
+    else if (netEnabled(env, 'bep20')) await scanBsc(env);
+  } finally { checking[net] = false; lastCheck[net] = Date.now(); }
+}
+const checkAll = (env) => Promise.all(NETWORKS.map((n) => checkNetwork(env, n).catch((e) => console.error('ASL payment check', n, e && (e.message || e)))));
+
+async function createOrder(env, user, plan, net) {
   const now = Date.now();
   const open = await env.DB.prepare(
-    "SELECT * FROM orders WHERE user_id = ? AND plan = ? AND status = 'pending' AND expires_at > ? ORDER BY created_at DESC LIMIT 1"
-  ).bind(user.id, plan, now).first();
+    "SELECT * FROM orders WHERE user_id = ? AND plan = ? AND network = ? AND status = 'pending' AND expires_at > ? ORDER BY created_at DESC LIMIT 1"
+  ).bind(user.id, plan, net, now).first();
   if (open) return open;
   const cnt = await env.DB.prepare("SELECT COUNT(*) AS c FROM orders WHERE user_id = ? AND status = 'pending' AND expires_at > ?").bind(user.id, now).first();
   if (cnt && cnt.c >= 5) return null;
   for (let i = 0; i < 40; i++) {
     const micro = PRICES[plan] * 1e6 + (1 + (crypto.getRandomValues(new Uint32Array(1))[0] % 99)) * 1000;   // +$0.001 .. +$0.099
-    const o = { id: rand(8), user_id: user.id, plan, amount_micro: micro, status: 'pending', created_at: now, expires_at: now + ORDER_TTL };
+    const o = { id: rand(8), user_id: user.id, plan, network: net, amount_micro: micro, status: 'pending', created_at: now, expires_at: now + ORDER_TTL };
     try {
-      await env.DB.prepare('INSERT INTO orders (id, user_id, plan, amount_micro, status, created_at, expires_at) VALUES (?, ?, ?, ?, ?, ?, ?)')
-        .bind(o.id, o.user_id, o.plan, o.amount_micro, o.status, o.created_at, o.expires_at).run();
+      await env.DB.prepare('INSERT INTO orders (id, user_id, plan, network, amount_micro, status, created_at, expires_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?)')
+        .bind(o.id, o.user_id, o.plan, o.network, o.amount_micro, o.status, o.created_at, o.expires_at).run();
       return o;
     } catch (e) { /* same amount already open: try another */ }
   }
@@ -469,15 +548,22 @@ export default {
       }
 
       /* ---------- automatic payments ---------- */
+      if (path === '/api/pay/config' && request.method === 'GET') {
+        return json({ networks: { trc20: netEnabled(env, 'trc20'), bep20: netEnabled(env, 'bep20') } });
+      }
+
       if (path === '/api/pay/create' && request.method === 'POST') {
         const user = await getUser(request, env);
         if (!user) return json({ error: 'Sign in first.' }, 401);
         const body = await request.json().catch(() => ({}));
         const plan = String(body.plan || '');
+        const net = String(body.network || 'trc20').toLowerCase();
         if (!PRICES[plan]) return json({ error: 'Choose a plan.' }, 400);
-        const o = await createOrder(env, user, plan);
+        if (!NETWORKS.includes(net)) return json({ error: 'Unknown network.' }, 400);
+        if (!netEnabled(env, net)) return json({ error: 'Automatic payment is not enabled for this network yet.' }, 501);
+        const o = await createOrder(env, user, plan, net);
         if (!o) return json({ error: 'Too many open payments. Please wait a few minutes and try again.' }, 429);
-        return json({ id: o.id, plan: o.plan, amount: usdt(o.amount_micro), wallet: trcWallet(env), network: 'TRC20', expires_at: o.expires_at });
+        return json({ id: o.id, plan: o.plan, amount: usdt(o.amount_micro), wallet: walletOf(env, net), network: net.toUpperCase(), expires_at: o.expires_at });
       }
 
       if (path === '/api/pay/status' && request.method === 'GET') {
@@ -486,8 +572,8 @@ export default {
         const id = String(url.searchParams.get('id') || '');
         let o = await env.DB.prepare('SELECT * FROM orders WHERE id = ? AND user_id = ?').bind(id, user.id).first();
         if (!o) return json({ error: 'Order not found.' }, 404);
-        if (o.status === 'pending' && Date.now() - lastTronCheck > 8000) {
-          await checkTron(env).catch(() => {});
+        if (o.status === 'pending' && Date.now() - (lastCheck[o.network] || 0) > 8000) {
+          await checkNetwork(env, o.network).catch((e) => console.error('ASL payment check', e && (e.message || e)));
           o = await env.DB.prepare('SELECT * FROM orders WHERE id = ? AND user_id = ?').bind(id, user.id).first();
         }
         if (o.status === 'paid') { const tk = getCookie(request, COOKIE); if (tk) AUTH_CACHE.delete(tk); }
@@ -498,7 +584,7 @@ export default {
       if (path === '/api/admin/payments' && request.method === 'GET') {
         if (!(await isAdmin(request, env))) return json({ error: 'Unauthorized.' }, 401);
         const orders = await env.DB.prepare(
-          'SELECT o.id, u.username, o.plan, o.amount_micro, o.status, o.created_at, o.paid_at, o.tx_id FROM orders o JOIN users u ON u.id = o.user_id ORDER BY o.created_at DESC LIMIT 100'
+          'SELECT o.id, u.username, o.plan, o.network, o.amount_micro, o.status, o.created_at, o.paid_at, o.tx_id FROM orders o JOIN users u ON u.id = o.user_id ORDER BY o.created_at DESC LIMIT 100'
         ).all();
         const seen = await env.DB.prepare(
           "SELECT tx_id, amount_micro, from_addr, block_ts, result FROM seen_tx WHERE result NOT LIKE 'paid:%' ORDER BY block_ts DESC LIMIT 100"
@@ -536,10 +622,11 @@ export default {
 
       return json({ error: 'Not found.' }, 404);
     } catch (e) {
+      console.error('ASL worker error:', new URL(request.url).pathname, e && (e.message || e));
       return json({ error: 'Server error. Please try again.' }, 500);
     }
   },
   async scheduled(event, env, ctx) {
-    ctx.waitUntil(checkTron(env).catch(() => {}));
+    ctx.waitUntil(checkAll(env));
   }
 };
