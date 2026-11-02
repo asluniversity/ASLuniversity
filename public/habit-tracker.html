@@ -250,22 +250,28 @@ html.embed{--card:linear-gradient(165deg,#14181A 0%,#111214 100%);--field:rgba(2
 var KEY='asl-habit-v1',MN=['January','February','March','April','May','June','July','August','September','October','November','December'],DN=['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
 var DEF=['Did you trade only setups from your plan?','Did every trade have a stop loss before entry?','Did you keep risk per trade within your limit?','Did you leave your stop loss untouched?','Did you avoid revenge trades after a loss?','Did you respect your daily loss limit?','Did you journal every trade?'];
 var DEMO=/[?&]demo=1/.test(location.search);
-var S=DEMO?demoState():load(),$=function(i){return document.getElementById(i)};
+var PREVIEW=false;
+var MINREAL=5;
+function realN(o){var n=0;for(var k in o.days)if(!o.days[k].demo)n++;return n}
+function boot(){if(DEMO)return demoState();var s=load();if(realN(s)<MINREAL){PREVIEW=true;var d=demoState(s,true);for(var k in s.days)d.days[k]=s.days[k];return d}return s}
+var S=boot(),$=function(i){return document.getElementById(i)};
+function setPrev(){var b=$('demobar');if(b)b.innerHTML=PREVIEW?'<b style="color:var(--mid);letter-spacing:.08em">SAMPLE DATA</b> · this is an example log so you can see how it works. Your own days are added on top of it, and once you have '+MINREAL+' logged days the sample disappears.':''}
+function leavePreview(){if(!PREVIEW)return;PREVIEW=false;for(var k in S.days)if(S.days[k].demo)delete S.days[k];var b=$('demobar');if(b)b.innerHTML=''}
 function load(){try{var s=JSON.parse(localStorage.getItem(KEY));if(s&&s.rules&&s.days){s.settings=s.settings||{maxTrades:3,weekends:false};return s}}catch(e){}
 return{settings:{maxTrades:3,weekends:false},rules:DEF.map(function(t,i){return{id:'r'+i,text:t}}),days:{}}}
-function save(){if(DEMO)return;try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
+function save(){if(DEMO)return;try{var o={settings:S.settings,rules:S.rules,days:{}};for(var k in S.days)if(!S.days[k].demo)o.days[k]=S.days[k];localStorage.setItem(KEY,JSON.stringify(o))}catch(e){}}
 /* ---------- demo log: ~12 weeks of sample days ending today, rebuilt from the calendar so it is always current; never saved ---------- */
-function demoState(){
+function demoState(base,skipToday){
 function hs(t){var x=2166136261;for(var i=0;i<t.length;i++){x^=t.charCodeAt(i);x=Math.imul(x,16777619)}return x>>>0}
 function rng(a){return function(){a|=0;a=a+0x6D2B79F5|0;var t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
 var GOOD=['Waited for my level and took only one clean setup. Closed the platform after the target.','Stop-loss set before entry on every trade. A boring day, exactly what I wanted.','Felt the urge to add a second trade and did not. Plan first, always.','Ran my checklist before each entry. Calm for the whole session.','Took profit where I planned instead of hoping for more.'];
 var BAD=['Took a revenge trade after the first loss. I knew it was wrong while clicking.','Moved my stop-loss just a little. Never again, the stop stays where I put it.','Overtraded out of boredom in the afternoon. Tomorrow: three trades maximum.','Skipped the journal because I was tired. Fix: write the note before closing the platform.','Sized up after a loss. That is how accounts get hurt.'];
-var st={settings:{maxTrades:3,weekends:false},rules:DEF.map(function(t,i){return{id:'r'+i,text:t}}),days:{}},n=new Date(),SPAN=84;
-for(var k=SPAN;k>=0;k--){var d=new Date(n.getFullYear(),n.getMonth(),n.getDate()-k),w=d.getDay();if(w===0||w===6)continue;
-var ky=key(d),r=rng(hs('hb'+ky)),prog=1-k/SPAN,saved=new Date(d.getFullYear(),d.getMonth(),d.getDate(),20,15).getTime();
-if(r()<0.09){st.days[ky]={rest:true,note:'',saved:saved};continue}
-var bad=r()<0.32-0.18*prog,py=bad?0.45:Math.min(0.98,0.88+0.1*prog),tr=bad?2+Math.floor(r()*4):1+Math.floor(r()*3);
-var e={rest:false,trades:tr,max:3,answers:{},labels:{},note:'',saved:saved},all=tr<=3;
+var st={settings:base?base.settings:{maxTrades:3,weekends:false},rules:base?base.rules:DEF.map(function(t,i){return{id:'r'+i,text:t}}),days:{}},n=new Date(),SPAN=84,M=st.settings.maxTrades||3;
+for(var k=SPAN;k>=(skipToday?1:0);k--){var d=new Date(n.getFullYear(),n.getMonth(),n.getDate()-k),w=d.getDay();if((w===0||w===6)&&!st.settings.weekends)continue;
+var ky=key(d);if(base&&base.days&&base.days[ky])continue;var r=rng(hs('hb'+ky)),prog=1-k/SPAN,saved=new Date(d.getFullYear(),d.getMonth(),d.getDate(),20,15).getTime();
+if(r()<0.09){st.days[ky]={rest:true,note:'',saved:saved,demo:true};continue}
+var bad=r()<0.32-0.18*prog,py=bad?0.45:Math.min(0.98,0.88+0.1*prog),tr=bad?Math.max(1,M-1)+Math.floor(r()*4):1+Math.floor(r()*M);
+var e={rest:false,trades:tr,max:M,answers:{},labels:{},note:'',saved:saved,demo:true},all=tr<=M;
 st.rules.forEach(function(x){var y=r()<py;e.answers[x.id]=y;e.labels[x.id]=x.text;if(!y)all=false});
 if(r()<0.7){var L=all?GOOD:BAD;e.note=L[Math.floor(r()*L.length)]}
 st.days[ky]=e}
@@ -311,7 +317,7 @@ if(!draft.rest)S.rules.forEach(function(r){if(typeof draft.answers[r.id]!=='bool
 if(miss.length){flash={k:sel,c:'bad',t:'Please answer every question ('+miss.length+' left). Honest answers only.'};renderCI();return}
 var e={rest:draft.rest,note:draft.note||'',saved:Date.now()};
 if(!draft.rest){e.trades=draft.trades;e.max=S.settings.maxTrades;e.answers={};e.labels={};S.rules.forEach(function(r){e.answers[r.id]=draft.answers[r.id];e.labels[r.id]=r.text})}
-S.days[sel]=e;save();popKey=sel;cp2=true;var v=evalE(e);
+S.days[sel]=e;save();if(PREVIEW&&realN(S)>=MINREAL){leavePreview();setPrev()}popKey=sel;cp2=true;var v=evalE(e);
 flash={k:sel,c:v.status==='perfect'?'ok':v.status==='rest'?'mid':v.status,t:v.rest?'Rest day logged.':v.status==='perfect'?'Tick earned. You traded your plan today.':v.pct+'% of your rules kept. Look at what broke and fix it tomorrow.'};
 if(flash.c==='partial')flash.c='mid';renderAll()}
 /* ---------- calendar ---------- */
@@ -375,7 +381,7 @@ $('re').querySelectorAll('[data-del]').forEach(function(b){b.onclick=function(){
 $('addrule').onclick=function(){var v=$('newrule').value.trim();if(!v)return;S.rules.push({id:'r'+Date.now(),text:v});$('newrule').value='';save();renderAll()};
 $('maxt').onchange=function(){S.settings.maxTrades=Math.max(1,Math.min(50,+this.value||3));save();renderAll()};
 $('wk').onchange=function(){S.settings.weekends=this.checked;save();renderAll()};
-$('wipe').onclick=function(){if(confirm('Erase your whole log and reset the questions? This cannot be undone.')){if(!DEMO){try{localStorage.removeItem(KEY)}catch(e){}}S=DEMO?demoState():load();flash=null;newDraft(sel);renderAll()}};
+$('wipe').onclick=function(){if(confirm('Erase your whole log and reset the questions? This cannot be undone.')){if(!DEMO){try{localStorage.removeItem(KEY)}catch(e){}}PREVIEW=false;S=boot();setPrev();flash=null;newDraft(sel);renderAll()}};
 $('mp').onclick=function(){cplay=true;cp2=true;view.m--;if(view.m<0){view.m=11;view.y--}renderAll(true)};
 $('mn').onclick=function(){cplay=true;cp2=true;view.m++;if(view.m>11){view.m=0;view.y++}renderAll(true)};
 function renderAll(keep){if(!keep)renderCI();renderCal();var md=monthData();renderStats(md);chart('c1',md,'d');chart('c2',md,'t');cp2=false;renderJ(md);if(!keep)renderRules()}
@@ -394,7 +400,8 @@ if(window.ResizeObserver)new ResizeObserver(post).observe(document.body);window.
 var DB_=$('demobar');
 if(DEMO){DB_.innerHTML='<b style="color:var(--mid);letter-spacing:.08em">DEMO DATA</b> · a sample log that updates every day. Nothing here is saved.'+(EMB?'':' <a href="habit-tracker.html" style="color:var(--accent)">Back to my own log</a>');
 document.addEventListener('visibilitychange',function(){if(!document.hidden&&key(new Date())!==TODAY)location.reload()})}
-else if(!EMB)DB_.innerHTML='<a href="habit-tracker.html?demo=1" style="color:var(--accent)">See a demo log →</a>';
+else setPrev();
+if(DEMO||PREVIEW){var dt=document.querySelector('details');if(dt)dt.open=true}
 newDraft(sel);renderAll();
 })();
 </script>
