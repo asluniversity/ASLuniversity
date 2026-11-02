@@ -104,6 +104,20 @@ textarea.inp:focus { outline: 2px solid var(--accent); outline-offset: 1px; }
 .opt[aria-pressed="true"] { border-color: var(--accent); background: rgba(11,177,210,0.10); box-shadow: inset 0 0 0 1px var(--accent); }
 .nav-row { display: flex; justify-content: space-between; align-items: center; gap: 10px; margin-top: 22px; }
 
+a.btn { display: inline-block; text-decoration: none; text-align: center; }
+.gate { max-width: 640px; margin: 26px auto 0; text-align: left; background: var(--panel-bg); border: 1px solid var(--hairline); border-left: 3px solid var(--warn); border-radius: 6px; padding: 20px 22px; box-shadow: var(--shadow); }
+.gate b { display: block; font-family: var(--display); font-size: 17px; color: var(--heading-color); margin-bottom: 6px; }
+.gate p { font-size: 14px; color: var(--muted-color); margin: 0 0 16px; max-width: none; }
+.gate .hero-btns { justify-content: flex-start; }
+.note { max-width: 640px; margin: 14px auto 0; font-size: 13px; color: var(--muted-color); }
+.locked { max-width: 760px; margin: 0 auto 18px; }
+.locked li { padding-left: 26px; }
+.locked li::before { content: "\1F512"; font-size: 12px; top: 9px; color: inherit; }
+.cta-box { max-width: 760px; margin: 0 auto 18px; text-align: center; background: var(--panel-bg); border: 1px solid var(--accent); border-radius: 6px; padding: 30px 24px; box-shadow: var(--shadow); }
+.cta-box h2 { font-family: var(--display); font-size: 22px; color: var(--heading-color); margin-bottom: 8px; }
+.cta-box p { color: var(--muted-color); max-width: 560px; margin: 0 auto 20px; font-size: 14.5px; }
+.cta-box .hero-btns { margin-bottom: 4px; }
+
 /* results */
 .rhead { text-align: center; padding: 46px 0 18px; }
 .rhead .tag { font-family: var(--mono); font-size: 11.5px; letter-spacing: 0.18em; color: var(--accent); }
@@ -163,7 +177,7 @@ footer .disclaimer { font-size: 11.5px; color: var(--footer-text); max-width: 82
 </nav>
 <main><div class="wrap" id="app"></div></main>
 <footer>
-  <div class="disclaimer">The Growth Program is an educational self-assessment. It turns your own answers into a suggested trading style and plan; it is not a psychological diagnosis, a guarantee of results, or investment advice. Results are only as honest as your answers. Trading leveraged products such as gold, forex and CFDs carries a high risk of loss, and you can lose more than you expect. Your answers are processed in your own browser and saved only on this device — nothing is sent to a server.</div>
+  <div class="disclaimer">The Growth Program is an educational self-assessment. It turns your own answers into a suggested trading style and plan; it is not a psychological diagnosis, a guarantee of results, or investment advice. Results are only as honest as your answers. Trading leveraged products such as gold, forex and CFDs carries a high risk of loss, and you can lose more than you expect. Your answers are processed in your own browser and saved on this device under your account — nothing is sent to a server.</div>
   <div class="footer-info">© 2026 ASL University. All rights reserved. | Support: @mrasltl on Telegram</div>
 </footer>
 
@@ -401,7 +415,39 @@ function toText(res, p) {
 const $ = (s, r) => (r || document).querySelector(s);
 const $$ = (s, r) => [...(r || document).querySelectorAll(s)];
 const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
-const KEY = 'asl-growth-v1', N = Q.length;
+/* ---------- ACCOUNT CHECK ----------
+   Adapt the key names / URLs below to match the login system used on the other pages. */
+const AUTH = {
+  loginUrl: 'index.html#login',
+  pricingUrl: 'index.html#pricing',
+  sessionKeys: ['asl-user', 'asl_user', 'asl-session', 'asl-auth', 'asl-token', 'asl_token', 'user', 'token'],
+  memberKeys: ['asl-member', 'asl_member', 'asl-subscription', 'asl-plan']
+};
+function readStore(k) { for (const st of ['localStorage', 'sessionStorage']) { try { const v = window[st].getItem(k); if (v) return v; } catch (e) { /* blocked */ } } return null; }
+function parseVal(v) { try { return JSON.parse(v); } catch (e) { return v; } }
+function getUser() {
+  for (const k of AUTH.sessionKeys) {
+    const v = readStore(k); if (!v) continue;
+    const o = parseVal(v);
+    if (o && typeof o === 'object') return { id: String(o.email || o.username || o.id || o.user || k).slice(0, 80), raw: o };
+    return { id: String(o).slice(0, 40), raw: o };
+  }
+  return null;
+}
+function activeFlag(o) {
+  if (o === true || o === 'true' || o === 'active') return true;
+  if (!o || typeof o !== 'object') return false;
+  if (o.active === true || o.member === true || o.isMember === true || o.subscribed === true || o.status === 'active') return true;
+  const exp = o.expires || o.expiresAt || o.expiry || o.subscriptionEnd || o.validUntil;
+  return !!exp && new Date(exp).getTime() > Date.now();
+}
+function isMember() {
+  if (!USER) return false;
+  if (activeFlag(USER.raw)) return true;
+  return AUTH.memberKeys.some(k => { const v = readStore(k); return v && activeFlag(parseVal(v)); });
+}
+const USER = getUser();
+const KEY = 'asl-growth-v1' + (USER ? ':' + USER.id : ''), N = Q.length;
 let ST = { ans: [], text: '', step: -1, done: false };
 try { const o = JSON.parse(localStorage.getItem(KEY)); if (o && Array.isArray(o.ans)) ST = Object.assign(ST, o); } catch (e) { /* first visit */ }
 const save = () => { try { localStorage.setItem(KEY, JSON.stringify(ST)); } catch (e) { /* blocked */ } };
@@ -416,11 +462,17 @@ const ul = (a, c) => '<ul class="ul ' + (c || '') + '">' + a.map(x => '<li>' + e
 
 function landing() {
   const has = ST.ans.length > 0 && !ST.done;
-  return '<section class="hero"><div class="lbl" style="color:var(--accent);letter-spacing:.2em">ASL UNIVERSITY · GROWTH PROGRAM</div><h1 style="margin-top:12px">Find the way of trading<br><em>that fits who you are.</em></h1>' +
-    '<p>Answer ' + N + ' honest questions about how you react in the market. You get your trader profile, the style that suits your temperament — scalping, day trading, swing or position — and a written plan with rules, behaviour fixes and a 12-week roadmap.</p>' +
+  const intro = '<section class="hero"><div class="lbl" style="color:var(--accent);letter-spacing:.2em">ASL UNIVERSITY · GROWTH PROGRAM</div><h1 style="margin-top:12px">Find the way of trading<br><em>that fits who you are.</em></h1>' +
+    '<p>Answer ' + N + ' honest questions about how you react in the market. You get your trader profile, the style that suits your temperament — scalping, day trading, swing or position — and a written plan with rules, behaviour fixes and a 12-week roadmap.</p>';
+  const feat = '<div class="feat"><div><b>Your trader profile</b><span>Patience, decision speed, emotional control, discipline and risk appetite — plus the habits that cost you money.</span></div><div><b>A style that fits you</b><span>A fit score for scalping, day trading, swing and position trading, with the reasons behind it.</span></div><div><b>A plan, not a theory</b><span>Timeframes, setups, risk limits, behaviour fixes and a 12-week roadmap you can follow and track in the journal.</span></div></div>';
+  if (!USER) {
+    return intro + '<div class="gate"><b>Log in first so your answers are saved</b><p>Your program is built from your answers, so they need to belong to an account. Log in or create one before you start. Your progress is saved to it — you can stop and continue any time, and your personal program is waiting for you when your membership is active.</p>' +
+      '<div class="hero-btns"><a class="btn btn-primary" href="' + AUTH.loginUrl + '">Log in</a><a class="btn btn-secondary" href="' + AUTH.loginUrl + '">Create an account</a></div></div></section>' + feat;
+  }
+  return intro +
     '<div class="hero-btns">' + (has ? '<button class="btn btn-primary" data-go="resume">Continue where I stopped</button><button class="btn btn-secondary" data-go="start">Start over</button>' : '<button class="btn btn-primary" data-go="start">Start the test</button>') + (ST.done ? '<button class="btn btn-secondary" data-go="result">See my last result</button>' : '') + '</div>' +
-    '<p class="fine">About 5 minutes · answers stay in your browser · no sign-up</p></section>' +
-    '<div class="feat"><div><b>Your trader profile</b><span>Patience, decision speed, emotional control, discipline and risk appetite — plus the habits that cost you money.</span></div><div><b>A style that fits you</b><span>A fit score for scalping, day trading, swing and position trading, with the reasons behind it.</span></div><div><b>A plan, not a theory</b><span>Timeframes, setups, risk limits, behaviour fixes and a 12-week roadmap you can follow and track in the journal.</span></div></div>';
+    '<p class="fine">About 5 minutes · your answers are saved to your account</p>' +
+    (isMember() ? '' : '<p class="note">You can answer every question now. Your personal program opens with an active membership.</p>') + '</section>' + feat;
 }
 function step() {
   const i = ST.step;
@@ -434,6 +486,23 @@ function step() {
   return '<div class="card"><div class="lbl">' + esc(q.s) + ' · question ' + (i + 1) + ' of ' + N + '</div><div class="progress"><i style="width:' + pc + '%"></i></div><h2>' + esc(q.t) + '</h2><div class="opts">' +
     q.o.map((o, k) => '<button class="opt" data-pick="' + k + '" aria-pressed="' + (ST.ans[i] === k) + '">' + esc(o[0]) + '</button>').join('') + '</div>' +
     '<div class="nav-row"><button class="btn-mini" data-go="back">← Back</button><button class="btn-mini" data-go="next"' + (ST.ans[i] == null ? ' hidden' : '') + '>Next →</button></div></div>';
+}
+function locked() {
+  const cta = !USER
+    ? '<a class="btn btn-primary" href="' + AUTH.loginUrl + '">Log in to continue</a>'
+    : '<a class="btn btn-primary" href="' + AUTH.pricingUrl + '">Get your membership · $49/month</a><button class="btn btn-secondary" data-go="reload">I already subscribed</button>';
+  return '<div class="rhead"><div class="tag">YOUR PERSONAL PROGRAM IS READY</div><h1>Your plan is built.<br>One step left to open it.</h1>' +
+    '<p>We matched your answers to a trading style, a set of risk rules and a 12-week roadmap. To unlock it, activate your ASL University membership — then follow the plan the way a professional does: one style, fixed rules, the same routine every day.</p></div>' +
+    '<section class="panel locked"><h3>What is waiting inside</h3>' + ul([
+      'Your trader profile and style-fit scores for scalping, day, swing and position trading',
+      'Your strategy blueprint: timeframes, setups, entry rules, exit and trade management',
+      'Risk rules matched to your temperament — risk per trade, daily and weekly limits',
+      'The behaviours that are costing you money, with a fix for each',
+      'A 12-week roadmap and a daily routine you can track in the ASL Account Journal'
+    ]) + '</section>' +
+    '<div class="cta-box"><h2>Your answers are saved. Your plan is ready.</h2><p>Activate your membership and this page shows your full personal program straight away — you won’t need to answer anything again.</p>' +
+    '<div class="hero-btns">' + cta + '</div><p class="fine" style="margin-top:14px">Need help? Message us on Telegram: @mrasltl</p></div>' +
+    '<div class="actions"><button class="btn-mini" data-go="retake">Retake the test</button></div>';
 }
 function result() {
   const res = compute(ST.ans, ST.text), p = build(res), s = p.s;
@@ -458,7 +527,7 @@ function result() {
 }
 function draw() {
   const a = $('#app');
-  a.innerHTML = ST.done ? result() : ST.step < 0 ? landing() : step();
+  a.innerHTML = ST.done ? (isMember() ? result() : locked()) : ST.step < 0 ? landing() : step();
   if (ST.step >= 0 && !ST.done) window.scrollTo({ top: 0 });
 }
 function advance() { ST.step = Math.min(N, ST.step + 1); save(); draw(); }
@@ -468,6 +537,8 @@ document.addEventListener('click', e => {
   if (d.themeBtn) { document.documentElement.setAttribute('data-theme', d.themeBtn); $$('[data-theme-btn]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.themeBtn === d.themeBtn))); try { localStorage.setItem('asl-theme', d.themeBtn); } catch (x) { /* blocked */ } return; }
   if (d.pick != null) { ST.ans[ST.step] = +d.pick; save(); $$('.opt').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.pick === d.pick))); setTimeout(advance, 220); return; }
   const g = d.go;
+  if (g === 'reload') { location.reload(); return; }
+  if (!USER && /^(start|resume|finish|retake)$/.test(g)) { location.href = AUTH.loginUrl; return; }
   if (g === 'start') { ST = { ans: [], text: '', step: 0, done: false }; save(); draw(); }
   else if (g === 'resume') { ST.step = Math.min(ST.ans.length, N); draw(); }
   else if (g === 'back') { if (ST.step <= 0) { ST.step = -1; } else ST.step--; save(); draw(); }
@@ -487,6 +558,7 @@ document.addEventListener('input', e => { if (e.target.id === 'free') { ST.text 
 (function () { const th = document.documentElement.getAttribute('data-theme'); $$('[data-theme-btn]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.themeBtn === th))); })();
 if (ST.done && ST.ans.length < N) ST.done = false;
 if (ST.step >= 0 && ST.ans.length === 0 && !ST.done) ST.step = -1;
+if (!USER) { ST.step = -1; ST.done = false; }
 draw();
 })();
 </script>
