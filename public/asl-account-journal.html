@@ -889,7 +889,7 @@ const MISTAKES = ['No stop-loss', 'Moved stop-loss', 'Oversized position', 'Ente
 
 function makeDemo(now) {
   now = now || new Date();
-  const rnd = mulberry32(20240607);
+  let rnd = mulberry32(20240607);
   const pick = arr => arr[Math.floor(rnd() * arr.length)];
   const SY = {
     XAUUSD: { w: 34, pv: 100, base: 2350, dec: 2, edge: 0.10 }, EURUSD: { w: 22, pv: 100000, base: 1.085, dec: 5, edge: 0.02 },
@@ -912,6 +912,8 @@ function makeDemo(now) {
   }
   let lastLossClose = 0, lastLoss = false;
   for (const day of days) {
+    /* each day has its own seed: past days never change, a new day is simply added every day */
+    rnd = mulberry32(20240607 + Math.floor(Date.UTC(day.y, day.m, day.d) / 864e5) * 7919);
     const heavy = rnd() < 0.12;
     const cnt = heavy ? 6 + Math.floor(rnd() * 4) : 1 + Math.floor(rnd() * 4);
     let clock = Date.UTC(day.y, day.m, day.d, 7, 0) + Math.floor(rnd() * 90) * 60000;
@@ -924,7 +926,7 @@ function makeDemo(now) {
       queuedRevenge = false;
       const hour = new Date(open).getUTCHours();
       if (hour > 20) break;
-      if (day.today && hour >= Math.max(nowH - 1, 0)) break;
+      if (open > now.getTime() - 5 * 60000) break;
       const sym = pickSym(), S = SY[sym];
       const em = revenge ? ['Revenge', 0, -0.10] : pickEm();
       let wp = 0.49 + S.edge + em[2];
@@ -946,7 +948,7 @@ function makeDemo(now) {
       const swap = minutes > 720 ? -(lots * (1 + rnd() * 2)) : 0;
       const followed = !(em[0] === 'FOMO' || em[0] === 'Revenge' || em[0] === 'Bored') || rnd() < 0.3;
       const j = {};
-      if (rnd() < 0.55) {
+      if (rnd() < 0.88) {
         j.setup = revenge ? 'Scalp' : pick(SETUPS);
         j.emotion = em[0];
         j.plan = followed ? 'yes' : 'no';
@@ -961,7 +963,22 @@ function makeDemo(now) {
       if (!win && rnd() < (heavy ? 0.5 : 0.28)) queuedRevenge = true;
     }
   }
-  return trades.filter(t => t.close <= Date.UTC(y, mo, d0, 23, 59));
+  return trades.filter(t => t.close <= now.getTime());
+}
+/* daily notes for the demo, so the Journal tab and calendar notes are filled too */
+function makeDemoNotes(trades) {
+  const by = new Map();
+  for (const t of trades) { const k = dkey(t.close); const o = by.get(k) || { net: 0, n: 0, bad: 0 }; o.net += t.net; o.n++; if (t.j && t.j.plan === 'no') o.bad++; by.set(k, o); }
+  const keys = [...by.keys()].sort().slice(-30), out = {};
+  const WIN = ['Followed the plan and took only A-setups. Stopped after the second win. Same routine tomorrow.', 'Waited for the pullback on gold instead of chasing. Risk stayed the same on every trade.', 'Good patience in the London session. Moved the stop to breakeven only after 1R, as planned.'];
+  const LOSS = ['Small loss, but the setup was valid. No change to size afterwards. Review the entry timing tomorrow.', 'Two stops in a row, then I closed the platform. That was the right call.', 'The market was choppy. I should have skipped the second trade and waited for a cleaner level.'];
+  const BAD = ['Overtraded after the first loss and sized up. Tomorrow: max 3 trades and no size increase after a loss.', 'Chased price after missing the entry. Write the entry level down before the session starts.', 'Moved my stop-loss and it cost me. Tomorrow the stop stays where I put it.'];
+  for (const k of keys) {
+    const o = by.get(k), h = Math.abs(k.split('-').reduce((a, x) => a * 31 + (+x), 7));
+    const arr = (o.n >= 6 || o.bad >= 2) ? BAD : o.net >= 0 ? WIN : LOSS;
+    if (h % 3 !== 0 || o.n >= 6) out[k] = arr[h % arr.length];
+  }
+  return out;
 }
 
 /* ---------------- analytics ---------------- */
@@ -2106,10 +2123,23 @@ function connectModalInner(targetId, initialFile) {
     };
   });
 }
+const DEMO_PROP = { bal: 10000, target: 8, days: 0, daily: 5, total: 10, cons: 0, dbase: 'initial', type: 'static' };
+/* The demo is rebuilt whenever the calendar day changes, so visitors always see an account that was traded up to today. */
+function refreshDemo(force) {
+  const day = todayKey(); let changed = false;
+  for (const a of DB.accounts) {
+    if (!a.demo || (!force && a.demoDay === day && a.acctType === 'prop')) continue;
+    const tr = makeDemo(new Date());
+    a.trades = tr; a.dayNotes = makeDemoNotes(tr); a.acctType = 'prop'; a.prop = Object.assign({}, DEMO_PROP);
+    a.startBalance = 10000; a.demoDay = day; a.rev = (a.rev || 0) + 1; changed = true;
+  }
+  if (changed) { UI.cal = null; UI.day = null; saveDB(); }
+  return changed;
+}
 function addDemo() {
   const ex = DB.accounts.find(a => a.demo);
-  if (ex) { DB.activeId = ex.id; }
-  else { const a = { id: uid(), name: 'Demo account', platform: 'MT5', login: '', currency: 'USD', startBalance: 10000, demo: true, trades: makeDemo(new Date()), dayNotes: {}, created: Date.now(), rev: 0 }; DB.accounts.push(a); DB.activeId = a.id; }
+  if (ex) { DB.activeId = ex.id; refreshDemo(); }
+  else { const tr = makeDemo(new Date()); const a = { id: uid(), name: 'Demo account', platform: 'MT5', login: '', currency: 'USD', startBalance: 10000, demo: true, acctType: 'prop', prop: Object.assign({}, DEMO_PROP), trades: tr, dayNotes: makeDemoNotes(tr), demoDay: todayKey(), created: Date.now(), rev: 0 }; DB.accounts.push(a); DB.activeId = a.id; }
   UI.cal = null; UI.day = null; DB.ui.view = 'overview'; saveDB(); render(); toast('Demo account loaded — these are sample trades, not real results.');
 }
 
@@ -2166,6 +2196,11 @@ function applyTheme(theme, persist) {
 }
 function init() {
   loadDB();
+  refreshDemo();
+  /* keep the demo current if the page stays open past midnight or the tab is reopened the next day */
+  const demoTick = () => { if (refreshDemo() && $('#app') && !$('#app').hidden) render(); };
+  setInterval(demoTick, 10 * 60000);
+  document.addEventListener('visibilitychange', () => { if (!document.hidden) demoTick(); });
   applyTheme(document.documentElement.getAttribute('data-theme') === 'light' ? 'light' : 'dark', false);
   document.addEventListener('click', e => {
     const t = e.target.closest('[data-view],[data-range],[data-open],[data-edit],[data-cal],[data-day],[data-more],[data-close],[data-theme-btn],[data-demo],[data-settype]');
