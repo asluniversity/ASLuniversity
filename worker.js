@@ -1,4 +1,5 @@
 // ASL University - member login + subscription API (Cloudflare Worker + D1)
+import { runGrowth, validAnswers } from './growth-logic.js';
 const enc = new TextEncoder();
 const COOKIE = 'asl_session';
 const SESSION_MS = 30 * 24 * 3600 * 1000;
@@ -93,6 +94,12 @@ async function getAsset(env, request, url, p) {
   return r;
 }
 
+let growthReady = false;
+async function growthTable(env) {
+  if (growthReady) return;
+  await env.DB.prepare('CREATE TABLE IF NOT EXISTS growth_answers (user_id INTEGER PRIMARY KEY, ans TEXT NOT NULL, free_text TEXT, updated_at INTEGER NOT NULL)').run();
+  growthReady = true;
+}
 const json = (data, status = 200, headers = {}) =>
   new Response(JSON.stringify(data), {
     status,
@@ -505,6 +512,31 @@ export default {
       if (path === '/api/me' && request.method === 'GET') {
         const user = await getUser(request, env);
         return user ? json({ authenticated: true, user: publicUser(user) }) : json({ authenticated: false });
+      }
+
+      /* Growth Program: answers are saved on the account; the personal plan is built here and sent ONLY to active members. */
+      if (path === '/api/growth/result') {
+        const user = await getUser(request, env);
+        if (!user) return json({ ok: false, error: 'login' }, 401);
+        await growthTable(env);
+        if (request.method === 'GET') {
+          const row = await env.DB.prepare('SELECT ans, free_text FROM growth_answers WHERE user_id = ?').bind(user.id).first();
+          let ans = null; try { ans = row && JSON.parse(row.ans); } catch (e) { /* ignore */ }
+          if (!validAnswers(ans)) return json({ ok: true, saved: false });
+          const text = (row && row.free_text) || '';
+          if (!isActive(user)) return json({ ok: true, saved: true, locked: true, ans, text });
+          const data = runGrowth(ans, text);
+          return data ? json({ ok: true, saved: true, locked: false, ans, text, data }) : json({ ok: true, saved: false });
+        }
+        if (request.method === 'POST') {
+          let body; try { body = await request.json(); } catch (e) { return json({ ok: false, error: 'bad request' }, 400); }
+          const ans = body && body.ans, text = typeof (body && body.text) === 'string' ? body.text.slice(0, 3000) : '';
+          if (!validAnswers(ans)) return json({ ok: false, error: 'bad answers' }, 400);
+          await env.DB.prepare('INSERT INTO growth_answers (user_id, ans, free_text, updated_at) VALUES (?, ?, ?, ?) ON CONFLICT(user_id) DO UPDATE SET ans = excluded.ans, free_text = excluded.free_text, updated_at = excluded.updated_at')
+            .bind(user.id, JSON.stringify(ans), text, Date.now()).run();
+          if (!isActive(user)) return json({ ok: true, locked: true });
+          return json({ ok: true, data: runGrowth(ans, text) });
+        }
       }
 
       if (path === '/api/logout' && request.method === 'POST') {
