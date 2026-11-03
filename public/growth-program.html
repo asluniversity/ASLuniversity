@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en" data-theme="dark">
 <head>
@@ -418,9 +419,12 @@ const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&a
 /* ---------- ACCOUNT CHECK ----------
    Adapt the key names / URLs below to match the login system used on the other pages. */
 const AUTH = {
-  loginUrl: 'index.html#login',
-  pricingUrl: 'index.html#pricing',
-  sessionKeys: ['asl-user', 'asl_user', 'asl-session', 'asl-auth', 'asl-token', 'asl_token', 'user', 'token'],
+  loginUrl: 'index.html?next=growth-program.html#login',
+  pricingUrl: 'index.html?next=growth-program.html#pricing',
+  /* If the login API lives on the Worker (another origin than this page), put its address here, e.g. 'https://asl.asluniversity.workers.dev' */
+  apiBase: '',
+  meEndpoints: ['/api/me', '/api/auth/me', '/api/session'],
+  sessionKeys: ['asl-user', 'asl_user', 'asl-session', 'asl-auth', 'asl-token', 'asl_token'],
   memberKeys: ['asl-member', 'asl_member', 'asl-subscription', 'asl-plan']
 };
 function readStore(k) { for (const st of ['localStorage', 'sessionStorage']) { try { const v = window[st].getItem(k); if (v) return v; } catch (e) { /* blocked */ } } return null; }
@@ -435,6 +439,7 @@ function getUser() {
   return null;
 }
 function activeFlag(o) {
+  if (o && typeof o === 'object') { const n = o.subscription || o.membership || o.plan; if (n && typeof n === 'object' && activeFlag(n)) return true; }
   if (o === true || o === 'true' || o === 'active') return true;
   if (!o || typeof o !== 'object') return false;
   if (o.active === true || o.member === true || o.isMember === true || o.subscribed === true || o.status === 'active') return true;
@@ -446,10 +451,35 @@ function isMember() {
   if (activeFlag(USER.raw)) return true;
   return AUTH.memberKeys.some(k => { const v = readStore(k); return v && activeFlag(parseVal(v)); });
 }
-const USER = getUser();
-const KEY = 'asl-growth-v1' + (USER ? ':' + USER.id : ''), N = Q.length;
+let USER = null, KEY = '', CHECKING = true;
+const N = Q.length;
 let ST = { ans: [], text: '', step: -1, done: false };
-try { const o = JSON.parse(localStorage.getItem(KEY)); if (o && Array.isArray(o.ans)) ST = Object.assign(ST, o); } catch (e) { /* first visit */ }
+function loadState() {
+  ST = { ans: [], text: '', step: -1, done: false };
+  KEY = 'asl-growth-v1' + (USER ? ':' + USER.id : '');
+  try { const o = JSON.parse(localStorage.getItem(KEY)); if (o && Array.isArray(o.ans)) ST = Object.assign(ST, o); } catch (e) { /* first visit */ }
+  if (ST.done && ST.ans.length < N) ST.done = false;
+  if (ST.step >= 0 && ST.ans.length === 0 && !ST.done) ST.step = -1;
+  if (!USER) { ST.step = -1; ST.done = false; }
+}
+async function fetchMe() {
+  for (const ep of AUTH.meEndpoints) {
+    try {
+      const ctl = new AbortController(), tm = setTimeout(() => ctl.abort(), 4000);
+      const r = await fetch(AUTH.apiBase + ep, { credentials: 'include', headers: { 'Accept': 'application/json' }, signal: ctl.signal });
+      clearTimeout(tm);
+      if (!r.ok || !/json/i.test(r.headers.get('content-type') || '')) continue;
+      const j = await r.json(), u = (j && (j.user || j.account)) || j;
+      if (u && typeof u === 'object' && (u.email || u.username || u.id)) return { id: String(u.email || u.username || u.id).slice(0, 80), raw: Object.assign({}, j, u, { subscription: j.subscription || u.subscription, membership: j.membership || u.membership }) };
+    } catch (e) { /* try next */ }
+  }
+  return null;
+}
+async function boot() {
+  CHECKING = true; draw();
+  USER = (await fetchMe()) || getUser();
+  CHECKING = false; loadState(); draw();
+}
 const save = () => { try { localStorage.setItem(KEY, JSON.stringify(ST)); } catch (e) { /* blocked */ } };
 
 function ringSVG(v, label) {
@@ -527,6 +557,7 @@ function result() {
 }
 function draw() {
   const a = $('#app');
+  if (CHECKING) { a.innerHTML = '<section class="hero"><p>Checking your account…</p></section>'; return; }
   a.innerHTML = ST.done ? (isMember() ? result() : locked()) : ST.step < 0 ? landing() : step();
   if (ST.step >= 0 && !ST.done) window.scrollTo({ top: 0 });
 }
@@ -537,7 +568,7 @@ document.addEventListener('click', e => {
   if (d.themeBtn) { document.documentElement.setAttribute('data-theme', d.themeBtn); $$('[data-theme-btn]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.themeBtn === d.themeBtn))); try { localStorage.setItem('asl-theme', d.themeBtn); } catch (x) { /* blocked */ } return; }
   if (d.pick != null) { ST.ans[ST.step] = +d.pick; save(); $$('.opt').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.pick === d.pick))); setTimeout(advance, 220); return; }
   const g = d.go;
-  if (g === 'reload') { location.reload(); return; }
+  if (g === 'reload') { boot(); return; }
   if (!USER && /^(start|resume|finish|retake)$/.test(g)) { location.href = AUTH.loginUrl; return; }
   if (g === 'start') { ST = { ans: [], text: '', step: 0, done: false }; save(); draw(); }
   else if (g === 'resume') { ST.step = Math.min(ST.ans.length, N); draw(); }
@@ -556,10 +587,7 @@ document.addEventListener('click', e => {
 });
 document.addEventListener('input', e => { if (e.target.id === 'free') { ST.text = e.target.value; save(); } });
 (function () { const th = document.documentElement.getAttribute('data-theme'); $$('[data-theme-btn]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.themeBtn === th))); })();
-if (ST.done && ST.ans.length < N) ST.done = false;
-if (ST.step >= 0 && ST.ans.length === 0 && !ST.done) ST.step = -1;
-if (!USER) { ST.step = -1; ST.done = false; }
-draw();
+boot();
 })();
 </script>
 </body>
