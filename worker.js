@@ -1,5 +1,5 @@
 // ASL University - member login + subscription API (Cloudflare Worker + D1)
-import { runGrowth, validAnswers } from './growth-logic.js';
+import { runGrowth, validAnswers } from './logic.js';
 const enc = new TextEncoder();
 const COOKIE = 'asl_session';
 const SESSION_MS = 30 * 24 * 3600 * 1000;
